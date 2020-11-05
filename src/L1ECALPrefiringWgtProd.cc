@@ -58,7 +58,7 @@ void L1ECALPrefiringWgtProd::produceWeights(Photon& photons, Jet& jets){
 
 			// Get Lorentz vector of the corresponding photon
 			TLorentzVector photonP4 = photons.RecoP4(i);
-
+			// std::cout << "Photon #" << i << ", pt = " << photons.RecoP4(i).Pt() << ", eta = " << photons.RecoP4(i).Eta() << std::endl;
 			// Check that it is in the affected region of pt and eta
 			if(photonP4.Pt() < 20.0) continue;
 			if(abs(photonP4.Eta()) < 2.0 || abs(photonP4.Eta()) > 3.0) continue;
@@ -72,7 +72,8 @@ void L1ECALPrefiringWgtProd::produceWeights(Photon& photons, Jet& jets){
 		for(size_t i = 0; i < jets.size(); i++){
 			// Get the Lorentz vector for the corresponding jet
 			TLorentzVector jetP4 = jets.RecoP4(i);
-
+			// std::cout << "Jet #" << i << ", pt = " << jets.RecoP4(i).Pt() << ", eta = " << jets.RecoP4(i).Eta() << std::endl;
+			
 			float pt_jet = jetP4.Pt();
 
 			// Check that it is in the affected regions

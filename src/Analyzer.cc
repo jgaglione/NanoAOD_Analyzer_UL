@@ -702,21 +702,42 @@ bool Analyzer::checkGoodRunsAndLumis(int event){
 
 }
 
-bool Analyzer::passHEMveto2018(){
+bool Analyzer::passHEMJetVeto2018(){
 
   bool hasJetinHEM = false;
+
+  if(distats["Run"].bfind("ApplySUSY2_HEMJetVeto2018")){
+  	// Calculate the MHT Phi angle:
+  	_MET->calculateHtAndMHt(distats["Run"], *_Jet, 0); // nominal HT and MHT
+  	// std::cout << "MHT pt = " << _MET->MHT() << ", phi = " << _MET->MHTphi() << std::endl;
+  }
   // Loop over all jets in the reco Jet collection before applying any selections.
+
   for(size_t index = 0; index < _Jet->size(); index++){
     // Get the 4-momentum of the jet:
     TLorentzVector jetP4 = _Jet->p4(index);
 
-    //std::cout << "Jet #" << index << ": pt = " << jetP4.Pt() << ", eta = " << jetP4.Eta() << ", phi = " << jetP4.Phi() << std::endl;
-    // Check if jet is in the HEM region
-    if(jetP4.Pt() >= 30.0 && jetP4.Eta() >= -3.0 && jetP4.Eta() <= -1.3 && jetP4.Phi() >= -1.57 && jetP4.Phi() <= -0.87){
-      //std::cout << "....... This jet is in the HEM region" << std::endl;
-      hasJetinHEM = true;
-      break;
-    }
+    // std::cout << "Jet #" << index << ": pt = " << jetP4.Pt() << ", eta = " << jetP4.Eta() << ", phi = " << jetP4.Phi() << std::endl;
+    
+    // Check if jet is in the HEM region according to the corresponding flag
+    if(distats["Run"].bfind("ApplyHEMVeto2018")){
+        if(jetP4.Pt() >= 30.0 && jetP4.Eta() >= -3.0 && jetP4.Eta() <= -1.3 && jetP4.Phi() >= -1.57 && jetP4.Phi() <= -0.87){
+            // std::cout << "....... This jet is in the HEM region" << std::endl;
+            hasJetinHEM = true;
+            break;
+        }
+     } else if(distats["Run"].bfind("ApplyExtendedHEMVeto2018")){
+       // std::cout << "deltaPhi(j,MHT) = " << normPhi(jetP4.Phi() - _MET->MHTphi()) <<  std::endl; 
+       if(jetP4.Pt() >= 30.0 && jetP4.Eta() >= -3.0 && jetP4.Eta() <= -1.3 && jetP4.Phi() >= -1.57 && jetP4.Phi() <= -0.87){ 
+            // std::cout << "....... This jet is in the nominal HEM region" << std::endl;
+            hasJetinHEM = true;
+            break;
+       } else if(jetP4.Pt() >= 30.0 && jetP4.Eta() >= -3.2 && jetP4.Eta() <= -1.1 && jetP4.Phi() >= -1.77 && jetP4.Phi() <= -0.67 && absnormPhi(jetP4.Phi() - _MET->MHTphi()) < 0.5){
+            // std::cout << "....... This jet is in the extended HEM region" << std::endl;
+	    hasJetinHEM = true;
+            break;
+        }
+     }
   }
 
   if(hasJetinHEM == true) return false;
@@ -851,17 +872,17 @@ void Analyzer::preprocess(int event, std::string year){ // This function no long
   		return;
   	}
   }
-
+  // std::cout << "------------" << std::endl;
   // Apply HEM veto for 2018 if the flag is on.
-  bool checkHEM = distats["Run"].bfind("ApplyHEMVeto2018");
+  bool checkHEM = distats["Run"].bfind("ApplyHEMVeto2018") || distats["Run"].bfind("ApplyExtendedHEMVeto2018");
   if(checkHEM == 1 || checkHEM == true){
-    if(passHEMveto2018() == false){
+    if(passHEMJetVeto2018() == false){
       clear_values();
       return;
     }
   }
 
-  // std::cout << "------------" << std::endl;
+  
 
   // ------- Number of primary vertices requirement -------- // 
   active_part->at(CUTS::eRVertex)->resize(bestVertices);
@@ -2629,12 +2650,24 @@ void Analyzer::getGoodRecoLeptons(const Lepton& lep, const CUTS ePos, const CUTS
     if (fabs(lvec.Eta()) > stats.dmap.at("EtaCut")) passCuts = passCuts && false;
     else if (lvec.Pt() < stats.pmap.at("PtCut").first || lvec.Pt() > stats.pmap.at("PtCut").second) passCuts = passCuts && false;
 
+    //if(lep.type == PType::Electron){
+    //   std::cout << "electron pt = " << lvec.Pt() <<  ", eta = " << lvec.Eta() << ", phi = " << lvec.Phi() << std::endl;
+    //}
+
     if((lep.pstats.at("Smear").bfind("MatchToGen")) && (!isData)) {   /////check
       if(matchLeptonToGen(lvec, lep.pstats.at("Smear") ,eGenPos) == TLorentzVector(0,0,0,0)) continue;
     }
 
     for( auto cut: stats.bset) {
       if(!passCuts) break;
+      else if(cut == "DiscrByAsymmEta"){
+         passCuts = passCuts && passCutRange(lvec.Eta(), stats.pmap.at("AsymmEtaCut"));
+         // if(passCuts) std::cout << "Passed asymmetric eta requirement." << std::endl;
+      }
+      else if(cut == "DiscrByAsymmPhi"){
+         passCuts = passCuts && passCutRange(lvec.Phi(), stats.pmap.at("AsymmPhiCut"));
+         // if(passCuts) std::cout << "Passed asymmetric phi requirement." << std::endl;
+      }
       else if(cut == "DoDiscrByIsolation") {
         double firstIso = (stats.pmap.find("IsoSumPtCutValue") != stats.pmap.end()) ? stats.pmap.at("IsoSumPtCutValue").first : ival(ePos) - ival(CUTS::eRTau1) + 1;
         double secondIso = (stats.pmap.find("IsoSumPtCutValue") != stats.pmap.end()) ? stats.pmap.at("IsoSumPtCutValue").second : stats.bfind("FlipIsolationRequirement");

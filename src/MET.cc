@@ -189,27 +189,36 @@ void Met::calculateHtAndMHt(PartStats& stats, Jet& jet, int syst=0){
   float sumpyForMht=0;
   float sumptForHt=0;
 
+  // std::cout << "jet size vector = " << jet.size() << std::endl;
   // Calculates HT and MHT.
   int i=0;
   for(auto jetVec: jet){
     bool add = true;
+    // std::cout << "jetVec.Pt() = " << jetVec.Pt() << ", jetVec.Eta() = " << jetVec.Eta() << ", passedTightJetID = " << jet.passedTightJetID(i) << std::endl;
+
     if( (jetVec.Pt() < stats.dmap.at("JetPtForMhtAndHt")) || 
     	(abs(jetVec.Eta()) > stats.dmap.at("JetEtaForMhtAndHt")) || 
     	(stats.bfind("ApplyJetLooseIDforMhtAndHt") && !jet.passedLooseJetID(i)) ||
     	(stats.bfind("ApplyJetTightIDforMhtAndHt") && !jet.passedTightJetID(i)) ) add = false;
-    
+
+    // std::cout << "add = " << add << std::endl; 
+
     if(add) {
       sumpxForMht -= jetVec.Px();
       sumpyForMht -= jetVec.Py();
       sumptForHt  += jetVec.Pt();
     }
-
+    
     i++;
   }
+
   syst_HT.at(syst)=sumptForHt;
   syst_MHT.at(syst)= sqrt( pow(sumpxForMht,2.0) + pow(sumpyForMht,2.0) );
   syst_MHTphi.at(syst)=atan2(sumpyForMht,sumpxForMht);
 
+  // std::cout << "HT = " << sumptForHt << " = " << syst_HT.at(syst) << std::endl;
+  // std::cout << "MHT = " << sqrt( pow(sumpxForMht,2.0) + pow(sumpyForMht,2.0) ) << " = " << syst_MHT.at(syst) << std::endl;
+  // std::cout << "MHTphi = " << atan2(sumpyForMht,sumpxForMht) << " = " << syst_MHTphi.at(syst) << std::endl;
 }
 
 double Met::pt()const         {return cur_P->Pt();}

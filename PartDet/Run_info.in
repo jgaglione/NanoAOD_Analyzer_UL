@@ -33,6 +33,7 @@ UseJetEMPt false
 /// ------ Data-specific cuts ------///
 FilterDataByGoldenJSON true
 ApplyHEMVeto2018 false
+ApplyExtendedHEMVeto2018 true
 
 /// ------ MC Gen-level cuts ------///
 /// --- HT filter --- ///
@@ -72,8 +73,8 @@ HtCut 30.0
 
 JetPtForMhtAndHt 30.0        
 JetEtaForMhtAndHt 5.0        
-ApplyJetLooseIDforMhtAndHt true
-ApplyJetTightIDforMhtAndHt false
+ApplyJetLooseIDforMhtAndHt false
+ApplyJetTightIDforMhtAndHt true
 
 /// --- MC selection --- ///
 InitializeMCSelection false

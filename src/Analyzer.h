@@ -119,7 +119,7 @@ public:
   void initializeTrigger();
   void setCutNeeds();
 
-  bool passHEMveto2018();
+  bool passHEMJetVeto2018();
   bool passJetVetoEEnoise2017(int);
 
   bool skimSignalMC(int);

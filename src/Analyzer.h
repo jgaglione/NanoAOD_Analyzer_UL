@@ -336,6 +336,7 @@ public:
   
   Float_t jec_rho =20.;
   std::vector< std::vector<float> > jets_jer_sfs;
+  TLorentzVector testMet;
 
   const static std::vector<CUTS> genCuts;
   const static std::vector<CUTS> jetCuts;

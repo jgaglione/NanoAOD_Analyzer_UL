@@ -1379,6 +1379,13 @@ void Analyzer::selectMet(int syst) {
    
   // Before using the TreatMuonsAsNeutrinos option, we store the MET value in a separate vector for reference purposes:
   _MET->JERCorrMet.SetPxPyPzE(_MET->px(), _MET->py(), _MET->p4().Pz(), _MET->energy());
+  // Same as above but with a different vector, study possible changes after calling this function.
+  const float met_px = _MET->px();
+  const float met_py = _MET->py();
+  const float met_pz =  _MET->p4().Pz();
+  const float met_e = _MET->energy();
+
+  testMet.SetPxPyPzE(met_px,met_py,met_pz,met_e);
 
   if(distats["Run"].bfind("TreatMuonsAsNeutrinos") || distats["Run"].bfind("TreatOnlyOneMuonAsNeutrino") ) treatMuonsAsMet(syst);
 
@@ -4480,6 +4487,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
     histAddVal(_MET->T1Met.Pt(), "T1METOriginal");
     histAddVal(_MET->RawMet.Pt(), "RawMETOriginal");
     histAddVal(_MET->JERCorrMet.Pt(),"CorrectedRawMET");
+    histAddVal(testMet.Pt(), "testCorrectedRawMet");
 
   } else if(group == "FillLeadingJet" && active_part->at(CUTS::eSusyCom)->size() == 0) {
 

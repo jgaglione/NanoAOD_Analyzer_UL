@@ -208,6 +208,7 @@ DefaultMETOriginal 100  0  1000
 T1METOriginal      100  0  1000
 RawMETOriginal     100  0  1000
 CorrectedRawMET    100  0  1000
+testCorrectedRawMet    100  0  1000
  
 //------------------------------------------------//
 

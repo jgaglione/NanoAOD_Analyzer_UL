@@ -31,51 +31,44 @@ NVertices   100   0.  100.
 FillGen 1
 
 PUNTrueInt    99 0. 99. // nTruePU - change the number of bins accordingly for each year's datatset
-GenHT       4000 0. 4000.
-GenWeight  10000 -50000. 50000. 
+GenHT       	500 	0. 	5000.
+GenPartonHT		500 	0. 	5000.
+GenWeight  	  10000 -50000. 50000. 
 L1PrefiringWeight 200 0. 1.
 
-GenVisHadTauPt 				100   0.     250.
-GenVisHadTauEta 			72  -3.6      +3.6
-GenVisHadTauPhi				36	-3.15	  +3.15
-GenVisHadTauMass			100	  0. 	  2.
-GenVisHadTauDecayMode		16	  0.	  16.
-NGenVisHadTau				20   0.       20.
+// GenVisHadTauPt 				100   0.     250.
+// GenVisHadTauEta 			72  -3.6      +3.6
+// GenVisHadTauPhi				36	-3.15	  +3.15
+// GenVisHadTauMass			100	  0. 	  2.
+// GenVisHadTauDecayMode		16	  0.	  16.
+// NGenVisHadTau				20   0.       20.
 
-NGenHadW	5	0.	5. //05.21.18
-NGenTau            20   0.       20.
-NGenHadTau         20   0.       20.
-NGenBJ		   10	0.	 10. //07.25.18
-GenBJPt       200   0.    500. 	 //07.25.18
-GenBJEta       72  -3.6    +3.6 //07.25.18
-NGenNu		   20.	0.	 20.
-GenTauEnergy      500   0.     5000.
-GenTauPt          500   0.     5000.
-GenTauEta          72  -3.6      +3.6
-GenTauPhi          36  -3.15     +3.15
-GenHadTauPt       100   0.     250.
-GenNuPt		  100 	0.     250.
-GenNuP		  100 	0.     250.
-GenHadTauEta       72  -3.6      +3.6
+// NGenHadW	5	0.	5. //05.21.18
+// NGenTau            20   0.       20.
+// NGenHadTau         20   0.       20.
+// NGenBJ		   10	0.	 10. //07.25.18
+// GenBJPt       200   0.    500. 	 //07.25.18
+// GenBJEta       72  -3.6    +3.6 //07.25.18
+// NGenNu		   20.	0.	 20.
+// GenTauEnergy      500   0.     5000.
+// GenTauPt          500   0.     5000.
+// GenTauEta          72  -3.6      +3.6
+// GenTauPhi          36  -3.15     +3.15
+// GenHadTauPt       100   0.     250.
+// GenNuPt		  100 	0.     250.
+// GenNuP		  100 	0.     250.
+// GenHadTauEta       72  -3.6      +3.6
+//GenDiTauMass      100   0.    10000.
 NGenMuon           20   0.       20.
 GenMuonEnergy     200   0.      500.
 GenMuonPt         200   0.      500.
 GenMuonEta         72  -3.6      +3.6
 GenMuonPhi         36  -3.15     +3.15
-GenDiTauMass      100   0.    10000.
 GenZDiLepMass	  1000	0.	 5000.
-//GenHadTauFrac_scalar	  100	0.    1.
-//GenHadTauFrac_vector	  100	0.    1.
-//GenDeltaR		  100	0.    10.
-//GenHadTauFrac2	  100	0.    1.
-//GenHadTauFrac3	  100	0.    1.
-//////GenZprimeMass    100 0. 10000.      NOT IMPLIMENTED
-//////GenZprimeStatusCode     100 0. 100.
-//////GenTauStatusCode     100 0. 100.
 
 //------------------------------------------------//
 
-FillTau1 1
+FillTau1 0
 
 NTau1                    20   0.      20.
 Tau1Energy             2000   0.    5000.
@@ -89,7 +82,7 @@ Tau1SeedTrackPt        2000   0.    5000.
 Tau1Charge               10  -5.       5.
 Tau1MetMt		 200  0.       1000.
 
-FillTau2 1
+FillTau2 0
 
 NTau2                    20   0.      20.
 Tau2Energy             2000   0.    5000.
@@ -105,7 +98,7 @@ Tau2MetMt		 200 0.	       1000.
 
 //------------------------------------------------//
 
-FillElectron1 1
+FillElectron1 0
 
 NElectron1                   20   0.      20.
 Electron1Energy            2000   0.    5000.
@@ -211,6 +204,8 @@ FillMetCuts 1
 Met                100  0  1000
 MHT                500  0  5000
 HT                 500  0  5000
+HTGen              500  0  5000
+HTPartonGen        500  0  5000
 Meff               500  0  5000
 DefaultMETOriginal 100  0  1000
 T1METOriginal      100  0  1000

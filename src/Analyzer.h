@@ -149,7 +149,7 @@ public:
   void getGoodGen(const PartStats&);
   void getGoodRecoLeptons(const Lepton&, const CUTS, const CUTS, const PartStats&, const int);
   void getGoodRecoJets(CUTS, const PartStats&, const int);
-  void getGoodRecoLeadJets(CUTS, const PartStats&, const int); 
+  void getGoodRecoLeadJets(CUTS, const PartStats&, const int);
   void getGoodRecoBJets(CUTS, const PartStats&, const int); //01.16.19
   void getGoodRecoFatJets(CUTS, const PartStats&, const int);
 
@@ -225,7 +225,7 @@ public:
   int version=0;
   std::map<std::string,TTree* > originalTrees;
   //std::map<std::string,*TObject> otherObjects;
-  
+
 
   Generated* _Gen;
   GenHadronicTaus* _GenHadTau;
@@ -294,8 +294,9 @@ public:
 
   float nTruePU = 0;
   int bestVertices = 0;
-  float gen_weight = 0; 
+  float gen_weight = 0;
   float generatorht = 0;
+  float generatorpartonht = 0;
   float gendilepmass = 0;
 
   // Met filters' variables
@@ -309,14 +310,14 @@ public:
   bool ecalbadcalibrationfilter = false;
   bool allmetfilters = false;
   bool passedmetfilters = false;
-  
+
   // B-tagging scale factors - calibration + readers
   BTagCalibration btagcalib;
   BTagCalibrationReader btagsfreader;
   BTagEntry::JetFlavor bjetflavor;
   BTagEntry::OperatingPoint b_workingpoint;
 
-  // Tau ID SFs 
+  // Tau ID SFs
   TauIDSFTool tau1idSFs, tau2idSFs;
   TauIDSFTool tau1id_antiEleSFs, tau2id_antiEleSFs;
   TauIDSFTool tau1id_antiMuSFs, tau2id_antiMuSFs;
@@ -332,7 +333,7 @@ public:
 
   // Prefiring weights
   float l1prefiringwgt = 1.0, l1prefiringwgt_up = 1.0, l1prefiringwgt_dn = 1.0;
-  
+
   Float_t jec_rho =20.;
   std::vector< std::vector<float> > jets_jer_sfs;
 

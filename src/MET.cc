@@ -125,15 +125,21 @@ void Met::removeEEnoiseUnclEnergy(double const& delta_x_T1Jet, double const& del
 
   if(systRawMetVec.at(syst) == nullptr) return;
 
+  //std::cout << "Raw MET vector (before EE noise delta propagation): px = " << systRawMetVec.at(syst)->Px() << ", py = " << systRawMetVec.at(syst)->Py() << ", pz = " << systRawMetVec.at(syst)->Pz() << ", energy = " << systRawMetVec.at(syst)->E() << std::endl;
+  //std::cout << "Default MET (old) x = " << DefMet.Px() << ", y = " << DefMet.Py() << std::endl;
   // Remove the L1L2L3 - L1 corrected jets in the EE region from the default MET branch
   float new_def_met_px = DefMet.Px() + delta_x_T1Jet;
   float new_def_met_py = DefMet.Py() + delta_y_T1Jet;
 
   DefMet.SetPxPyPzE(new_def_met_px, new_def_met_py, DefMet.Pz(), sqrt(pow(new_def_met_px,2) + pow(new_def_met_py, 2)));
+  //std::cout << "Default MET (new) x = " << DefMet.Px() << ", y = " << DefMet.Py() << std::endl;
+  //std::cout << "Type I MET (orig) x = " << T1Met.Px() << ", y = " << T1Met.Py() << std::endl;
 
   // Get the unclustered energy part that is removed in the v2 recipe
   float met_unclEE_x = DefMet.Px() - T1Met.Px(); //t1met_px;
   float met_unclEE_y = DefMet.Py() - T1Met.Py(); //t1met_py;
+
+  //std::cout << "unclustered energy in EE noise region x = " << met_unclEE_x << ", y = " << met_unclEE_y << std::endl;
 
   // Finalize the v2 recipe for the rawMET by removing the unclustered part in the EE region
   float met_px_unclshift = systRawMetVec.at(syst)->Px();
@@ -142,8 +148,13 @@ void Met::removeEEnoiseUnclEnergy(double const& delta_x_T1Jet, double const& del
   met_px_unclshift = met_px_unclshift + delta_x_rawJet - met_unclEE_x;
   met_py_unclshift = met_py_unclshift + delta_y_rawJet - met_unclEE_y;
 
+  //std::cout << "unclustered energy shift in EE noise region x = " << met_px_unclshift << ", y = " << met_py_unclshift << std::endl;
+
   // Add this to the systematics vector
   systRawMetVec.at(syst)->SetPxPyPzE(met_px_unclshift, met_py_unclshift, systRawMetVec.at(syst)->Pz(), TMath::Sqrt(pow(met_px_unclshift,2) + pow(met_py_unclshift,2)));
+
+  //std::cout << "Raw MET vector (after EE noise delta propagation): px = " << systRawMetVec.at(syst)->Px() << ", py = " << systRawMetVec.at(syst)->Py() << ", pz = " << systRawMetVec.at(syst)->Pz() << ", energy = " << systRawMetVec.at(syst)->E() << std::endl;
+
 
 }
 
@@ -155,7 +166,7 @@ void Met::applyXYshiftCorr(std::string const& year, std::string const& runera, i
   float met_px_xcorr = systRawMetVec.at(syst)->Px();
   float met_py_ycorr = systRawMetVec.at(syst)->Py();
 
-  //std::cout << "Corrected Type-I MET: px = " << met_px_xcorr << ", py = " << met_py_ycorr << std::endl;
+  //std::cout << "Corrected Type-I MET: px = " << systRawMetVec.at(syst)->Px() << ", py = " << systRawMetVec.at(syst)->Py() << std::endl;
   //std::cout << "Corrected Type-I MET: pt = " << systRawMetVec.at(syst)->Pt() << ", phi = " << systRawMetVec.at(syst)->Phi() << std::endl;
 
   float metxcorr = 0.0, metycorr = 0.0;

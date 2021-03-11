@@ -2063,7 +2063,7 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
 
     // Get the reconstruced 4-vector (original vector straight from the corresponding branches), these jets have applied L1L2L3 JECs
     const TLorentzVector origJetReco = jet.RecoP4(i);
-    // std::cout << " --- Jet #" << i << " --- " << std::endl;
+    //std::cout << " --- Jet #" << i << " --- " << std::endl;
     //std::cout << "Original JEC L1L2L3 corrected jet pt = " << origJetReco.Pt() << ", eta = " << origJetReco.Eta() << ", phi = " << origJetReco.Phi() << ", mass = "<< origJetReco.M() << std::endl;
 
     // Step 1: get the raw jet 4-momentum from the raw factor
@@ -2150,6 +2150,7 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
     //std::cout << " *** Before smearing JER *** " << std::endl;
     //std::cout << "jer_sf_nom = " << jer_sf_nom << ", jer_shift = " << jer_shift << std::endl;
     //std::cout << "Jet nominal JER no muon p4: pt = " << jetL1L2L3_jerNom_noMuonP4.Pt() << ", eta = " << jetL1L2L3_jerNom_noMuonP4.Eta() << ", phi = " << jetL1L2L3_jerNom_noMuonP4.Phi() << ", mass = " << jetL1L2L3_jerNom_noMuonP4.M() << std::endl;
+    //std::cout << "Jet nominal L1 no muon p4: pt = " << jetL1_noMuonP4.Pt() << ", eta = " << jetL1_noMuonP4.Eta() << ", phi = " << jetL1_noMuonP4.Phi() << ", mass = " << jetL1_noMuonP4.M() << std::endl;
     //std::cout << "Jet shifted JER no muon p4: pt = " << jetL1L2L3_jerShifted_noMuonP4.Pt() << ", eta = " << jetL1L2L3_jerShifted_noMuonP4.Eta() << ", phi = " << jetL1L2L3_jerShifted_noMuonP4.Phi() << ", mass = " << jetL1L2L3_jerShifted_noMuonP4.M() << std::endl;
 
     // Verify that this is done (1) for MC, (2) if the smearing is turned on, (3) if the corrected jet Pt without the muon is above the unclustered energy threshold.
@@ -2451,8 +2452,8 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
 
           // Get the delta for removing L1L2L3-L1 corrected jets in the EE region from the default MET branch
           // Take into account if the jets are smeared in resolution, multiplying by jer_sf_nom
-          delta_x_EEnoise_T1Jets += (jetL1L2L3_jerNom_noMuonP4.Pt() - jetL1_noMuonP4.Pt()) * cos(jetL1L2L3_jerNom_noMuonP4.Phi()) + delta_x_EEnoise_rawJets;
-          delta_y_EEnoise_T1Jets += (jetL1L2L3_jerNom_noMuonP4.Pt() - jetL1_noMuonP4.Pt()) * sin(jetL1L2L3_jerNom_noMuonP4.Phi()) + delta_y_EEnoise_rawJets;
+          delta_x_EEnoise_T1Jets += (jetL1L2L3_jerNom_noMuonP4.Pt() - jetL1_noMuonP4.Pt()) * cos(jetL1L2L3_jerNom_noMuonP4.Phi()) + rawJetP4_noMuon.Pt() * cos(rawJetP4_noMuon.Phi());
+          delta_y_EEnoise_T1Jets += (jetL1L2L3_jerNom_noMuonP4.Pt() - jetL1_noMuonP4.Pt()) * sin(jetL1L2L3_jerNom_noMuonP4.Phi()) + rawJetP4_noMuon.Pt() * sin(rawJetP4_noMuon.Phi());
 
         }
       }

@@ -20,7 +20,7 @@ Particle::Particle(TTree* _BOOM, std::string _GenName, std::string filename, std
   std::regex genName_regex(".*([A-Z][^[:space:]]+)");
   std::regex syst_regex("([A-Za-z]+).+");
   std::smatch mGen, mSyst;
-  
+
   std::regex_match(GenName, mGen, genName_regex);
 
   for( auto item : syst_names) {
@@ -92,7 +92,7 @@ void Particle::init(){
   std::cout << "Particle: " << GenName << std::endl;
   std::cout << "Number of vectors = " << m_n << std::endl;
   std::cout << "Reco.size() = " << Reco.size() << std::endl;
-  std::cout << "systVec.size() = " << systVec.size() << std::endl; 
+  std::cout << "systVec.size() = " << systVec.size() << std::endl;
   std::cout << "Reco.empty() = " << Reco.empty() << std::endl;
   std::cout << "systVec.empty() = " << systVec.empty() << std::endl;
   */
@@ -108,14 +108,14 @@ void Particle::init(){
   	// Reco.push_back(badtmp);
   	// Reco.shrink_to_fit();
   //} else {
-  
+
   // std::cout << "normal clean up" << std::endl;
   Reco.clear();
   Reco.shrink_to_fit();
-  
-  // std::vector<TLorentzVector>().swap(Reco);  	
+
+  // std::vector<TLorentzVector>().swap(Reco);
   //}
-  // 
+  //
   //
 
  for(auto it: systVec){
@@ -132,7 +132,7 @@ void Particle::init(){
 
   TLorentzVector tmp;
   // std::cout << "Started filling TLorentz vectors... " << std::endl;
-  
+
   for(uint i=0; i < m_n; i++) {
 
     tmp.SetPtEtaPhiM(m_pt[i],m_eta[i],m_phi[i],m_mass[i]);
@@ -140,11 +140,11 @@ void Particle::init(){
 
   }
   // std::cout << "Reco.size() = " << Reco.size() << std::endl;
-  
+
   // std::cout << "Done. Doing setCurrentP(-1)" << std::endl;
   setCurrentP(-1);
   // std::cout << "Reco.size() = " << Reco.size() << std::endl;
-  
+
   // std::cout << "Done." << std::endl;
 
 }
@@ -289,7 +289,7 @@ GenJets::GenJets(TTree* _BOOM, std::string filename, std::vector<std::string> sy
 
 Jet::Jet(TTree* _BOOM, std::string filename, std::vector<std::string> syst_names, std::string year) : Particle(_BOOM, "Jet", filename, syst_names) {
   type = PType::Jet;
-  
+
   SetBranch("Jet_jetId", jetId);
   SetBranch("Jet_neHEF", neutralHadEnergyFraction);
   SetBranch("Jet_neEmEF", neutralEmEnergyFraction);
@@ -297,25 +297,25 @@ Jet::Jet(TTree* _BOOM, std::string filename, std::vector<std::string> syst_names
   SetBranch("Jet_nMuons", nMuons);
   SetBranch("Jet_chHEF", chargedHadronEnergyFraction);
   SetBranch("Jet_chEmEF", chargedEmEnergyFraction);
-  
+
   SetBranch("Jet_btagCSVV2", bDiscriminatorCSVv2);
   SetBranch("Jet_btagDeepB", bDiscriminatorDeepCSV);
   SetBranch("Jet_btagDeepFlavB", bDiscriminatorDeepFlav);
-  
+
   SetBranch("Jet_puId", puID);
   SetBranch("Jet_area", area);
   SetBranch("Jet_rawFactor", rawFactor); // JEC
   SetBranch("Jet_muonIdx1", matchingMuonIdx1);
   SetBranch("Jet_muonIdx2", matchingMuonIdx2);
-  
+
   if(_BOOM->FindBranch("Jet_partonFlavour")!=0){
     SetBranch("Jet_partonFlavour", partonFlavour);
   }
-  
+
   if(_BOOM->FindBranch("Jet_genJetIdx")!=0){
     SetBranch("Jet_genJetIdx", genJetIdx); // index of matched gen jet in the GenJet collection.
   }
-  
+
 }
 
 std::vector<CUTS> Jet::findExtraCuts() {
@@ -340,15 +340,21 @@ std::vector<CUTS> Jet::overlapCuts(CUTS ePos) {
 }
 
 bool Jet::passedLooseJetID(int nobj) {
-// bit1 = Loose ID, bit2 = Tight ID, bit3 =  TightLepVeto
+// bit0 = Loose ID, bit1 = Tight ID, bit2 =  TightLepVeto
   std::bitset<8> bit_jet(jetId[nobj]);
-  return bit_jet[0]; // This will return the Tight ID bit
+  return bit_jet[0]; // This will return the Loose ID bit
 }
 
 bool Jet::passedTightJetID(int nobj) {
-  // bit1 = Loose ID, bit2 = Tight ID, bit3 =  TightLepVeto
+  // bit0 = Loose ID, bit1 = Tight ID, bit2 =  TightLepVeto
   std::bitset<8> bit_jet(jetId[nobj]);
   return bit_jet[1]; // This will return the Tight ID bit
+}
+
+bool Jet::passedTightLepVetoJetID(int nobj) {
+  // bit0 = Loose ID, bit1 = Tight ID, bit2 =  TightLepVeto
+  std::bitset<8> bit_jet(jetId[nobj]);
+  return bit_jet[2]; // This will return the TightLepVeto ID bit
 }
 
 bool Jet::getPileupJetID(int nobj, int bit_id) {
@@ -434,7 +440,7 @@ Electron::Electron(TTree* _BOOM, std::string filename, std::vector<std::string> 
 
   auto& elec1 = pstats["Elec1"];
   auto& elec2 = pstats["Elec2"];
-  
+
   std::bitset<8> tmp(elec1.dmap.at("DiscrByCBID"));
   cbIDele1=tmp;
   tmp=elec2.dmap.at("DiscrByCBID");
@@ -453,8 +459,8 @@ Electron::Electron(TTree* _BOOM, std::string filename, std::vector<std::string> 
   if(elec1.bfind("DoDiscrByCBID") || elec2.bfind("DoDiscrByCBID")) {
     SetBranch("Electron_cutBased", cutBased);
   }
-  
-  
+
+
   if( (elec1.bfind("DoDiscrBymvaID") || elec2.bfind("DoDiscrBymvaID")) ){
     SetBranch("Electron_mvaFall17V2Iso_WP80", mvaFall17V2Iso_WP80);
     SetBranch("Electron_mvaFall17V2noIso_WP80", mvaFall17V2noIso_WP80);
@@ -531,7 +537,7 @@ bool Electron::customSoftLooseEleMVAId(int index, TLorentzVector electronp4, std
     }
   }
 
-  if(year.compare("2017") == 0){    
+  if(year.compare("2017") == 0){
 
     if(electronp4.Pt() > 5.0 && electronp4.Pt() <= 10.0){
       if(abs(electronp4.Eta()) < 1.479){
@@ -559,7 +565,7 @@ bool Electron::customSoftLooseEleMVAId(int index, TLorentzVector electronp4, std
     }
   }
 
-  if(year.compare("2018") == 0){  
+  if(year.compare("2018") == 0){
     if(electronp4.Pt() > 5.0 && electronp4.Pt() <= 10.0){
       if(abs(electronp4.Eta()) < 1.479){
       	passCutId = passCutId && mvaFall17V2noIso[index] > 0.98;
@@ -638,11 +644,11 @@ bool Electron::customSoftTightEleMVAId(int index, TLorentzVector electronp4, std
       else if(abs(electronp4.Eta()) >= 1.479 && abs(electronp4.Eta()) < 2.5){
         passCutId = passCutId && rawMvaIdScore > 2.680;
       }
-      
+
     }
   }
 
-  if(year.compare("2017") == 0){    
+  if(year.compare("2017") == 0){
     if(electronp4.Pt() > 5.0 && electronp4.Pt() <= 10.0){
       passCutId = passCutId && mvaFall17V2noIso_WP90[index];
     }
@@ -667,11 +673,11 @@ bool Electron::customSoftTightEleMVAId(int index, TLorentzVector electronp4, std
       else if(abs(electronp4.Eta()) >= 1.479 && abs(electronp4.Eta()) < 2.5){
         passCutId = passCutId && mvaFall17V2noIso[index] > 0.32;
       }
-      
+
     }
   }
 
-  if(year.compare("2018") == 0){  
+  if(year.compare("2018") == 0){
 
   	if(normMvaIdScore > -1.0 && normMvaIdScore < 1.0){
   		// std::cout << "score between -1 and 1" << std::endl;
@@ -708,7 +714,7 @@ bool Electron::customSoftTightEleMVAId(int index, TLorentzVector electronp4, std
       else if(abs(electronp4.Eta()) >= 1.479 && abs(electronp4.Eta()) < 2.5){
         passCutId = passCutId && rawMvaIdScore > 2.359;
       }
-      
+
     }
   }
 
@@ -779,22 +785,22 @@ bool Muon::get_Iso(int index, double min, double max) const {
 
 Taus::Taus(TTree* _BOOM, std::string filename, std::vector<std::string> syst_names, std::string year) : Lepton(_BOOM, "Tau", filename, syst_names) {
   type = PType::Tau;
-  
+
   std::bitset<8> tmp=pstats["Tau1"].dmap.at("DiscrByMinIsolation");
   tau1minIso=tmp;
   tmp=pstats["Tau1"].dmap.at("DiscrByMaxIsolation");
   tau1maxIso=tmp;
-  
+
   tmp=pstats["Tau2"].dmap.at("DiscrByMinIsolation");
   tau2minIso=tmp;
   tmp=pstats["Tau2"].dmap.at("DiscrByMaxIsolation");
   tau2maxIso=tmp;
-  
+
   tmp=pstats["Tau1"].dmap.at("DiscrAgainstElectron");
   tau1ele=tmp;
   tmp= pstats["Tau1"].dmap.at("DiscrAgainstMuon");
   tau1mu= tmp;
-  
+
   tmp=pstats["Tau2"].dmap.at("DiscrAgainstElectron");
   tau2ele=tmp;
   tmp= pstats["Tau2"].dmap.at("DiscrAgainstMuon");
@@ -817,12 +823,12 @@ Taus::Taus(TTree* _BOOM, std::string filename, std::vector<std::string> syst_nam
     SetBranch("Tau_idDeepTau2017v2p1VSe", againstElectron);
 
     // --------- Tau isolation --------- //
-    SetBranch("Tau_idDeepTau2017v2p1VSjet", TauIdDiscr);      
+    SetBranch("Tau_idDeepTau2017v2p1VSjet", TauIdDiscr);
 
   }
   catch(const char* msg){
 
-    std::cerr << "WARNING! " << msg << std::endl; 
+    std::cerr << "WARNING! " << msg << std::endl;
     // --------- Anti-particle discriminators --------- //
     if(year.compare("2018") == 0){
       SetBranch("Tau_idAntiEle2018", againstElectron);
@@ -848,7 +854,7 @@ Taus::Taus(TTree* _BOOM, std::string filename, std::vector<std::string> syst_nam
      // --------- Tau isolation --------- //
      SetBranch("Tau_idMVAoldDM2017v2", TauIdDiscr);
 
-  } 
+  }
   catch(...){
     std::cerr << "ERROR setting up tau ID algorithm. Setting MVA-based tau ID algorithm (MVAoldDM2017v2) by default. " << std::endl;
 
@@ -882,7 +888,7 @@ Taus::Taus(TTree* _BOOM, std::string filename, std::vector<std::string> syst_nam
   // ----- Tau gen-matching for ID SFs ----- //
   if(_BOOM->FindBranch("Tau_genPartFlav") != 0){ SetBranch("Tau_genPartFlav", genPartFlav); } // Flavour of genParticle for MC matching to status==2 taus: 1 = prompt electron, 2 = prompt muon, 3 = tau->e decay, 4 = tau->mu decay, 5 = hadronic tau decay, 0 = unknown or unmatched
   if(_BOOM->FindBranch("Tau_genPartIdx") != 0){ SetBranch("Tau_genPartIdx", genPartIdx); } // (index to Genpart collection) Index into genParticle list for MC matching to status==2 taus
-  
+
 }
 
 std::vector<CUTS> Taus::findExtraCuts() {
@@ -908,18 +914,18 @@ bool Taus::get_Iso(int index, double onetwo, double flipisolation) const {
   std::bitset<8> tau_iso(TauIdDiscr[index]);
   std::bitset<8> tau_isomin_mask(tau1minIso);
   std::bitset<8> tau_isomax_mask(tau1maxIso);
-  
+
   if(onetwo != 1 ){
     tau_isomin_mask=tau2minIso;
     tau_isomax_mask=tau2maxIso;
   }
 
-  // Bitset operation: 
+  // Bitset operation:
   // foo = 0110; bar = 0011
   // foo&bar = 0010
   // (foo&bar).count() = 1 (number of ones in the bitset)
 
-  if(!flipisolation && (tau_isomin_mask.count() == 0)){ // Requiring a non-isolated tau 
+  if(!flipisolation && (tau_isomin_mask.count() == 0)){ // Requiring a non-isolated tau
     // std::cout << "Tau isolation (1) = " << tau_iso << ", requirement = " << tau_isomin_mask << std::endl;
     // std::cout << "(no flip isolation) Isolation requirement passed? " << (tau_isomin_mask == tau_iso) << std::endl;
     return (tau_isomin_mask == tau_iso);

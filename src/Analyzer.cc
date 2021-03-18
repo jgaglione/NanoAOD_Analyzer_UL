@@ -2182,18 +2182,12 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
         genJetMatchDR = jet.pstats["Smear"].dmap.at("GenMatchingDeltaR");
       }
       catch(std::out_of_range& err){
-        if(jet.type == PType::Jet) genJetMatchDR = 0.4;
-        else if(jet.type == PType::FatJet) genJetMatchDR = 0.8;
+        if(jet.type == PType::Jet) genJetMatchDR = 0.2;
+        else if(jet.type == PType::FatJet) genJetMatchDR = 0.4;
       }
 
       // Find the gen-level jet that matches this reco jet (the original jet).
       TLorentzVector genJet = matchJetToGen(jetL1L2L3_noMuonP4, genJetMatchDR, eGenPos, stats.bfind("ResolutionMatching"));
-      bool genjetmatch = ( genJet != TLorentzVector(0,0,0,0) ) ? true : false;
-      bool passtightPUjetID = _Jet->getPileupJetID(i, 0); // i - jet index, 0 = bit0 (tight ID). If true, it passes tight PU jet ID, otherwise, it fails PU jet ID.
-
-      bool smearunmatchedjet = true;
-
-      if((_Jet->pt(i) <= 50.0)) smearunmatchedjet = !genjetmatch && passtightPUjetID ? true : false;
 
       // std::cout << "Jet #" << i << " being smeared." << std::endl;
       if(genJet != TLorentzVector(0,0,0,0)){
@@ -2216,10 +2210,12 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
         jets_datatoMCSFs_jer[i] = jetScaleRes.getDataToMCCoreResSF(jetL1L2L3_noMuonP4, 1);
       }
 
-      //std::cout << "Jet # " << i << ", pt = " << jetL1L2L3_noMuonP4.Pt() << ", eta = " << jetL1L2L3_noMuonP4.Eta() << ", rho = " << jec_rho << std::endl;
+      // std::cout << "Jet # " << i << ", pt = " << jetL1L2L3_noMuonP4.Pt() << ", eta = " << jetL1L2L3_noMuonP4.Eta() << ", rho = " << jec_rho << std::endl;
       //std::cout << "sigma_jer = " << jets_jetptres[i] << ", s_jer = " << jets_datatoMCSFs_jer[i] << ", c_jer = " << jet_jer_sf.at(0) << std::endl;
       //std::cout << "genjetmatch = " << std::boolalpha << genjetmatch << ", passtightPUjetID = " << std::boolalpha << passtightPUjetID << ", smearunmatchedjet = " << std::boolalpha << smearunmatchedjet << std::endl;
       //if(genjetmatch) std::cout << "Matched jet pt = " << genJet.Pt() << ", eta = " << genJet.Eta() << ", deltaR = " << jetL1L2L3_noMuonP4.DeltaR(genJet) << ", |pt_reco - pt_gen| = " << (abs(jetL1L2L3_noMuonP4.Pt() - genJet.Pt()) ) << ", 3sigmapt = " << (3.0*jets_jetptres[i]*jetL1L2L3_noMuonP4.Pt()) << std::endl;
+
+      bool genjetmatch = false, passtightPUjetID = false, smearunmatchedjet = true;
 
       // Correct the nominal p4 for this jet.
       if( !stats.bfind("ModifiedPUsmearing") ){
@@ -2261,17 +2257,20 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
 
       } else {
 
-        //std::cout << " -- Performing modified JER smearing -- " << std::endl;
-        //std::cout << "jer_sf_nom = " << jer_sf_nom << ", jer_shift = " << jer_shift << std::endl;
-        //std::cout << "jet_pt_nomu_nom (p4) = " << jetL1L2L3_jerNom_noMuonP4.Pt() << ", jet_pt_nomu_nom = " << jet_pt_nomu_nom << std::endl;
-        //std::cout << "jet_pt_nomu_jerShifted (p4) = " << jetL1L2L3_jerShifted_noMuonP4.Pt() << ", jet_pt_nomu_jerShifted = " << jet_pt_nomu_jerShifted << std::endl;
+        // std::cout << " -- Performing modified JER smearing -- " << std::endl;
+        // std::cout << "jer_sf_nom = " << jer_sf_nom << ", jer_shift = " << jer_shift << "updated jer_sf_nom = " << jet_jer_sf.at(0) << std::endl;
+        // std::cout << "jet_pt_nomu_nom (p4) = " << jetL1L2L3_jerNom_noMuonP4.Pt() << ", jet_pt_nomu_nom = " << jet_pt_nomu_nom << std::endl;
+        // std::cout << "jet_pt_nomu_jerShifted (p4) = " << jetL1L2L3_jerShifted_noMuonP4.Pt() << ", jet_pt_nomu_jerShifted = " << jet_pt_nomu_jerShifted << std::endl;
+        // std::cout << "Original genjetmatch = " << std::boolalpha << genjetmatch << ", passtightPUjetID = " << std::boolalpha << passtightPUjetID << ", smear unmatched jet? = " << std::boolalpha << smearunmatchedjet << std::endl;
 
-        genjetmatch = ( genJet != TLorentzVector(0,0,0,0) ) ? true : false;
+
+        genjetmatch = genJet != TLorentzVector(0,0,0,0);
         passtightPUjetID = _Jet->getPileupJetID(i, 0); // i - jet index, 0 = bit0 (tight ID). If true, it passes tight PU jet ID, otherwise, it fails PU jet ID.
+        if (jetL1L2L3_noMuonP4.Pt() <= 50.0) smearunmatchedjet = !genjetmatch && passtightPUjetID ? true : false;
 
-        if((jetL1L2L3_noMuonP4.Pt() <= 50.0)) smearunmatchedjet = !genjetmatch && passtightPUjetID ? true : false;
+        //std::cout << "Updated genjetmatch = " << std::boolalpha << genjetmatch << ", passtightPUjetID = " << std::boolalpha << passtightPUjetID << ", smear unmatched jet? = " << std::boolalpha << smearunmatchedjet << std::endl;
 
-        //std::cout << "genjetmatch = " << std::boolalpha << genjetmatch << ", passtightPUjetID = " << std::boolalpha << passtightPUjetID << ", smear unmatched jet? = " << std::boolalpha << smearunmatchedjet << std::endl;
+        //std::cout << "Passing criteria for smearing? " << std::boolalpha << ( (genjetmatch || smearunmatchedjet) && !jetlepmatch ) << std::endl;
 
         if( (genjetmatch || smearunmatchedjet) && !jetlepmatch){
           //std::cout << "We're smearing this jet!!" << std::endl;

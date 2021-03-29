@@ -2310,7 +2310,7 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
 
       if( stats.bfind("ModifiedPUsmearing") ){
 
-        std::cout << " -- Performing modified JER smearing -- " << std::endl;
+        //std::cout << " -- Performing modified JER smearing -- " << std::endl;
         // std::cout << "jer_sf_nom = " << jer_sf_nom << ", jer_shift = " << jer_shift << "updated jer_sf_nom = " << jet_jer_sf.at(0) << std::endl;
         // std::cout << "jet_pt_nomu_nom (p4) = " << jetL1L2L3_jerNom_noMuonP4.Pt() << ", jet_pt_nomu_nom = " << jet_pt_nomu_nom << std::endl;
         // std::cout << "jet_pt_nomu_jerShifted (p4) = " << jetL1L2L3_jerShifted_noMuonP4.Pt() << ", jet_pt_nomu_jerShifted = " << jet_pt_nomu_jerShifted << std::endl;
@@ -2358,7 +2358,7 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
 
       } else if ( stats.bfind("ModifiedForwardSmearing") ){
 
-        std::cout << " -- Performing modified forward JER smearing -- " << std::endl;
+        //std::cout << " -- Performing modified forward JER smearing -- " << std::endl;
         //std::cout << "jer_sf_nom = " << jer_sf_nom << ", jer_shift = " << jer_shift << ", updated jer_sf_nom = " << jet_jer_sf.at(0) << std::endl;
         //std::cout << "jet_pt_nomu_nom (p4) = " << jetL1L2L3_jerNom_noMuonP4.Pt() << ", jet_pt_nomu_nom = " << jet_pt_nomu_nom << ", jet_eta_nomu_nom (p4) = " << jetL1L2L3_jerNom_noMuonP4.Eta() << std::endl;
         //std::cout << "jet_pt_nomu_jerShifted (p4) = " << jetL1L2L3_jerShifted_noMuonP4.Pt() << ", jet_pt_nomu_jerShifted = " << jet_pt_nomu_jerShifted << std::endl;
@@ -2405,7 +2405,7 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
 
       } else {
 
-        std::cout << " -- Performing nominal JER smearing -- " << std::endl;
+        //std::cout << " -- Performing nominal JER smearing -- " << std::endl;
         //std::cout << "jer_sf_nom = " << jer_sf_nom << ", jer_shift = " << jer_shift << std::endl;
         //std::cout << "jet_pt_nomu_nom (p4) = " << jetL1L2L3_jerNom_noMuonP4.Pt() << ", jet_pt_nomu_nom = " << jet_pt_nomu_nom << std::endl;
         //std::cout << "jet_pt_nomu_jerShifted (p4) = " << jetL1L2L3_jerShifted_noMuonP4.Pt() << ", jet_pt_nomu_jerShifted = " << jet_pt_nomu_jerShifted << std::endl;

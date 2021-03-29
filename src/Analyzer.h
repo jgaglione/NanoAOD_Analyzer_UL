@@ -38,7 +38,7 @@ struct CRTester;
 #include "DepGraph.h"
 #include "JetScaleResolution.h"
 #include "JetRecalibrator.h"
-#include "L1ECALPrefiringWgtProd.h"
+#include "BTaggingSFProd.h"
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
@@ -189,10 +189,10 @@ public:
   double getZpTWeight_vbfSusy(std::string);
   double getZBoostWeightSyst(int ud); // 06.02.20
   double getTopBoostWeight(); //01.15.19
-  void setupBJetSFInfo(const PartStats&, std::string); // new function that sets up the b-tagging SF info
-  double getBJetSF(CUTS, const PartStats&); //01.16.19
-  double getBJetSFResUp(CUTS, const PartStats&); //01.16.19
-  double getBJetSFResDown(CUTS, const PartStats&); //01.16.19
+  float getBJetSF(CUTS, const PartStats&, std::string); // March 29, 2021
+  //double getBJetSF(CUTS, const PartStats&); //01.16.19
+  //double getBJetSFResUp(CUTS, const PartStats&); //01.16.19
+  //double getBJetSFResDown(CUTS, const PartStats&); //01.16.19
   std::pair<double, double> getPZeta(const TLorentzVector&, const TLorentzVector&);
   void create_fillInfo();
 
@@ -322,11 +322,11 @@ public:
   bool allmetfilters = false;
   bool passedmetfilters = false;
 
-  // B-tagging scale factors - calibration + readers
-  BTagCalibration btagcalib;
-  BTagCalibrationReader btagsfreader;
-  BTagEntry::JetFlavor bjetflavor;
-  BTagEntry::OperatingPoint b_workingpoint;
+  // B-taggiing SFs
+  BTaggingSFProd btaggingsfproducer;
+  std::vector<int> passingBJets;
+  std::vector<int> failingBJets;
+
 
   // Tau ID SFs
   TauIDSFTool tau1idSFs, tau2idSFs;

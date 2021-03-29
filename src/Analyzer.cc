@@ -169,7 +169,8 @@ Analyzer::Analyzer(std::vector<std::string> infiles, std::string outfile, bool s
 
 
   // B-tagging scale factor stuff
-  setupBJetSFInfo(_Jet->pstats["BJet"], year);
+  // setupBJetSFInfo(_Jet->pstats["BJet"], year);
+  btaggingsfproducer.init(_Jet->pstats["BJet"], PUSPACE.c_str(), year);
 
   // Tau scale factors stuff
   setupTauIDSFsInfo(_Tau->pstats["TauID"].smap.at("TauIDAlgorithm"), year, distats["Run"].bfind("TauIdSFsByDM"), distats["Run"].bfind("TauSFforEmbeddedSamples"));
@@ -757,6 +758,12 @@ void Analyzer::preprocess(int event, std::string year){ // This function no long
 
   // Call the new function setupEventGeneral: this will set generatorht, pu weight and genweight
   setupEventGeneral(event);
+
+  // Cleanup vectors for b-tagging SF calculation
+  passingBJets.clear();
+  failingBJets.clear();
+  passingBJets.shrink_to_fit();
+  failingBJets.shrink_to_fit();
 
   if(!isData){ // Do everything that corresponds only to MC
 
@@ -3740,10 +3747,31 @@ void Analyzer::getGoodRecoBJets(CUTS ePos, const CUTS eGenPos, const PartStats& 
       else if(cut == "RemoveOverlapWithTau1s") passCuts = passCuts && !isOverlaping(lvec, *_Tau, CUTS::eRTau1, stats.dmap.at("Tau1MatchingDeltaR"));
       else if (cut =="RemoveOverlapWithTau2s") passCuts = passCuts && !isOverlaping(lvec, *_Tau, CUTS::eRTau2, stats.dmap.at("Tau2MatchingDeltaR"));
     }
-    if(passCuts) active_part->at(ePos)->push_back(i);
+    if(passCuts){
+      active_part->at(ePos)->push_back(i);
+      passingBJets.push_back(i);
+    } else {
+      passingBJets.push_back(i);
+    }
     i++;
   }
 }
+
+float Analyzer::getBJetSF(CUTS ePos, const PartStats& stats, std::string syst_name) {
+
+	float bjetSF = 1.0;
+
+  if(!neededCuts.isPresent(ePos)) return bjetSF;
+
+  if(!stats.bfind("UseBtagSF")) return bjetSF;
+
+  bjetSF = btaggingsfproducer.calculateBTagSF(*_Jet, *_GenJet, passingBJets, failingBJets, syst_name);
+
+  return bjetSF;
+}
+
+
+/*
 
 // The function below sets up the information from the right CSV file in the Pileup folder
 // to obtain the functions needed to apply b-tagging SF in an automatic way.
@@ -4025,6 +4053,8 @@ double Analyzer::getBJetSFResDown(CUTS ePos, const PartStats& stats) {
 
   return bjetSFall;
 }
+
+*/
 
 ////FatJet specific function for finding the number of V-jets that pass the cuts.
 void Analyzer::getGoodRecoFatJets(CUTS ePos, const PartStats& stats, const int syst) {
@@ -4897,8 +4927,7 @@ void Analyzer::fill_histogram(std::string year) {
       wgt *= l1prefiringwgt; // nominal value
 
     }
-
-    wgt *= getBJetSF(CUTS::eRBJet, _Jet->pstats["BJet"]); //01.16.19
+    wgt *= getBJetSF(CUTS::eRBJet, _Jet->pstats["BJet"], "central"); // March 29, 2021
   }else  wgt=1.;
   //backup current weight
   backup_wgt=wgt;
@@ -4968,11 +4997,11 @@ void Analyzer::fill_histogram(std::string year) {
 
       if(syst_names[i].find("Btag")!=std::string::npos){ //01.16.19
         if(syst_names[i]=="Btag_Up"){
-          wgt/=getBJetSF(CUTS::eRBJet, _Jet->pstats["BJet"]);
-          wgt*=getBJetSFResUp(CUTS::eRBJet, _Jet->pstats["BJet"]);
+          wgt /= getBJetSF(CUTS::eRBJet, _Jet->pstats["BJet"], "central"); // March 29, 2021
+          wgt *= getBJetSF(CUTS::eRBJet, _Jet->pstats["BJet"], "up"); // March 29, 2021
         }else if(syst_names[i]=="Btag_Down"){
-          wgt/=getBJetSF(CUTS::eRBJet, _Jet->pstats["BJet"]);
-          wgt*=getBJetSFResDown(CUTS::eRBJet, _Jet->pstats["BJet"]);
+          wgt /= getBJetSF(CUTS::eRBJet, _Jet->pstats["BJet"], "central"); // March 29, 2021
+          wgt *= getBJetSF(CUTS::eRBJet, _Jet->pstats["BJet"], "down"); // March 29, 2021
         }
       }
 

@@ -7,6 +7,7 @@ GenMatchingDeltaR 0.2
 ResolutionMatching 1
 MuonMatchingDeltaR  0.2
 ModifiedPUsmearing 0
+ModifiedForwardSmearing 1
 
 ########################################
                Jet1
@@ -17,7 +18,6 @@ PtCut 30.0
 
 ApplyLooseID 1
 ApplyTightID 0
-ApplyTightLepVeto 0
 
 ApplyPileupJetID 1
 # WPs: tight = 0, medium = 1, loose = 2 
@@ -56,7 +56,6 @@ PtCut 30.0
 
 ApplyLooseID 1
 ApplyTightID 0
-ApplyTightLepVetoID 0
 
 ApplyPileupJetID 1
 # WPs: tight = 0, medium = 1, loose = 2 
@@ -94,7 +93,6 @@ PtCut 30.0
 
 ApplyLooseID 1
 ApplyTightID 0
-ApplyTightLepVetoID 0
 
 ApplyPileupJetID 1
 # WPs: tight = 0, medium = 1, loose = 2 
@@ -129,7 +127,6 @@ PtCut 30.0
 
 ApplyLooseID 1
 ApplyTightID 0
-ApplyTightLepVetoID 0
 
 ApplyPileupJetID 1
 # WPs: tight = 0, medium = 1, loose = 2 
@@ -164,7 +161,6 @@ PtCut 30.0
 
 ApplyLooseID 1
 ApplyTightID 0
-ApplyTightLepVetoID 0
 
 ApplyPileupJetID 1
 # WPs: tight = 0, medium = 1, loose = 2 
@@ -197,7 +193,6 @@ PtCut 20.0
 
 ApplyLooseID 1
 ApplyTightID 0
-ApplyTightLepVetoID 0
 
 ApplyPileupJetID 1
 # WPs: tight = 0, medium = 1, loose = 2 

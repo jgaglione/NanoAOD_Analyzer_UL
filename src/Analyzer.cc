@@ -504,7 +504,7 @@ void Analyzer::setupEventGeneral(int nevent){
 
   }
   // Get the number of primary vertices, applies to both data and MC
-  // SetBranch("PV_npvs", bestVertices);
+  SetBranch("PV_npvs", totalVertices);
   SetBranch("PV_npvsGood", bestVertices);
 
   // Get the offset energy density for jet energy corrections: https://twiki.cern.ch/twiki/bin/view/CMS/IntroToJEC
@@ -2613,7 +2613,7 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
   //std::cout << "------" << std::endl;
   if(distats["Run"].bfind("ApplyMETxyShiftCorrections")){
     //std::cout << "I'm applying xy-shift corrections" << std::endl;
-    _MET->applyXYshiftCorr(year, runera, bestVertices, isData, systname, syst);
+    _MET->applyXYshiftCorr(year, runera, totalVertices, isData, systname, syst);
   }
 }
 
@@ -5068,6 +5068,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
 
     // In all cases: Bin 2 contains the weighted number of events passing a certain selection.
     histAddVal(true, "Events");
+    histAddVal(totalVertices, "NTotalVertices");
     histAddVal(bestVertices, "NVertices");
 
   } else if(group == "FillRun" && issyst) {
@@ -5105,6 +5106,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
 
     // In all cases: Bin 2 contains the weighted number of events passing a certain selection.
     histAddVal(true, "Events");
+    histAddVal(totalVertices, "NTotalVertices");
     histAddVal(bestVertices, "NVertices");
 
   } else if(!isData && group == "FillGen") {
@@ -5470,8 +5472,8 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
     histAddVal(_MET->pt(), "Met");
     histAddVal(_MET->phi(), "MetPhi");
     // Added by Brenda - 02/22/2021
-    histAddVal2(_MET->pt(), bestVertices, "NPVvsMetPt");
-    histAddVal2(_MET->phi(), bestVertices, "NPVvsMetPhi");
+    histAddVal2(_MET->pt(), totalVertices, "NPVvsMetPt");
+    histAddVal2(_MET->phi(), totalVertices, "NPVvsMetPhi");
     histAddVal(_MET->DefMet.Pt(), "DefaultMETOriginal");
     histAddVal(_MET->T1Met.Pt(), "T1METOriginal");
     histAddVal(_MET->RawMet.Pt(), "RawMETOriginal");

@@ -306,6 +306,7 @@ public:
 
   float nTruePU = 0;
   int bestVertices = 0;
+  int totalVertices = 0;
   float gen_weight = 0;
   float generatorht = 0;
   float gendilepmass = 0;

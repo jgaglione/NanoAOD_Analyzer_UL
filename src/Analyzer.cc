@@ -2613,7 +2613,7 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
   //std::cout << "------" << std::endl;
   if(distats["Run"].bfind("ApplyMETxyShiftCorrections")){
     //std::cout << "I'm applying xy-shift corrections" << std::endl;
-    _MET->applyXYshiftCorr(year, runera, totalVertices, isData, systname, syst);
+    _MET->applyXYshiftCorr(year, runera, bestVertices, isData, systname, syst);
   }
 }
 

@@ -127,6 +127,10 @@ public:
   float pfIso_chg[MAXINDEX];
   bool eleVeto[MAXINDEX];
   bool hasPixelSeed[MAXINDEX];
+  UChar_t genPartFlav[MAXINDEX];
+  int genPartIdx[MAXINDEX];
+  int electronIdx[MAXINDEX];
+  int jetIdx[MAXINDEX];
 };
 
 
@@ -273,7 +277,7 @@ public:
   float sip3d[MAXINDEX];
   float dxy[MAXINDEX];
   float dz[MAXINDEX];
-  int associatedJetIndex[MAXINDEX];
+  Int_t associatedJetIndex[MAXINDEX];
   int genPartIdx[MAXINDEX];
 };
 
@@ -353,6 +357,7 @@ public:
   // ----- Tau gen-matching for ID SFs ----- //
   UChar_t genPartFlav[MAXINDEX];
   Int_t genPartIdx[MAXINDEX];
+  Int_t jetIdx[MAXINDEX];
 
 };
 

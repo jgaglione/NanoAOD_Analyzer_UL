@@ -237,6 +237,15 @@ Photon::Photon(TTree* _BOOM, std::string filename, std::vector<std::string> syst
   SetBranch("Photon_pfRelIso03_chg", pfIso_chg);
   SetBranch("Photon_electronVeto", eleVeto);
   SetBranch("Photon_pixelSeed", hasPixelSeed);
+  if(_BOOM->FindBranch("Photon_genPartFlav")!= 0){
+    SetBranch("Photon_genPartFlav", genPartFlav);
+  }
+
+  if(_BOOM->FindBranch("Photon_genJetIdx")!=0){
+    SetBranch("Photon_genJetIdx", genPartIdx); // index of matched gen jet in the GenJet collection.
+  }
+  SetBranch("Photon_electronIdx", electronIdx);
+  SetBranch("Photon_jetIdx", jetIdx);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -493,8 +502,8 @@ Electron::Electron(TTree* _BOOM, std::string filename, std::vector<std::string> 
     SetBranch("Electron_dz", dz);
     SetBranch("Electron_lostHits", lostHits);
     SetBranch("Electron_convVeto", conversionVeto);
-    SetBranch("Electron_jetIdx", associatedJetIndex);
   }
+  SetBranch("Electron_jetIdx", associatedJetIndex);
 }
 
 bool Electron::get_Iso(int index, double min, double max) const {
@@ -884,6 +893,7 @@ Taus::Taus(TTree* _BOOM, std::string filename, std::vector<std::string> syst_nam
   SetBranch("Tau_chargedIso", chargedIsoPtSum);
   SetBranch("Tau_neutralIso", neutralIso);
   SetBranch("Tau_puCorr", puCorr);
+  SetBranch("Tau_jetIdx", jetIdx);
 
   // ----- Tau gen-matching for ID SFs ----- //
   if(_BOOM->FindBranch("Tau_genPartFlav") != 0){ SetBranch("Tau_genPartFlav", genPartFlav); } // Flavour of genParticle for MC matching to status==2 taus: 1 = prompt electron, 2 = prompt muon, 3 = tau->e decay, 4 = tau->mu decay, 5 = hadronic tau decay, 0 = unknown or unmatched

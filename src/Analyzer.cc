@@ -2046,7 +2046,7 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
 
   // Include the xy-shift corrections to raw MET -- this is equivalent to apply them to the type-I MET.
   if(distats["Run"].bfind("ApplyMETxyShiftCorrections")){
-    _MET->applyXYshiftCorr(year, runera, bestVertices, isData, systname, syst);
+    _MET->applyXYshiftCorr(year, runera, totalVertices, isData, systname, syst);
   }
 
 

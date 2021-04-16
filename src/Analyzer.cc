@@ -2144,6 +2144,40 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
     float jet_pt_nomu_jerShifted = jetL1L2L3_jerShifted_noMuonP4.Pt(), jet_mass_nomu_jerShifted = jetL1L2L3_jerShifted_noMuonP4.M();
 
     // Verify that this is done (1) for MC, (2) if the smearing is turned on, (3) if the corrected jet Pt without the muon is above the unclustered energy threshold.
+    if(isData && (jetL1L2L3_noMuonP4.Pt() > jetUnclEnThreshold) ){
+      // study separation of jets from Met
+
+        float deltaPhiJetMet_data = normPhi(rawJetP4_noMuon.Phi() - _MET->phi());
+        float cosinedPhiJetMet_data = cos(deltaPhiJetMet_data);
+        float jetptmetproj_p_data = 0.0, jetptmetproj_m_data = 0.0;
+
+        if(cosinedPhiJetMet_data < 0.0){
+          jetptmetproj_m_data = rawJetP4_noMuon.Pt() * cosinedPhiJetMet_data;
+        } else if(cosinedPhiJetMet_data > 0.0){
+          jetptmetproj_p_data = rawJetP4_noMuon.Pt() * cosinedPhiJetMet_data;
+        }
+
+        if(abs(deltaPhiJetMet_data) < minDeltaPhiMet_formet){
+          minDeltaPhiMet_formet = abs(deltaPhiJetMet_data);
+          index_minjmetdphi_formet = i;
+        }
+
+        if(abs(deltaPhiJetMet_data) > maxDeltaPhiMet_formet){
+          maxDeltaPhiMet_formet = abs(deltaPhiJetMet_data);
+          index_maxjmetdphi_formet = i;
+        }
+
+        if(abs(jetptmetproj_m_data) > maxjetptprojonmet_minus_formet){
+          maxjetptprojonmet_minus_formet = abs(jetptmetproj_m_data);
+          index_maxjetptprojonmet_minus_formet = i;
+        }
+
+        if(abs(jetptmetproj_p_data) > maxjetptprojonmet_plus_formet){
+          maxjetptprojonmet_plus_formet = abs(jetptmetproj_p_data);
+          index_maxjetptprojonmet_plus_formet = i;
+        }
+    }
+
     if( (!isData) && (stats.bfind("SmearTheJet")) && (jetL1L2L3_noMuonP4.Pt() > jetUnclEnThreshold) ){
 
       // Check if there are any overlaps only with muons. Treat any electrons or hadronic taus which show up in the jet vector as jets.
@@ -2162,7 +2196,6 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
           jetlepmatch = true;
         }
       }
-
 
       // study separation of jets from Met
       if(!jetlepmatch){

@@ -2325,6 +2325,69 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
           }
         }
 
+      } else if ( stats.bfind("CombinedModifiedSmearing") ){
+
+        if( abs( jetL1L2L3_noMuonP4.Eta() ) <= 2.5 ){ // central jets
+
+          genjetmatch = genJet != TLorentzVector(0,0,0,0);
+          passtightPUjetID = _Jet->getPileupJetID(i, 0); // i - jet index, 0 = bit0 (tight ID). If true, it passes tight PU jet ID, otherwise, it fails PU jet ID.
+          if (jetL1L2L3_noMuonP4.Pt() <= 50.0) smearunmatchedjet = !genjetmatch && passtightPUjetID ? true : false;
+
+          if( (genjetmatch || smearunmatchedjet) && !jetlepmatch){
+
+            // Update the resolution scale factors as well as the 4 vectors for the jet momentum.
+            jer_sf_nom = jet_jer_sf.at(0); // 0 is the nominal value
+
+            // Correct the nominal mass and pt for this jet.
+            jet_pt_nomu_nom = jetL1L2L3_noMuonP4.Pt() * jer_sf_nom > 0.0 ? jetL1L2L3_noMuonP4.Pt() * jer_sf_nom : -1.0 * jetL1L2L3_noMuonP4.Pt() * jer_sf_nom;
+            jet_mass_nomu_nom = jetL1L2L3_noMuonP4.M() * jer_sf_nom > 0.0 ? jetL1L2L3_noMuonP4.M() * jer_sf_nom : -1.0 * jetL1L2L3_noMuonP4.M() * jer_sf_nom;
+
+            if(systname == "orig"){ // This corresponds to the nominal values: set the scale factor; if smearing, update jet_pt_nom and jet_mass_nom
+              jer_shift = jer_sf_nom;
+              jet_pt_nomu_jerShifted = jet_pt_nomu_nom;
+              jet_mass_nomu_jerShifted = jet_mass_nomu_nom;
+
+            }else if(systname.find("_Res_") != std::string::npos){
+              if(systname == "Jet_Res_Up"){
+                jer_shift = jet_jer_sf.at(2); // i is the jet index, 2 is the up value
+              }else if(systname == "Jet_Res_Down"){
+                jer_shift = jet_jer_sf.at(1); // i is the jet index, 1 is the down value
+              }
+              jet_pt_nomu_jerShifted = jetL1L2L3_noMuonP4.Pt() * jer_shift;
+              jet_mass_nomu_jerShifted = jetL1L2L3_noMuonP4.M() * jer_shift;
+            }
+          }
+
+        } else if( abs( jetL1L2L3_noMuonP4.Eta() ) > 2.5 ) { // forward jets
+
+          if( jetL1L2L3_noMuonP4.Pt() <= 50.0 ) forwardjetsmearing = false;
+
+          if( forwardjetsmearing && !jetlepmatch){
+
+            // Update the resolution scale factors as well as the 4 vectors for the jet momentum.
+            jer_sf_nom = jet_jer_sf.at(0); // 0 is the nominal value
+
+            // Correct the nominal mass and pt for this jet.
+            jet_pt_nomu_nom = jetL1L2L3_noMuonP4.Pt() * jer_sf_nom > 0.0 ? jetL1L2L3_noMuonP4.Pt() * jer_sf_nom : -1.0 * jetL1L2L3_noMuonP4.Pt() * jer_sf_nom;
+            jet_mass_nomu_nom = jetL1L2L3_noMuonP4.M() * jer_sf_nom > 0.0 ? jetL1L2L3_noMuonP4.M() * jer_sf_nom : -1.0 * jetL1L2L3_noMuonP4.M() * jer_sf_nom;
+
+            if(systname == "orig"){ // This corresponds to the nominal values: set the scale factor; if smearing, update jet_pt_nom and jet_mass_nom
+              jer_shift = jer_sf_nom;
+              jet_pt_nomu_jerShifted = jet_pt_nomu_nom;
+              jet_mass_nomu_jerShifted = jet_mass_nomu_nom;
+
+            }else if(systname.find("_Res_") != std::string::npos){
+              if(systname == "Jet_Res_Up"){
+                jer_shift = jet_jer_sf.at(2); // i is the jet index, 2 is the up value
+              }else if(systname == "Jet_Res_Down"){
+                jer_shift = jet_jer_sf.at(1); // i is the jet index, 1 is the down value
+              }
+              jet_pt_nomu_jerShifted = jetL1L2L3_noMuonP4.Pt() * jer_shift;
+              jet_mass_nomu_jerShifted = jetL1L2L3_noMuonP4.M() * jer_shift;
+            }
+          }
+
+        }
 
       } else {
 

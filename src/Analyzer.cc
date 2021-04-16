@@ -5102,7 +5102,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
         histAddVal(_Jet->pt(index_maxjetptprojonmet_plus_formet), "InitialMaxJetProjMetPlusPt");
         histAddVal(_Jet->eta(index_maxjetptprojonmet_plus_formet), "InitialMaxJetProjMetPlusEta");
         histAddVal2(_Jet->eta(index_maxjetptprojonmet_plus_formet), _MET->pt(), "InitialMaxJetProjMetPlusVsEta");
-        histAddVal2(_Jet->eta(index_maxjetptprojonmet_plus_formet), _Jet->pt(index_maxjetptprojonmet_plus_formet), "InitialMaxJetProjMetPlusvsEta");
+        histAddVal2(_Jet->eta(index_maxjetptprojonmet_plus_formet), _Jet->pt(index_maxjetptprojonmet_plus_formet), "InitialMaxJetProjMetPlusPtvsEta");
         histAddVal(_Jet->phi(index_maxjetptprojonmet_plus_formet), "InitialMaxJetProjMetPlusPhi");
         histAddVal(maxjetptprojonmet_plus_formet, "InitialMaxJetProjMetPlusMag");
         histAddVal2(maxjetptprojonmet_plus_formet, _MET->pt(), "InitialMetvsMaxJetProjMetPlusMag");

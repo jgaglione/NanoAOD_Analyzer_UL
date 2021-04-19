@@ -2867,16 +2867,85 @@ void Analyzer::getGoodGen(const PartStats& stats) {
       active_part->at(genMaper.at(5)->ePos)->push_back(j);
     }
     else if(genMaper.find(particle_id) != genMaper.end() && _Gen->status[j] == genMaper.at(particle_id)->status) {
-      // Cuts on gen-taus (before decaying)
-      if(stats.bfind("DiscrTauByPtAndEta")){
-        if(particle_id == 15 && (_Gen->pt(j) < stats.pmap.at("TauPtCut").first || _Gen->pt(j) > stats.pmap.at("TauPtCut").second || abs(_Gen->eta(j)) > stats.dmap.at("TauEtaCut"))) continue;
-      }
-      // Cuts on light lepton mother IDs
-      else if(stats.bfind("DiscrLightLepByMotherID")){
-       if( (particle_id == 11 || particle_id == 13) && (abs(_Gen->pdg_id[_Gen->genPartIdxMother[j]]) != stats.pmap.at("LightLepMotherIDs").first || abs(_Gen->pdg_id[_Gen->genPartIdxMother[j]]) != stats.pmap.at("LightLepMotherIDs").second)) continue;
+
+      if(particle_id == 15){
+
+      	if(stats.bfind("DiscrTauByPtAndEta") &&  (_Gen->pt(j) < stats.pmap.at("TauPtCut").first || _Gen->pt(j) > stats.pmap.at("TauPtCut").second || abs(_Gen->eta(j)) > stats.dmap.at("TauEtaCut"))) continue;
+
+	if(stats.bfind("DiscrTauByMotherID")){
+	   int motherpart_idx = _Gen->genPartIdxMother[j];
+           int mother_pid = abs(_Gen->pdg_id[motherpart_idx]);   
+
+           if(mother_pid == particle_id){
+               // std::cout << "Lepton with same ID for mother particle" << std::endl;
+               int motherpart_idx_tmp = motherpart_idx;
+               int mother_pid_tmp = mother_pid;            
+
+               while(mother_pid_tmp == particle_id){
+                  motherpart_idx = _Gen->genPartIdxMother[motherpart_idx_tmp];
+                  mother_pid_tmp = abs(_Gen->pdg_id[motherpart_idx]);
+                  motherpart_idx_tmp = motherpart_idx;
+               }
+             
+                mother_pid = mother_pid_tmp;
+                //std::cout << "Final mother ID = " << mother_pid << std::endl;
+           }
+           
+           if( (mother_pid != stats.pmap.at("TauMotherIDs").first) && (mother_pid != stats.pmap.at("TauMotherIDs").second) ) continue;
+        }
+      } else if(particle_id == 11){
+      	if(stats.bfind("DiscrElecByPtAndEta") &&  (_Gen->pt(j) < stats.pmap.at("ElecPtCut").first || _Gen->pt(j) > stats.pmap.at("ElecPtCut").second || abs(_Gen->eta(j)) > stats.dmap.at("ElecEtaCut"))) continue;
+
+        if(stats.bfind("DiscrElecByMotherID")){
+            int motherpart_idx = _Gen->genPartIdxMother[j];
+            int mother_pid = abs(_Gen->pdg_id[motherpart_idx]);
+            
+            if(mother_pid == particle_id){
+                //std::cout << "Lepton with same ID for mother particle" << std::endl;
+                int motherpart_idx_tmp = motherpart_idx;
+                int mother_pid_tmp = mother_pid;
+                
+                while(mother_pid_tmp == particle_id){
+                   motherpart_idx = _Gen->genPartIdxMother[motherpart_idx_tmp];
+                   mother_pid_tmp = abs(_Gen->pdg_id[motherpart_idx]);
+                   motherpart_idx_tmp = motherpart_idx;
+                } 
+              
+                 mother_pid = mother_pid_tmp;
+                 //std::cout << "Final mother ID = " << mother_pid << std::endl;
+            }
+            
+            if( (mother_pid != stats.pmap.at("ElecMotherIDs").first) && (mother_pid != stats.pmap.at("ElecMotherIDs").second) ) continue;
+        }
+      } else if(particle_id == 13){
+
+         if(stats.bfind("DiscrMuonByPtAndEta") &&  (_Gen->pt(j) < stats.pmap.at("MuonPtCut").first || _Gen->pt(j) > stats.pmap.at("MuonPtCut").second || abs(_Gen->eta(j)) > stats.dmap.at("MuonEtaCut"))) continue;
+
+         if(stats.bfind("DiscrTauByMotherID")){
+            int motherpart_idx = _Gen->genPartIdxMother[j];
+            int mother_pid = abs(_Gen->pdg_id[motherpart_idx]);
+            
+            if(mother_pid == particle_id){
+                // std::cout << "Lepton with same ID for mother particle" << std::endl;
+                int motherpart_idx_tmp = motherpart_idx;
+                int mother_pid_tmp = mother_pid;
+                
+                while(mother_pid_tmp == particle_id){
+                   motherpart_idx = _Gen->genPartIdxMother[motherpart_idx_tmp];
+                   mother_pid_tmp = abs(_Gen->pdg_id[motherpart_idx]);
+                   motherpart_idx_tmp = motherpart_idx;
+                } 
+              
+                 mother_pid = mother_pid_tmp;
+                 //std::cout << "Final mother ID = " << mother_pid << std::endl;
+            }
+            
+            if( (mother_pid != stats.pmap.at("MuonMotherIDs").first) && (mother_pid != stats.pmap.at("MuonMotherIDs").second) ) continue;
+         }
       }
 
       active_part->at(genMaper.at(particle_id)->ePos)->push_back(j);
+      //if(genMaper.at(particle_id)->ePos == CUTS::eGTau) std::cout << "index of Gen collection stored = " << j << std::endl;
     }
 
   }
@@ -5052,10 +5121,15 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
     histAddVal(gen_weight, "Weight");
     histAddVal(l1prefiringwgt, "L1PrefiringWeight");
 
+    std::vector<int> goodGenLeptons;
+
     int nhadtau = 0;
     TLorentzVector genVec(0,0,0,0);
     int i = 0;
     for(vec_iter it=active_part->at(CUTS::eGTau)->begin(); it!=active_part->at(CUTS::eGTau)->end(); it++, i++) {
+	//std::cout << "CUTS::eGTau #" << i << ", index in Gen = " << (*it) << ", status = " << _Gen->status[(*it)] << std::endl;
+      goodGenLeptons.push_back(*it);
+
       int nu = active_part->at(CUTS::eGNuTau)->at(i);
       if(nu != -1) {
         genVec = _Gen->p4(*it) - _Gen->p4(nu);
@@ -5114,6 +5188,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
     histAddVal(active_part->at(CUTS::eGW)->size(), "NW");
 
     for(auto it : *active_part->at(CUTS::eGMuon)) {
+      goodGenLeptons.push_back(it);
       histAddVal(_Gen->energy(it), "MuonEnergy");
       histAddVal(_Gen->pt(it), "MuonPt");
       histAddVal(_Gen->eta(it), "MuonEta");
@@ -5121,15 +5196,33 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
     }
     histAddVal(active_part->at(CUTS::eGMuon)->size(), "NMuon");
 
+    for(auto it: *active_part->at(CUTS::eGElec)){
+      goodGenLeptons.push_back(it);
+      histAddVal(_Gen->energy(it), "ElectronEnergy");
+      histAddVal(_Gen->pt(it), "ElectronPt");
+      histAddVal(_Gen->eta(it), "ElectronEta");
+      histAddVal(_Gen->phi(it), "ElectronPhi");
+    }
+    histAddVal(active_part->at(CUTS::eGElec)->size(), "NElectron");
+
     histAddVal(gendilepmass, "ZDiLepMass");
 
     double mass=0;
-    int nb_leptons = 0;
+    // int nb_leptons = 0;
     TLorentzVector lep1(0,0,0,0), lep2(0,0,0,0);
-
+    /*
     for(size_t igen=0; igen<_Gen->size(); igen++){
       if(abs(_Gen->pdg_id[igen])==11 or abs(_Gen->pdg_id[igen])==13 or abs(_Gen->pdg_id[igen])==15){
 
+	if( (abs(_Gen->pdg_id[igen])==11 or abs(_Gen->pdg_id[igen])==13) && _Gen->status[igen] != 1) continue;
+	else if( (abs(_Gen->pdg_id[igen])==15) && _Gen->status[igen] != 2 ) continue;
+
+	// std::cout << "Gen pdg_id = " << (abs(_Gen->pdg_id[igen])) << ", status = " << _Gen->status[igen] << std::endl;
+    */
+    for(size_t i=0; i<goodGenLeptons.size(); i++){
+        int igen = goodGenLeptons.at(i);
+	// std::cout << "Gen pdg_id = " << (abs(_Gen->pdg_id[igen])) << ", status = " << _Gen->status[igen] << std::endl;
+       
         if(lep1!=TLorentzVector(0,0,0,0)){
           lep2= _Gen->p4(igen);
           mass=(lep1+lep2).M();
@@ -5143,12 +5236,11 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
         histAddVal(_Gen->p4(igen).Phi(), "LeptonPhi");
         histAddVal(_Gen->p4(igen).E(), "LeptonE");
 
-        nb_leptons++;
-      }
+        //nb_leptons++;
     }
 
-    histAddVal(mass, "LeptonMass");
-    histAddVal(nb_leptons, "NLepton");
+    histAddVal(mass, "DiLeptonMass");
+    histAddVal(goodGenLeptons.size(), "NLepton");
 
     for(size_t i_genjet=0; i_genjet < _GenJet->size(); i_genjet++){
       histAddVal(_GenJet->pt(i_genjet), "JetPt");

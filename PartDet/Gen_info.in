@@ -2,11 +2,25 @@
 
 Gen
 
-DiscrTauByPtAndEta true
+DiscrTauByPtAndEta false
 TauPtCut -10.0  10000.0 
 TauEtaCut 10.0
+DiscrTauByMotherID  0
+TauMotherIDs   23.  24.
 
-DiscrHadTauByPtAndEta true
+DiscrElecByPtAndEta   false
+ElecPtCut  -10.0    100000.0
+ElecEtaCut  10.0
+DiscrElecByMotherID   1
+ElecMotherIDs   15.   15.
+
+DiscrMuonByPtAndEta   false
+MuonPtCut   -10.0   100000.0
+MuonEtaCut   10.0
+DiscrMuonByMotherID   1
+MuonMotherIDs    15.   15.
+
+DiscrHadTauByPtAndEta false
 HadTauPtCut   18.0  9999.9
 HadTauEtaCut  2.4
 DiscrByTauDecayMode false
@@ -21,9 +35,6 @@ PartonFlavorRange  0    22
 DiscrBJetByPtandEta  false
 BJetPtCut 0.0 9999.9
 BJetEtaCut 5.0 
-
-DiscrLightLepByMotherID 0
-LightLepMotherIDs 23. 24.
 
 //// ----- THESE OPTIONS ARE NOT USED ANYMORE ----- ////
 

@@ -502,6 +502,11 @@ void Analyzer::setupEventGeneral(int nevent){
       SetBranch("LHE_HT",generatorht);
     }
 
+    if(BOOM->FindBranch("GenMET_pt") != 0){
+      SetBranch("GenMET_pt", genmet_pt);
+      SetBranch("GenMET_phi", genmet_phi);
+    }
+
   }
   // Get the number of primary vertices, applies to both data and MC
   SetBranch("PV_npvs", totalVertices);
@@ -4918,6 +4923,7 @@ void Analyzer::fill_histogram(std::string year) {
     if(i == 0) {
       active_part = &goodParts;
       fillCuts(true);
+      if(isSignalMC && !finalInputSignal) continue;
       for(auto it: *groups) {
         fill_Folder(it, maxCut, histo, false);
       }
@@ -5003,6 +5009,7 @@ void Analyzer::fill_histogram(std::string year) {
     }
 
     if(!fillCuts(false)) continue;
+    if(isSignalMC && !finalInputSignal) continue; // Brenda FE, Apr 20, 2021
 
     for(auto it: *syst_histo.get_groups()) {
       fill_Folder(it, i, syst_histo, true);
@@ -5252,6 +5259,9 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
     }
 
     histAddVal(_GenJet->size(), "NJet");
+
+    histAddVal(genmet_pt, "MetPt");
+    histAddVal(genmet_phi, "MetPhi");
 
   } else if(group == "FillSpecial"){
 

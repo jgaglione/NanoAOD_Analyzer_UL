@@ -309,6 +309,8 @@ public:
   int totalVertices = 0;
   float gen_weight = 0;
   float generatorht = 0;
+  float genmet_pt = 0;
+  float genmet_phi = 0;
   float gendilepmass = 0;
 
   // Met filters' variables

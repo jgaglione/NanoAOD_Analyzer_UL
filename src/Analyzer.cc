@@ -2146,7 +2146,7 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
     // Verify that this is done (1) for MC, (2) if the smearing is turned on, (3) if the corrected jet Pt without the muon is above the unclustered energy threshold.
     if(isData && (jetL1L2L3_noMuonP4.Pt() > jetUnclEnThreshold) ){
       // study separation of jets from Met
-
+      if( (year.compare("2016") == 0) || (year.compare("2018") == 0)){
         float deltaPhiJetMet_data = normPhi(rawJetP4_noMuon.Phi() - _MET->phi());
         float cosinedPhiJetMet_data = cos(deltaPhiJetMet_data);
         float jetptmetproj_p_data = 0.0, jetptmetproj_m_data = 0.0;
@@ -2176,6 +2176,39 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
           maxjetptprojonmet_plus_formet = abs(jetptmetproj_p_data);
           index_maxjetptprojonmet_plus_formet = i;
         }
+      } else if ( year.compare("2017") == 0 ){
+        if( ! ((abs(rawJetP4_noMuon.Eta()) > 2.65 && abs(rawJetP4_noMuon.Eta()) < 3.14 ) && (rawJetP4_noMuon.Pt() < 50.0) ) ){
+          float deltaPhiJetMet_data = normPhi(rawJetP4_noMuon.Phi() - _MET->phi());
+          float cosinedPhiJetMet_data = cos(deltaPhiJetMet_data);
+          float jetptmetproj_p_data = 0.0, jetptmetproj_m_data = 0.0;
+
+          if(cosinedPhiJetMet_data < 0.0){
+            jetptmetproj_m_data = rawJetP4_noMuon.Pt() * cosinedPhiJetMet_data;
+          } else if(cosinedPhiJetMet_data > 0.0){
+            jetptmetproj_p_data = rawJetP4_noMuon.Pt() * cosinedPhiJetMet_data;
+          }
+
+          if(abs(deltaPhiJetMet_data) < minDeltaPhiMet_formet){
+            minDeltaPhiMet_formet = abs(deltaPhiJetMet_data);
+            index_minjmetdphi_formet = i;
+          }
+
+          if(abs(deltaPhiJetMet_data) > maxDeltaPhiMet_formet){
+            maxDeltaPhiMet_formet = abs(deltaPhiJetMet_data);
+            index_maxjmetdphi_formet = i;
+          }
+
+          if(abs(jetptmetproj_m_data) > maxjetptprojonmet_minus_formet){
+            maxjetptprojonmet_minus_formet = abs(jetptmetproj_m_data);
+            index_maxjetptprojonmet_minus_formet = i;
+          }
+
+          if(abs(jetptmetproj_p_data) > maxjetptprojonmet_plus_formet){
+            maxjetptprojonmet_plus_formet = abs(jetptmetproj_p_data);
+            index_maxjetptprojonmet_plus_formet = i;
+          }
+        }
+      }
     }
 
     if( (!isData) && (stats.bfind("SmearTheJet")) && (jetL1L2L3_noMuonP4.Pt() > jetUnclEnThreshold) ){
@@ -2200,34 +2233,68 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
       // study separation of jets from Met
       if(!jetlepmatch){
 
-        float deltaPhiJetMet = normPhi(rawJetP4_noMuon.Phi() - _MET->phi());
-        float cosinedPhiJetMet = cos(deltaPhiJetMet);
-        float jetptmetproj_p = 0.0, jetptmetproj_m = 0.0;
+        if( (year.compare("2016") == 0) || (year.compare("2018") == 0)){
+          float deltaPhiJetMet = normPhi(rawJetP4_noMuon.Phi() - _MET->phi());
+          float cosinedPhiJetMet = cos(deltaPhiJetMet);
+          float jetptmetproj_p = 0.0, jetptmetproj_m = 0.0;
 
-        if(cosinedPhiJetMet < 0.0){
-          jetptmetproj_m = rawJetP4_noMuon.Pt() * cosinedPhiJetMet;
-        } else if(cosinedPhiJetMet > 0.0){
-          jetptmetproj_p = rawJetP4_noMuon.Pt() * cosinedPhiJetMet;
-        }
+          if(cosinedPhiJetMet < 0.0){
+            jetptmetproj_m = rawJetP4_noMuon.Pt() * cosinedPhiJetMet;
+          } else if(cosinedPhiJetMet > 0.0){
+            jetptmetproj_p = rawJetP4_noMuon.Pt() * cosinedPhiJetMet;
+          }
 
-        if(abs(deltaPhiJetMet) < minDeltaPhiMet_formet){
-          minDeltaPhiMet_formet = abs(deltaPhiJetMet);
-          index_minjmetdphi_formet = i;
-        }
+          if(abs(deltaPhiJetMet) < minDeltaPhiMet_formet){
+            minDeltaPhiMet_formet = abs(deltaPhiJetMet);
+            index_minjmetdphi_formet = i;
+          }
 
-        if(abs(deltaPhiJetMet) > maxDeltaPhiMet_formet){
-          maxDeltaPhiMet_formet = abs(deltaPhiJetMet);
-          index_maxjmetdphi_formet = i;
-        }
+          if(abs(deltaPhiJetMet) > maxDeltaPhiMet_formet){
+            maxDeltaPhiMet_formet = abs(deltaPhiJetMet);
+            index_maxjmetdphi_formet = i;
+          }
 
-        if(abs(jetptmetproj_m) > maxjetptprojonmet_minus_formet){
-          maxjetptprojonmet_minus_formet = abs(jetptmetproj_m);
-          index_maxjetptprojonmet_minus_formet = i;
-        }
+          if(abs(jetptmetproj_m) > maxjetptprojonmet_minus_formet){
+            maxjetptprojonmet_minus_formet = abs(jetptmetproj_m);
+            index_maxjetptprojonmet_minus_formet = i;
+          }
 
-        if(abs(jetptmetproj_p) > maxjetptprojonmet_plus_formet){
-          maxjetptprojonmet_plus_formet = abs(jetptmetproj_p);
-          index_maxjetptprojonmet_plus_formet = i;
+          if(abs(jetptmetproj_p) > maxjetptprojonmet_plus_formet){
+            maxjetptprojonmet_plus_formet = abs(jetptmetproj_p);
+            index_maxjetptprojonmet_plus_formet = i;
+          }
+        } else if ( year.compare("2017") == 0 ){
+          if( ! ((abs(rawJetP4_noMuon.Eta()) > 2.65 && abs(rawJetP4_noMuon.Eta()) < 3.14 ) && (rawJetP4_noMuon.Pt() < 50.0) ) ){
+            float deltaPhiJetMet = normPhi(rawJetP4_noMuon.Phi() - _MET->phi());
+            float cosinedPhiJetMet = cos(deltaPhiJetMet);
+            float jetptmetproj_p = 0.0, jetptmetproj_m = 0.0;
+
+            if(cosinedPhiJetMet < 0.0){
+              jetptmetproj_m = rawJetP4_noMuon.Pt() * cosinedPhiJetMet;
+            } else if(cosinedPhiJetMet > 0.0){
+              jetptmetproj_p = rawJetP4_noMuon.Pt() * cosinedPhiJetMet;
+            }
+
+            if(abs(deltaPhiJetMet) < minDeltaPhiMet_formet){
+              minDeltaPhiMet_formet = abs(deltaPhiJetMet);
+              index_minjmetdphi_formet = i;
+            }
+
+            if(abs(deltaPhiJetMet) > maxDeltaPhiMet_formet){
+              maxDeltaPhiMet_formet = abs(deltaPhiJetMet);
+              index_maxjmetdphi_formet = i;
+            }
+
+            if(abs(jetptmetproj_m) > maxjetptprojonmet_minus_formet){
+              maxjetptprojonmet_minus_formet = abs(jetptmetproj_m);
+              index_maxjetptprojonmet_minus_formet = i;
+            }
+
+            if(abs(jetptmetproj_p) > maxjetptprojonmet_plus_formet){
+              maxjetptprojonmet_plus_formet = abs(jetptmetproj_p);
+              index_maxjetptprojonmet_plus_formet = i;
+            }
+          }
         }
       }
 
@@ -2535,8 +2602,10 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
 
           // Get the delta for removing L1L2L3-L1 corrected jets in the EE region from the default MET branch
           // Take into account if the jets are smeared in resolution, multiplying by jer_sf_nom
-          delta_x_EEnoise_T1Jets += (jetL1L2L3_jerNom_noMuonP4.Pt() - jetL1_noMuonP4.Pt()) * cos(jetL1L2L3_jerNom_noMuonP4.Phi()) + rawJetP4_noMuon.Pt() * cos(rawJetP4_noMuon.Phi());
-          delta_y_EEnoise_T1Jets += (jetL1L2L3_jerNom_noMuonP4.Pt() - jetL1_noMuonP4.Pt()) * sin(jetL1L2L3_jerNom_noMuonP4.Phi()) + rawJetP4_noMuon.Pt() * sin(rawJetP4_noMuon.Phi());
+          //delta_x_EEnoise_T1Jets += (jetL1L2L3_jerNom_noMuonP4.Pt() - jetL1_noMuonP4.Pt()) * cos(jetL1L2L3_jerNom_noMuonP4.Phi()) + rawJetP4_noMuon.Pt() * cos(rawJetP4_noMuon.Phi());
+          //delta_y_EEnoise_T1Jets += (jetL1L2L3_jerNom_noMuonP4.Pt() - jetL1_noMuonP4.Pt()) * sin(jetL1L2L3_jerNom_noMuonP4.Phi()) + rawJetP4_noMuon.Pt() * sin(rawJetP4_noMuon.Phi());
+          delta_x_EEnoise_T1Jets += (jetL1L2L3_noMuonP4.Pt() - jetL1_noMuonP4.Pt()) * cos(jetL1L2L3_noMuonP4.Phi()) + rawJetP4_noMuon.Pt() * cos(rawJetP4_noMuon.Phi());
+          delta_y_EEnoise_T1Jets += (jetL1L2L3_noMuonP4.Pt() - jetL1_noMuonP4.Pt()) * sin(jetL1L2L3_noMuonP4.Phi()) + rawJetP4_noMuon.Pt() * sin(rawJetP4_noMuon.Phi());
 
         }
       }

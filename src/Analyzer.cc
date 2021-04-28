@@ -2151,7 +2151,7 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
     // Verify that this is done (1) for MC, (2) if the smearing is turned on, (3) if the corrected jet Pt without the muon is above the unclustered energy threshold.
     if(isData && (jetL1L2L3_noMuonP4.Pt() > jetUnclEnThreshold) ){
       // study separation of jets from Met
-
+      if( (year.compare("2016") == 0) || (year.compare("2018") == 0)){
         float deltaPhiJetMet_data = normPhi(rawJetP4_noMuon.Phi() - _MET->phi());
         float cosinedPhiJetMet_data = cos(deltaPhiJetMet_data);
         float jetptmetproj_p_data = 0.0, jetptmetproj_m_data = 0.0;
@@ -2181,6 +2181,39 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
           maxjetptprojonmet_plus_formet = abs(jetptmetproj_p_data);
           index_maxjetptprojonmet_plus_formet = i;
         }
+      } else if ( year.compare("2017") == 0 ){
+        if( ! ((abs(rawJetP4_noMuon.Eta()) > 2.65 && abs(rawJetP4_noMuon.Eta()) < 3.14 ) && (rawJetP4_noMuon.Pt() < 50.0) ) ){
+          float deltaPhiJetMet_data = normPhi(rawJetP4_noMuon.Phi() - _MET->phi());
+          float cosinedPhiJetMet_data = cos(deltaPhiJetMet_data);
+          float jetptmetproj_p_data = 0.0, jetptmetproj_m_data = 0.0;
+
+          if(cosinedPhiJetMet_data < 0.0){
+            jetptmetproj_m_data = rawJetP4_noMuon.Pt() * cosinedPhiJetMet_data;
+          } else if(cosinedPhiJetMet_data > 0.0){
+            jetptmetproj_p_data = rawJetP4_noMuon.Pt() * cosinedPhiJetMet_data;
+          }
+
+          if(abs(deltaPhiJetMet_data) < minDeltaPhiMet_formet){
+            minDeltaPhiMet_formet = abs(deltaPhiJetMet_data);
+            index_minjmetdphi_formet = i;
+          }
+
+          if(abs(deltaPhiJetMet_data) > maxDeltaPhiMet_formet){
+            maxDeltaPhiMet_formet = abs(deltaPhiJetMet_data);
+            index_maxjmetdphi_formet = i;
+          }
+
+          if(abs(jetptmetproj_m_data) > maxjetptprojonmet_minus_formet){
+            maxjetptprojonmet_minus_formet = abs(jetptmetproj_m_data);
+            index_maxjetptprojonmet_minus_formet = i;
+          }
+
+          if(abs(jetptmetproj_p_data) > maxjetptprojonmet_plus_formet){
+            maxjetptprojonmet_plus_formet = abs(jetptmetproj_p_data);
+            index_maxjetptprojonmet_plus_formet = i;
+          }
+        }
+      }
     }
 
     if( (!isData) && (stats.bfind("SmearTheJet")) && (jetL1L2L3_noMuonP4.Pt() > jetUnclEnThreshold) ){
@@ -2205,34 +2238,68 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
       // study separation of jets from Met
       if(!jetlepmatch){
 
-        float deltaPhiJetMet = normPhi(rawJetP4_noMuon.Phi() - _MET->phi());
-        float cosinedPhiJetMet = cos(deltaPhiJetMet);
-        float jetptmetproj_p = 0.0, jetptmetproj_m = 0.0;
+        if( (year.compare("2016") == 0) || (year.compare("2018") == 0)){
+          float deltaPhiJetMet = normPhi(rawJetP4_noMuon.Phi() - _MET->phi());
+          float cosinedPhiJetMet = cos(deltaPhiJetMet);
+          float jetptmetproj_p = 0.0, jetptmetproj_m = 0.0;
 
-        if(cosinedPhiJetMet < 0.0){
-          jetptmetproj_m = rawJetP4_noMuon.Pt() * cosinedPhiJetMet;
-        } else if(cosinedPhiJetMet > 0.0){
-          jetptmetproj_p = rawJetP4_noMuon.Pt() * cosinedPhiJetMet;
-        }
+          if(cosinedPhiJetMet < 0.0){
+            jetptmetproj_m = rawJetP4_noMuon.Pt() * cosinedPhiJetMet;
+          } else if(cosinedPhiJetMet > 0.0){
+            jetptmetproj_p = rawJetP4_noMuon.Pt() * cosinedPhiJetMet;
+          }
 
-        if(abs(deltaPhiJetMet) < minDeltaPhiMet_formet){
-          minDeltaPhiMet_formet = abs(deltaPhiJetMet);
-          index_minjmetdphi_formet = i;
-        }
+          if(abs(deltaPhiJetMet) < minDeltaPhiMet_formet){
+            minDeltaPhiMet_formet = abs(deltaPhiJetMet);
+            index_minjmetdphi_formet = i;
+          }
 
-        if(abs(deltaPhiJetMet) > maxDeltaPhiMet_formet){
-          maxDeltaPhiMet_formet = abs(deltaPhiJetMet);
-          index_maxjmetdphi_formet = i;
-        }
+          if(abs(deltaPhiJetMet) > maxDeltaPhiMet_formet){
+            maxDeltaPhiMet_formet = abs(deltaPhiJetMet);
+            index_maxjmetdphi_formet = i;
+          }
 
-        if(abs(jetptmetproj_m) > maxjetptprojonmet_minus_formet){
-          maxjetptprojonmet_minus_formet = abs(jetptmetproj_m);
-          index_maxjetptprojonmet_minus_formet = i;
-        }
+          if(abs(jetptmetproj_m) > maxjetptprojonmet_minus_formet){
+            maxjetptprojonmet_minus_formet = abs(jetptmetproj_m);
+            index_maxjetptprojonmet_minus_formet = i;
+          }
 
-        if(abs(jetptmetproj_p) > maxjetptprojonmet_plus_formet){
-          maxjetptprojonmet_plus_formet = abs(jetptmetproj_p);
-          index_maxjetptprojonmet_plus_formet = i;
+          if(abs(jetptmetproj_p) > maxjetptprojonmet_plus_formet){
+            maxjetptprojonmet_plus_formet = abs(jetptmetproj_p);
+            index_maxjetptprojonmet_plus_formet = i;
+          }
+        } else if ( year.compare("2017") == 0 ){
+          if( ! ((abs(rawJetP4_noMuon.Eta()) > 2.65 && abs(rawJetP4_noMuon.Eta()) < 3.14 ) && (rawJetP4_noMuon.Pt() < 50.0) ) ){
+            float deltaPhiJetMet = normPhi(rawJetP4_noMuon.Phi() - _MET->phi());
+            float cosinedPhiJetMet = cos(deltaPhiJetMet);
+            float jetptmetproj_p = 0.0, jetptmetproj_m = 0.0;
+
+            if(cosinedPhiJetMet < 0.0){
+              jetptmetproj_m = rawJetP4_noMuon.Pt() * cosinedPhiJetMet;
+            } else if(cosinedPhiJetMet > 0.0){
+              jetptmetproj_p = rawJetP4_noMuon.Pt() * cosinedPhiJetMet;
+            }
+
+            if(abs(deltaPhiJetMet) < minDeltaPhiMet_formet){
+              minDeltaPhiMet_formet = abs(deltaPhiJetMet);
+              index_minjmetdphi_formet = i;
+            }
+
+            if(abs(deltaPhiJetMet) > maxDeltaPhiMet_formet){
+              maxDeltaPhiMet_formet = abs(deltaPhiJetMet);
+              index_maxjmetdphi_formet = i;
+            }
+
+            if(abs(jetptmetproj_m) > maxjetptprojonmet_minus_formet){
+              maxjetptprojonmet_minus_formet = abs(jetptmetproj_m);
+              index_maxjetptprojonmet_minus_formet = i;
+            }
+
+            if(abs(jetptmetproj_p) > maxjetptprojonmet_plus_formet){
+              maxjetptprojonmet_plus_formet = abs(jetptmetproj_p);
+              index_maxjetptprojonmet_plus_formet = i;
+            }
+          }
         }
       }
 
@@ -2540,8 +2607,10 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
 
           // Get the delta for removing L1L2L3-L1 corrected jets in the EE region from the default MET branch
           // Take into account if the jets are smeared in resolution, multiplying by jer_sf_nom
-          delta_x_EEnoise_T1Jets += (jetL1L2L3_jerNom_noMuonP4.Pt() - jetL1_noMuonP4.Pt()) * cos(jetL1L2L3_jerNom_noMuonP4.Phi()) + rawJetP4_noMuon.Pt() * cos(rawJetP4_noMuon.Phi());
-          delta_y_EEnoise_T1Jets += (jetL1L2L3_jerNom_noMuonP4.Pt() - jetL1_noMuonP4.Pt()) * sin(jetL1L2L3_jerNom_noMuonP4.Phi()) + rawJetP4_noMuon.Pt() * sin(rawJetP4_noMuon.Phi());
+          //delta_x_EEnoise_T1Jets += (jetL1L2L3_jerNom_noMuonP4.Pt() - jetL1_noMuonP4.Pt()) * cos(jetL1L2L3_jerNom_noMuonP4.Phi()) + rawJetP4_noMuon.Pt() * cos(rawJetP4_noMuon.Phi());
+          //delta_y_EEnoise_T1Jets += (jetL1L2L3_jerNom_noMuonP4.Pt() - jetL1_noMuonP4.Pt()) * sin(jetL1L2L3_jerNom_noMuonP4.Phi()) + rawJetP4_noMuon.Pt() * sin(rawJetP4_noMuon.Phi());
+          delta_x_EEnoise_T1Jets += (jetL1L2L3_noMuonP4.Pt() - jetL1_noMuonP4.Pt()) * cos(jetL1L2L3_noMuonP4.Phi()) + rawJetP4_noMuon.Pt() * cos(rawJetP4_noMuon.Phi());
+          delta_y_EEnoise_T1Jets += (jetL1L2L3_noMuonP4.Pt() - jetL1_noMuonP4.Pt()) * sin(jetL1L2L3_noMuonP4.Phi()) + rawJetP4_noMuon.Pt() * sin(rawJetP4_noMuon.Phi());
 
         }
       }
@@ -3419,12 +3488,15 @@ bool Analyzer::passJetVetoEEnoise2017(int jet_index){
 
    double jet_rawPt = jet_RecoP4.Pt() * (1.0 - jet_rawFactor);
 
+   std::cout << "Jet #" << jet_index << ", raw pt = " << jet_rawPt << ", eta = " << _Jet->eta(jet_index) << ", reco eta = " << jet_RecoP4.Eta() << std::endl;
+
    // Check if this jet is in the problematic pt-eta region: if yes, then jet does not pass the veto requirement
    if(jet_rawPt < 50.0 && (abs(jet_RecoP4.Eta()) > 2.65 && abs(jet_RecoP4.Eta()) < 3.139)){
-    //std::cout << "Jet in the EE noisy region, throwing it out." << std::endl;
+    std::cout << "Jet in the EE noisy region, throwing it out." << std::endl;
     return false;
    }
    // Otherwise, return true (passes the veto)
+   std::cout << "Jet not in the EE noise region, keeping it." << std::endl;
    return true;
  }
 
@@ -5400,10 +5472,16 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
         }
 
         // ---------
-        if( _Jet->pstats["Smear"].bfind("SmearTheJet") ){
-          histAddVal2(part->p4(it).Eta(), part->p4(it).Pt(), "PtVsEta");
-          histAddVal2(part->p4(it).Eta(), normPhi(part->p4(it).Phi() - _MET->phi()), "MetDphiVsEta");
+        float jetrawpt = _Jet->pt(it) * ( 1.0 - _Jet->rawFactor[it] ); 
+        histAddVal2(part->p4(it).Eta(), part->p4(it).Pt(), "PtVsEta");
+        histAddVal2(part->p4(it).Eta(), normPhi(part->p4(it).Phi() - _MET->phi()), "MetDphiVsEta");
+        histAddVal(jetrawpt, "RawPt"); 
+	histAddVal2(_Jet->eta(it), jetrawpt, "RawPtvsEta");
+        histAddVal2(_Jet->eta(it), _Jet->phi(it), "PhivsEta");
+        histAddVal2(_Jet->phi(it), jetrawpt, "RawPtvsPhi");
+        histAddVal2(jetrawpt, _Jet->pt(it), "PtvsRawPt");
 
+        if( _Jet->pstats["Smear"].bfind("SmearTheJet") ){
           std::map<int, std::vector<float> >::iterator smdj = jets_jer_sfs.find(it);
 
           if(smdj != jets_jer_sfs.end()){
@@ -5694,12 +5772,35 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
 
     TLorentzVector first = _Jet->p4(active_part->at(CUTS::eR1stJet)->at(active_part->at(CUTS::eR1stJet)->size() - 1));
     TLorentzVector second = _Jet->p4(active_part->at(CUTS::eR2ndJet)->at(active_part->at(CUTS::eR2ndJet)->size() - 1));
+    float firstjetrawpt = first.Pt() * (1.0 -  _Jet->rawFactor[active_part->at(CUTS::eR1stJet)->at(active_part->at(CUTS::eR1stJet)->size() - 1)]);
+    float secondjetrawpt = second.Pt() * (1.0 - _Jet->rawFactor[active_part->at(CUTS::eR2ndJet)->at(active_part->at(CUTS::eR2ndJet)->size() - 1)] );
 
     histAddVal(first.Pt(), "FirstPt");
     histAddVal(second.Pt(), "SecondPt");
 
     histAddVal(first.Eta(), "FirstEta");
     histAddVal(second.Eta(), "SecondEta");
+
+    histAddVal(first.Phi(), "FirstPhi");
+    histAddVal(second.Phi(), "SecondPhi");
+
+    histAddVal(firstjetrawpt, "FirstRawPt");
+    histAddVal(secondjetrawpt, "SecondRawPt");
+
+    histAddVal2(first.Eta(), first.Pt(), "FirstPtvsEta");
+    histAddVal2(first.Phi(), first.Pt(), "FirstPtvsPhi");
+    histAddVal2(first.Eta(), first.Phi(), "FirstPhivsEta");
+    histAddVal2(firstjetrawpt, first.Pt(), "FirstPtvsRawPt");
+    histAddVal2(first.Eta(), firstjetrawpt, "FirstRawPtvsEta");
+    histAddVal2(first.Phi(), firstjetrawpt, "FirstRawPtvsPhi");
+
+    histAddVal2(second.Eta(), second.Pt(), "SecondPtvsEta");
+    histAddVal2(second.Phi(), second.Pt(), "SecondPtvsPhi");
+    histAddVal2(second.Eta(), second.Phi(), "SecondPhivsEta");
+    histAddVal2(secondjetrawpt, second.Pt(), "SecondPtvsRawPt");
+    histAddVal2(second.Eta(), secondjetrawpt, "SecondRawPtvsEta");
+    histAddVal2(second.Phi(), secondjetrawpt, "SecondRawPtvsPhi");
+
 
     TLorentzVector LeadDiJet = first + second;
 

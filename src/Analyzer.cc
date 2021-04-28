@@ -3414,12 +3414,15 @@ bool Analyzer::passJetVetoEEnoise2017(int jet_index){
 
    double jet_rawPt = jet_RecoP4.Pt() * (1.0 - jet_rawFactor);
 
+   std::cout << "Jet #" << jet_index << ", raw pt = " << jet_rawPt << ", eta = " << _Jet->eta(jet_index) << ", reco eta = " << jet_RecoP4.Eta() << std::endl;
+
    // Check if this jet is in the problematic pt-eta region: if yes, then jet does not pass the veto requirement
    if(jet_rawPt < 50.0 && (abs(jet_RecoP4.Eta()) > 2.65 && abs(jet_RecoP4.Eta()) < 3.139)){
-    //std::cout << "Jet in the EE noisy region, throwing it out." << std::endl;
+    std::cout << "Jet in the EE noisy region, throwing it out." << std::endl;
     return false;
    }
    // Otherwise, return true (passes the veto)
+   std::cout << "Jet not in the EE noise region, keeping it." << std::endl;
    return true;
  }
 
@@ -5686,11 +5689,16 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
     histAddVal2(first.Phi(), first.Pt(), "FirstPtvsPhi");
     histAddVal2(first.Eta(), first.Phi(), "FirstPhivsEta");
     histAddVal2(firstjetrawpt, first.Pt(), "FirstPtvsRawPt");
+    histAddVal2(first.Eta(), firstjetrawpt, "FirstRawPtvsEta");
+    histAddVal2(first.Phi(), firstjetrawpt, "FirstRawPtvsPhi");
 
     histAddVal2(second.Eta(), second.Pt(), "SecondPtvsEta");
     histAddVal2(second.Phi(), second.Pt(), "SecondPtvsPhi");
     histAddVal2(second.Eta(), second.Phi(), "SecondPhivsEta");
     histAddVal2(secondjetrawpt, second.Pt(), "SecondPtvsRawPt");
+    histAddVal2(second.Eta(), secondjetrawpt, "SecondRawPtvsEta");
+    histAddVal2(second.Phi(), secondjetrawpt, "SecondRawPtvsPhi");
+
 
     TLorentzVector LeadDiJet = first + second;
 

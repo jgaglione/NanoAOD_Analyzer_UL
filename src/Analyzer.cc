@@ -5367,10 +5367,16 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
         }
 
         // ---------
-        if( _Jet->pstats["Smear"].bfind("SmearTheJet") ){
-          histAddVal2(part->p4(it).Eta(), part->p4(it).Pt(), "PtVsEta");
-          histAddVal2(part->p4(it).Eta(), normPhi(part->p4(it).Phi() - _MET->phi()), "MetDphiVsEta");
+        float jetrawpt = _Jet->pt(it) * ( 1.0 - _Jet->rawFactor[it] ); 
+        histAddVal2(part->p4(it).Eta(), part->p4(it).Pt(), "PtVsEta");
+        histAddVal2(part->p4(it).Eta(), normPhi(part->p4(it).Phi() - _MET->phi()), "MetDphiVsEta");
+        histAddVal(jetrawpt, "RawPt"); 
+	histAddVal2(_Jet->eta(it), jetrawpt, "RawPtvsEta");
+        histAddVal2(_Jet->eta(it), _Jet->phi(it), "PhivsEta");
+        histAddVal2(_Jet->phi(it), jetrawpt, "RawPtvsPhi");
+        histAddVal2(jetrawpt, _Jet->pt(it), "PtvsRawPt");
 
+        if( _Jet->pstats["Smear"].bfind("SmearTheJet") ){
           std::map<int, std::vector<float> >::iterator smdj = jets_jer_sfs.find(it);
 
           if(smdj != jets_jer_sfs.end()){
@@ -5661,12 +5667,30 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
 
     TLorentzVector first = _Jet->p4(active_part->at(CUTS::eR1stJet)->at(active_part->at(CUTS::eR1stJet)->size() - 1));
     TLorentzVector second = _Jet->p4(active_part->at(CUTS::eR2ndJet)->at(active_part->at(CUTS::eR2ndJet)->size() - 1));
+    float firstjetrawpt = first.Pt() * (1.0 -  _Jet->rawFactor[active_part->at(CUTS::eR1stJet)->at(active_part->at(CUTS::eR1stJet)->size() - 1)]);
+    float secondjetrawpt = second.Pt() * (1.0 - _Jet->rawFactor[active_part->at(CUTS::eR2ndJet)->at(active_part->at(CUTS::eR2ndJet)->size() - 1)] );
 
     histAddVal(first.Pt(), "FirstPt");
     histAddVal(second.Pt(), "SecondPt");
 
     histAddVal(first.Eta(), "FirstEta");
     histAddVal(second.Eta(), "SecondEta");
+
+    histAddVal(first.Phi(), "FirstPhi");
+    histAddVal(second.Phi(), "SecondPhi");
+
+    histAddVal(firstjetrawpt, "FirstRawPt");
+    histAddVal(secondjetrawpt, "SecondRawPt");
+
+    histAddVal2(first.Eta(), first.Pt(), "FirstPtvsEta");
+    histAddVal2(first.Phi(), first.Pt(), "FirstPtvsPhi");
+    histAddVal2(first.Eta(), first.Phi(), "FirstPhivsEta");
+    histAddVal2(firstjetrawpt, first.Pt(), "FirstPtvsRawPt");
+
+    histAddVal2(second.Eta(), second.Pt(), "SecondPtvsEta");
+    histAddVal2(second.Phi(), second.Pt(), "SecondPtvsPhi");
+    histAddVal2(second.Eta(), second.Phi(), "SecondPhivsEta");
+    histAddVal2(secondjetrawpt, second.Pt(), "SecondPtvsRawPt");
 
     TLorentzVector LeadDiJet = first + second;
 

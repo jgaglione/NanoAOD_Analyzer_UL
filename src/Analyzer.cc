@@ -754,6 +754,8 @@ void Analyzer::preprocess(int event, std::string year){ // This function no long
 
 
   active_part = &goodParts;
+  additionalEEnoiseJets.clear();
+  additionalEEnoiseJets.shrink_to_fit();
 
   // Call the new function setupEventGeneral: this will set generatorht, pu weight and genweight
   setupEventGeneral(event);
@@ -906,6 +908,7 @@ void Analyzer::getGoodParticles(int syst){
   getGoodRecoLeptons(*_Tau, CUTS::eRTau1, CUTS::eGHadTau, _Tau->pstats["Tau1"],syst);
   getGoodRecoLeptons(*_Tau, CUTS::eRTau2, CUTS::eGHadTau, _Tau->pstats["Tau2"],syst);
   getGoodRecoBJets(CUTS::eRBJet, CUTS::eGBJet, _Jet->pstats["BJet"],syst); //01.16.19
+  getAdditionalBadEENoiseRecoJets(_Jet->pstats["Jet1"]);
   getGoodRecoJets(CUTS::eRJet1, _Jet->pstats["Jet1"],syst);
   getGoodRecoJets(CUTS::eRJet2, _Jet->pstats["Jet2"],syst);
   getGoodRecoJets(CUTS::eRCenJet, _Jet->pstats["CentralJet"],syst);
@@ -3426,6 +3429,73 @@ bool Analyzer::passJetVetoEEnoise2017(int jet_index){
    return true;
  }
 
+ void Analyzer::getAdditionalBadEENoiseRecoJets(const PartStats& stats) {
+
+   int i=0;
+
+   for(auto lvec: *_Jet) {
+
+     bool passCuts = true;
+     double dphi1rjets = normPhi(lvec.Phi() - _MET->phi());
+
+     passCuts = passCuts && ( (fabs(lvec.Eta()) > 2.65) && (fabs(lvec.Eta()) < 3.14) ); // Eta region for EE noise
+     passCuts = passCuts && (lvec.Pt() > stats.dmap.at("PtCut") && lvec.Pt() < 80.0);
+
+     for( auto cut: stats.bset) {
+       if(!passCuts) break;
+       else if(cut == "Apply2017EEnoiseVeto") passCuts = passCuts && passJetVetoEEnoise2017(i);
+       else if(cut == "ApplyLooseID"){
+         if(stats.bfind("ApplyPileupJetID") && lvec.Pt() <= 50.0){
+           if(!stats.bfind("FailPUJetID")){
+             passCuts = passCuts && _Jet->getPileupJetID(i, stats.dmap.at("PUJetIDCut"));
+           } else {
+             passCuts = passCuts && (_Jet->getPileupJetID(i,0) == 0);
+           }
+         } else {
+           passCuts = passCuts && _Jet->passedLooseJetID(i);
+         }
+       }
+       else if(cut == "ApplyTightID"){
+         if(stats.bfind("ApplyPileupJetID") && lvec.Pt() <= 50.0){
+           if(!stats.bfind("FailPUJetID")){
+             passCuts = passCuts && _Jet->getPileupJetID(i, stats.dmap.at("PUJetIDCut")); // Only apply this cut to low pt jets
+           } else {
+             passCuts = passCuts && (_Jet->getPileupJetID(i,0) == 0);
+           }
+         } else {
+           passCuts = passCuts && _Jet->passedTightJetID(i);
+         }
+       }
+       else if(cut == "ApplyTightLepVetoID"){
+         if(stats.bfind("ApplyPileupJetID") && lvec.Pt() <= 50.0){
+           if(!stats.bfind("FailPUJetID")){
+             passCuts = passCuts && _Jet->getPileupJetID(i, stats.dmap.at("PUJetIDCut")); // Only apply this cut to low pt jets
+           } else {
+             passCuts = passCuts && (_Jet->getPileupJetID(i,0) == 0);
+           }
+         } else {
+           passCuts = passCuts && _Jet->passedTightLepVetoJetID(i);
+         }
+       }
+       else if(cut == "RemoveOverlapWithJs") passCuts = passCuts && !isOverlapingC(lvec, *_FatJet, CUTS::eRWjet, stats.dmap.at("JMatchingDeltaR"));
+       else if(cut == "RemoveOverlapWithBs") passCuts = passCuts && !isOverlapingB(lvec, *_Jet, CUTS::eRBJet, stats.dmap.at("BJMatchingDeltaR"));
+       // ----anti-overlap requirements
+       else if(cut == "RemoveOverlapWithMuon1s") passCuts = passCuts && !isOverlaping(lvec, *_Muon, CUTS::eRMuon1, stats.dmap.at("Muon1MatchingDeltaR"));
+       else if (cut =="RemoveOverlapWithMuon2s") passCuts = passCuts && !isOverlaping(lvec, *_Muon, CUTS::eRMuon2, stats.dmap.at("Muon2MatchingDeltaR"));
+       else if(cut == "RemoveOverlapWithElectron1s") passCuts = passCuts && !isOverlaping(lvec, *_Electron, CUTS::eRElec1, stats.dmap.at("Electron1MatchingDeltaR"));
+       else if(cut == "RemoveOverlapWithElectron2s") passCuts = passCuts && !isOverlaping(lvec, *_Electron, CUTS::eRElec2, stats.dmap.at("Electron2MatchingDeltaR"));
+       else if(cut == "RemoveOverlapWithTau1s") passCuts = passCuts && !isOverlaping(lvec, *_Tau, CUTS::eRTau1, stats.dmap.at("Tau1MatchingDeltaR"));
+       else if (cut =="RemoveOverlapWithTau2s") passCuts = passCuts && !isOverlaping(lvec, *_Tau, CUTS::eRTau2, stats.dmap.at("Tau2MatchingDeltaR"));
+       else if(cut == "DiscrByDPhiMet") passCuts = passCuts && passCutRange(fabs(dphi1rjets), stats.pmap.at("DPhiMetCut")); //01.17.19
+     }
+
+     if(passCuts) additionalEEnoiseJets.push_back(i);
+     i++;
+
+   }
+ }
+
+
 ////Jet specific function for finding the number of jets that pass the cuts.
 //used to find the nubmer of good jet1, jet2, central jet, 1st and 2nd leading jets and bjet.
 void Analyzer::getGoodRecoJets(CUTS ePos, const PartStats& stats, const int syst) {
@@ -5299,6 +5369,202 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
         histAddVal(cos( normPhi(_Jet->phi(maxprojonmet_idx_formet) - _MET->phi()) ), "InitialMaxJetProjMetCosDPhi");
       }
     }
+
+    // Plots for projection of bad jets in EE noise region for 2017, loop over all jets
+    if(additionalEEnoiseJets.size() > 0 ){
+
+      float maxjetptprojonmet = 0.0, minjetptprojonmet = 99999.9;
+      int index_maxjetptprojonmet = -1, index_minjetptprojonmet = -1;
+      float maxjetptprojperpmet = 0.0, minjetptprojperpmet = 99999.9;
+      int index_maxjetptprojperpmet = -1, index_minjetptprojperpmet = -1;
+
+
+      for(size_t i=0; i < additionalEEnoiseJets.size(); i++){
+
+        // std::cout << "Jet #" << additionalEEnoiseJets.at(i) << ", pt = " << _Jet->pt(additionalEEnoiseJets.at(i)) << ", eta = " << _Jet->eta(additionalEEnoiseJets.at(i)) << std::endl;
+        TLorentzVector jetP4 = _Jet->p4(additionalEEnoiseJets.at(i));
+
+        float jetrawpt = _Jet->pt(additionalEEnoiseJets.at(i)) * ( 1.0 - _Jet->rawFactor[additionalEEnoiseJets.at(i)] );
+        float deltaPhiMet = normPhi(jetP4.Phi() - _MET->phi());
+        float projonmetaxis = jetP4.Pt() * cos(deltaPhiMet);
+        float projperptometaxis = jetP4.Pt() * sin(deltaPhiMet);
+        float ratioprojonmet = projonmetaxis / _MET->pt();
+        float ratioprojperpmet = projperptometaxis / _MET->pt();
+
+        if(abs(projonmetaxis) > maxjetptprojonmet){
+          maxjetptprojonmet = abs(projonmetaxis);
+          index_maxjetptprojonmet = additionalEEnoiseJets.at(i);
+        }
+
+        if(abs(projonmetaxis) < minjetptprojonmet){
+          minjetptprojonmet = abs(projonmetaxis);
+          index_minjetptprojonmet = additionalEEnoiseJets.at(i);
+        }
+
+        if(abs(projperptometaxis) > maxjetptprojperpmet){
+          maxjetptprojperpmet = abs(projperptometaxis);
+          index_maxjetptprojperpmet = additionalEEnoiseJets.at(i);
+        }
+
+        if(abs(projperptometaxis) < minjetptprojperpmet){
+          minjetptprojperpmet = abs(projperptometaxis);
+          index_minjetptprojperpmet = additionalEEnoiseJets.at(i);
+        }
+
+        histAddVal(jetP4.Pt(), "EENoiseBadJetPt");
+        histAddVal(jetrawpt, "EENoiseBadJetRawPt");
+        histAddVal(jetP4.Eta(), "EENoiseBadJetEta");
+        histAddVal(jetP4.Phi(), "EENoiseBadJetPhi");
+        histAddVal(deltaPhiMet, "EENoiseBadJetMetDPhi");
+        histAddVal(abs(deltaPhiMet), "EENoiseBadJetMetAbsDPhi");
+
+        if(projonmetaxis < 0.0){
+          histAddVal(-1, "EENoiseBadJetPtProjonMetSign");
+        } else{
+          histAddVal(1, "EENoiseBadJetPtProjonMetSign");
+        }
+
+        if(projperptometaxis < 0.0){
+          histAddVal(-1, "EENoiseBadJetPtProjPerpMetSign");
+        } else{
+          histAddVal(1, "EENoiseBadJetPtProjPerpMetSign");
+        }
+
+        histAddVal(cos(deltaPhiMet), "EENoiseBadJetMetCosDPhi");
+        histAddVal(projonmetaxis, "EENoiseBadJetPtProjonMet");
+        histAddVal(abs(projonmetaxis), "EENoiseBadJetPtProjonMetMag");
+        histAddVal(ratioprojonmet, "EENoiseBadJetPtProjonMetRatio");
+        histAddVal(abs(ratioprojonmet), "EENoiseBadJetPtProjonMetRatioMag");
+
+        histAddVal(sin(deltaPhiMet), "EENoiseBadJetMetSinDPhi");
+        histAddVal(projperptometaxis, "EENoiseBadJetPtProjPerpMet");
+        histAddVal(abs(projperptometaxis), "EENoiseBadJetPtProjPerpMetMag");
+        histAddVal(ratioprojperpmet, "EENoiseBadJetPtProjPerpMetRatio");
+        histAddVal(abs(ratioprojperpmet), "EENoiseBadJetPtProjPerpMetRatioMag");
+
+      }
+
+      histAddVal(additionalEEnoiseJets.size(), "EENoiseBadNJets");
+
+      if(index_maxjetptprojonmet != -1){
+
+        TLorentzVector maxprojonmetjetp4 = _Jet->p4(index_maxjetptprojonmet);
+
+        float jetrawpt = _Jet->pt(index_maxjetptprojonmet) * ( 1.0 - _Jet->rawFactor[index_maxjetptprojonmet] );
+        float deltaPhiMet = normPhi(maxprojonmetjetp4.Phi() - _MET->phi());
+        float projonmetaxis = maxprojonmetjetp4.Pt() * cos(deltaPhiMet);
+        float ratioprojonmet = projonmetaxis / _MET->pt();
+
+        histAddVal(maxprojonmetjetp4.Pt(), "MaxProjonMetEENoiseBadJetPt");
+        histAddVal(jetrawpt, "MaxProjonMetEENoiseBadJetRawPt");
+        histAddVal(maxprojonmetjetp4.Eta(), "MaxProjonMetEENoiseBadJetEta");
+        histAddVal(maxprojonmetjetp4.Phi(), "MaxProjonMetEENoiseBadJetPhi");
+        histAddVal(deltaPhiMet, "MaxProjonMetEENoiseBadJetMetDPhi");
+        histAddVal(abs(deltaPhiMet), "MaxProjonMetEENoiseBadJetMetAbsDPhi");
+
+        if(projonmetaxis < 0.0){
+          histAddVal(-1, "MaxProjonMetEENoiseBadJetPtProjonMetSign");
+        } else{
+          histAddVal(1, "MaxProjonMetEENoiseBadJetPtProjonMetSign");
+        }
+
+        histAddVal(cos(deltaPhiMet), "MaxProjonMetEENoiseBadJetMetCosDPhi");
+        histAddVal(projonmetaxis, "MaxProjonMetEENoiseBadJetPtProjonMet");
+        histAddVal(abs(projonmetaxis), "MaxProjonMetEENoiseBadJetPtProjonMetMag");
+        histAddVal(ratioprojonmet, "MaxProjonMetEENoiseBadJetPtProjonMetRatio");
+        histAddVal(abs(ratioprojonmet), "MaxProjonMetEENoiseBadJetPtProjonMetRatioMag")
+
+      }
+
+      if(index_minjetptprojonmet != -1){
+        TLorentzVector minprojonmetjetp4 = _Jet->p4(index_minjetptprojonmet);
+
+        float jetrawpt = _Jet->pt(index_minjetptprojonmet) * ( 1.0 - _Jet->rawFactor[index_minjetptprojonmet] );
+        float deltaPhiMet = normPhi(minprojonmetjetp4.Phi() - _MET->phi());
+        float projonmetaxis = minprojonmetjetp4.Pt() * cos(deltaPhiMet);
+        float ratioprojonmet = projonmetaxis / _MET->pt();
+
+        histAddVal(minprojonmetjetp4.Pt(), "MinProjonMetEENoiseBadJetPt");
+        histAddVal(jetrawpt, "MinProjonMetEENoiseBadJetRawPt");
+        histAddVal(minprojonmetjetp4.Eta(), "MinProjonMetEENoiseBadJetEta");
+        histAddVal(minprojonmetjetp4.Phi(), "MinProjonMetEENoiseBadJetPhi");
+        histAddVal(deltaPhiMet, "MinProjonMetEENoiseBadJetMetDPhi");
+        histAddVal(abs(deltaPhiMet), "MinProjonMetEENoiseBadJetMetAbsDPhi");
+
+        if(projonmetaxis < 0.0){
+          histAddVal(-1, "MinProjonMetEENoiseBadJetPtProjonMetSign");
+        } else{
+          histAddVal(1, "MinProjonMetEENoiseBadJetPtProjonMetSign");
+        }
+
+        histAddVal(cos(deltaPhiMet), "MinProjonMetEENoiseBadJetMetCosDPhi");
+        histAddVal(projonmetaxis, "MinProjonMetEENoiseBadJetPtProjonMet");
+        histAddVal(abs(projonmetaxis), "MinProjonMetEENoiseBadJetPtProjonMetMag");
+        histAddVal(ratioprojonmet, "MinProjonMetEENoiseBadJetPtProjonMetRatio");
+        histAddVal(abs(ratioprojonmet), "MinProjonMetEENoiseBadJetPtProjonMetRatioMag")
+      }
+
+      if(index_maxjetptprojperpmet != -1){
+        TLorentzVector maxprojperpmetjetp4 = _Jet->p4(index_maxjetptprojperpmet);
+
+        float jetrawpt = _Jet->pt(index_maxjetptprojperpmet) * ( 1.0 - _Jet->rawFactor[index_maxjetptprojperpmet] );
+        float deltaPhiMet = normPhi(maxprojperpmetjetp4.Phi() - _MET->phi());
+        float projperpmetaxis = maxprojperpmetjetp4.Pt() * sin(deltaPhiMet);
+        float ratioprojperpmet = projperpmetaxis / _MET->pt();
+
+        histAddVal(maxprojperpmetjetp4.Pt(), "MaxProjPerpMetEENoiseBadJetPt");
+        histAddVal(jetrawpt, "MaxProjPerpMetEENoiseBadJetRawPt");
+        histAddVal(maxprojperpmetjetp4.Eta(), "MaxProjPerpMetEENoiseBadJetEta");
+        histAddVal(maxprojperpmetjetp4.Phi(), "MaxProjPerpMetEENoiseBadJetPhi");
+        histAddVal(deltaPhiMet, "MaxProjPerpMetEENoiseBadJetMetDPhi");
+        histAddVal(abs(deltaPhiMet), "MaxProjPerpMetEENoiseBadJetMetAbsDPhi");
+
+        if(projperpmetaxis < 0.0){
+          histAddVal(-1, "MaxProjPerpMetEENoiseBadJetPtProjonMetSign");
+        } else{
+          histAddVal(1, "MaxProjPerpMetEENoiseBadJetPtProjonMetSign");
+        }
+
+        histAddVal(sin(deltaPhiMet), "MaxProjPerpMetEENoiseBadJetMetSinDPhi");
+        histAddVal(projperpmetaxis, "MaxProjPerpMetEENoiseBadJetPtProjonMet");
+        histAddVal(abs(projperpmetaxis), "MaxProjPerpMetEENoiseBadJetPtProjonMetMag");
+        histAddVal(ratioprojperpmet, "MaxProjPerpMetEENoiseBadJetPtProjonMetRatio");
+        histAddVal(abs(ratioprojperpmet), "MaxProjPerpMetEENoiseBadJetPtProjonMetRatioMag")
+
+      }
+
+      if(index_minjetptprojperpmet != -1){
+        TLorentzVector minprojperpmetjetp4 = _Jet->p4(index_minjetptprojperpmet);
+
+        float jetrawpt = _Jet->pt(index_minjetptprojperpmet) * ( 1.0 - _Jet->rawFactor[index_minjetptprojperpmet] );
+        float deltaPhiMet = normPhi(minprojperpmetjetp4.Phi() - _MET->phi());
+        float projperpmetaxis = minprojperpmetjetp4.Pt() * sin(deltaPhiMet);
+        float ratioprojperpmet = projperpmetaxis / _MET->pt();
+
+        histAddVal(minprojperpmetjetp4.Pt(), "MinProjPerpMetEENoiseBadJetPt");
+        histAddVal(jetrawpt, "MinProjPerpMetEENoiseBadJetRawPt");
+        histAddVal(minprojperpmetjetp4.Eta(), "MinProjPerpMetEENoiseBadJetEta");
+        histAddVal(minprojperpmetjetp4.Phi(), "MinProjPerpMetEENoiseBadJetPhi");
+        histAddVal(deltaPhiMet, "MinProjPerpMetEENoiseBadJetMetDPhi");
+        histAddVal(abs(deltaPhiMet), "MinProjPerpMetEENoiseBadJetMetAbsDPhi");
+
+        if(projperpmetaxis < 0.0){
+          histAddVal(-1, "MinProjPerpMetEENoiseBadJetPtProjonMetSign");
+        } else{
+          histAddVal(1, "MinProjPerpMetEENoiseBadJetPtProjonMetSign");
+        }
+
+        histAddVal(sin(deltaPhiMet), "MinProjPerpMetEENoiseBadJetMetSinDPhi");
+        histAddVal(projperpmetaxis, "MinProjPerpMetEENoiseBadJetPtProjonMet");
+        histAddVal(abs(projperpmetaxis), "MinProjPerpMetEENoiseBadJetPtProjonMetMag");
+        histAddVal(ratioprojperpmet, "MinProjPerpMetEENoiseBadJetPtProjonMetRatio");
+        histAddVal(abs(ratioprojperpmet), "MinProjPerpMetEENoiseBadJetPtProjonMetRatioMag")
+      }
+
+
+    }
+
+
   } else if(fillInfo[group]->type == FILLER::Single) {
     Particle* part = fillInfo[group]->part;
     CUTS ePos = fillInfo[group]->ePos;
@@ -5370,11 +5636,11 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
         }
 
         // ---------
-        float jetrawpt = _Jet->pt(it) * ( 1.0 - _Jet->rawFactor[it] ); 
+        float jetrawpt = _Jet->pt(it) * ( 1.0 - _Jet->rawFactor[it] );
         histAddVal2(part->p4(it).Eta(), part->p4(it).Pt(), "PtVsEta");
         histAddVal2(part->p4(it).Eta(), normPhi(part->p4(it).Phi() - _MET->phi()), "MetDphiVsEta");
-        histAddVal(jetrawpt, "RawPt"); 
-	histAddVal2(_Jet->eta(it), jetrawpt, "RawPtvsEta");
+        histAddVal(jetrawpt, "RawPt");
+	       histAddVal2(_Jet->eta(it), jetrawpt, "RawPtvsEta");
         histAddVal2(_Jet->eta(it), _Jet->phi(it), "PhivsEta");
         histAddVal2(_Jet->phi(it), jetrawpt, "RawPtvsPhi");
         histAddVal2(jetrawpt, _Jet->pt(it), "PtvsRawPt");

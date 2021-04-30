@@ -5486,12 +5486,13 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
         // std::cout << "Jet #" << additionalEEnoiseJets.at(i) << ", pt = " << _Jet->pt(additionalEEnoiseJets.at(i)) << ", eta = " << _Jet->eta(additionalEEnoiseJets.at(i)) << std::endl;
         TLorentzVector jetP4 = _Jet->p4(additionalEEnoiseJets.at(i));
 
-        float jetrawpt = _Jet->pt(additionalEEnoiseJets.at(i)) * ( 1.0 - _Jet->rawFactor[additionalEEnoiseJets.at(i)] );
+        float jetrawpt = _Jet->RecoP4(additionalEEnoiseJets.at(i)).Pt() * ( 1.0 - _Jet->rawFactor[additionalEEnoiseJets.at(i)] );
         float deltaPhiMet = normPhi(jetP4.Phi() - _MET->phi());
         float projonmetaxis = jetP4.Pt() * cos(deltaPhiMet);
         float projperptometaxis = jetP4.Pt() * sin(deltaPhiMet);
         float ratioprojonmet = projonmetaxis / _MET->pt();
         float ratioprojperpmet = projperptometaxis / _MET->pt();
+        // std::cout << "Jet #" << additionalEEnoiseJets.at(i) << ", pt = " << _Jet->pt(additionalEEnoiseJets.at(i)) << ", eta = " << _Jet->eta(additionalEEnoiseJets.at(i)) << ", raw pt = " << jetrawpt <<  std::endl;
 
         if(abs(projonmetaxis) > maxjetptprojonmet){
           maxjetptprojonmet = abs(projonmetaxis);
@@ -5552,7 +5553,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
 
         TLorentzVector maxprojonmetjetp4 = _Jet->p4(index_maxjetptprojonmet);
 
-        float jetrawpt = _Jet->pt(index_maxjetptprojonmet) * ( 1.0 - _Jet->rawFactor[index_maxjetptprojonmet] );
+        float jetrawpt = _Jet->RecoP4(index_maxjetptprojonmet).Pt() * ( 1.0 - _Jet->rawFactor[index_maxjetptprojonmet] );
         float deltaPhiMet = normPhi(maxprojonmetjetp4.Phi() - _MET->phi());
         float projonmetaxis = maxprojonmetjetp4.Pt() * cos(deltaPhiMet);
         float ratioprojonmet = projonmetaxis / _MET->pt();
@@ -5581,7 +5582,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
       if(index_minjetptprojonmet != -1){
         TLorentzVector minprojonmetjetp4 = _Jet->p4(index_minjetptprojonmet);
 
-        float jetrawpt = _Jet->pt(index_minjetptprojonmet) * ( 1.0 - _Jet->rawFactor[index_minjetptprojonmet] );
+        float jetrawpt = _Jet->RecoP4(index_minjetptprojonmet).Pt() * ( 1.0 - _Jet->rawFactor[index_minjetptprojonmet] );
         float deltaPhiMet = normPhi(minprojonmetjetp4.Phi() - _MET->phi());
         float projonmetaxis = minprojonmetjetp4.Pt() * cos(deltaPhiMet);
         float ratioprojonmet = projonmetaxis / _MET->pt();
@@ -5609,7 +5610,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
       if(index_maxjetptprojperpmet != -1){
         TLorentzVector maxprojperpmetjetp4 = _Jet->p4(index_maxjetptprojperpmet);
 
-        float jetrawpt = _Jet->pt(index_maxjetptprojperpmet) * ( 1.0 - _Jet->rawFactor[index_maxjetptprojperpmet] );
+        float jetrawpt = _Jet->RecoP4(index_maxjetptprojperpmet).Pt() * ( 1.0 - _Jet->rawFactor[index_maxjetptprojperpmet] );
         float deltaPhiMet = normPhi(maxprojperpmetjetp4.Phi() - _MET->phi());
         float projperpmetaxis = maxprojperpmetjetp4.Pt() * sin(deltaPhiMet);
         float ratioprojperpmet = projperpmetaxis / _MET->pt();
@@ -5638,7 +5639,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
       if(index_minjetptprojperpmet != -1){
         TLorentzVector minprojperpmetjetp4 = _Jet->p4(index_minjetptprojperpmet);
 
-        float jetrawpt = _Jet->pt(index_minjetptprojperpmet) * ( 1.0 - _Jet->rawFactor[index_minjetptprojperpmet] );
+        float jetrawpt = _Jet->RecoP4(index_minjetptprojperpmet).Pt() * ( 1.0 - _Jet->rawFactor[index_minjetptprojperpmet] );
         float deltaPhiMet = normPhi(minprojperpmetjetp4.Phi() - _MET->phi());
         float projperpmetaxis = minprojperpmetjetp4.Pt() * sin(deltaPhiMet);
         float ratioprojperpmet = projperpmetaxis / _MET->pt();

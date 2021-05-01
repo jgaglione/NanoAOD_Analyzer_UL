@@ -5739,7 +5739,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
         }
 
         // ---------
-        float jetrawpt = _Jet->pt(it) * ( 1.0 - _Jet->rawFactor[it] );
+        float jetrawpt = _Jet->RecoP4(it).Pt() * ( 1.0 - _Jet->rawFactor[it] );
         histAddVal2(part->p4(it).Eta(), part->p4(it).Pt(), "PtVsEta");
         histAddVal2(part->p4(it).Eta(), normPhi(part->p4(it).Phi() - _MET->phi()), "MetDphiVsEta");
         histAddVal(jetrawpt, "RawPt");
@@ -5747,6 +5747,283 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
         histAddVal2(_Jet->eta(it), _Jet->phi(it), "PhivsEta");
         histAddVal2(_Jet->phi(it), jetrawpt, "RawPtvsPhi");
         histAddVal2(jetrawpt, _Jet->pt(it), "PtvsRawPt");
+
+        /* -----  Histograms to compare neutral/charged EM and hadronic energy fractions */
+        std::vector<int> jetsetaminus;
+        std::vector<int> jetsetaplus;
+        float totalHadronicEF = _Jet->neutralHadEnergyFraction[it] + _Jet->chargedHadronEnergyFraction[it];
+        float totalEmEF = _Jet->neutralEmEnergyFraction[it] + _Jet->chargedEmEnergyFraction[it];
+
+        if((_Jet->eta(it) > -3.2) && (_Jet->eta(it) < -2.6)){
+
+          jetsetaminus.push_back(it);
+          // Reference cold cell
+          if( (_Jet->phi(it) > -2.8) && (_Jet->phi(it) < -2.2) ){
+
+            histAddVal(_Jet->neutralHadEnergyFraction[it]   , "ColdCellEtaMneHEF");
+            histAddVal(_Jet->neutralEmEnergyFraction[it]    , "ColdCellEtaMneEmEF");
+            histAddVal(_Jet->chargedHadronEnergyFraction[it], "ColdCellEtaMchHEF");
+            histAddVal(_Jet->chargedEmEnergyFraction[it]    , "ColdCellEtaMchEmEF");
+            histAddVal(totalHadronicEF                     , "ColdCellEtaMTotalHadEF");
+            histAddVal(totalEmEF                           , "ColdCellEtaMTotalEmEF");
+            histAddVal(jetrawpt                            , "ColdCellEtaMRawPt");
+            histAddVal( (jetrawpt * _Jet->neutralHadEnergyFraction[it]   ), "ColdCellEtaMneHEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->neutralEmEnergyFraction[it]    ), "ColdCellEtaMneEmEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->chargedHadronEnergyFraction[it]), "ColdCellEtaMchHEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->chargedEmEnergyFraction[it]    ), "ColdCellEtaMchEmEFxRawPt");
+            histAddVal( (jetrawpt * totalHadronicEF                     ), "ColdCellEtaMTotalHadEFxRawPt");
+            histAddVal( (jetrawpt * totalEmEF                           ), "ColdCellEtaMTotalEmEFxRawPt");
+
+            histAddVal2(jetrawpt, _Jet->neutralHadEnergyFraction[it]   , "ColdCellEtaMneHEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->neutralEmEnergyFraction[it]    , "ColdCellEtaMneEmEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->chargedHadronEnergyFraction[it], "ColdCellEtaMchHEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->chargedEmEnergyFraction[it]    , "ColdCellEtaMchEmEFvsRawPt");
+            histAddVal2(jetrawpt, totalHadronicEF                     , "ColdCellEtaMTotalHadEFvsRawPt");
+            histAddVal2(jetrawpt, totalEmEF                           , "ColdCellEtaMTotalEmEFvsRawPt");
+            histAddVal2(_Jet->p4(it).Eta(), _Jet->p4(it).Pt()         , "ColdCellEtaMPtVsEta");
+            histAddVal2(_Jet->eta(it), jetrawpt                       , "ColdCellEtaMRawPtvsEta");
+            histAddVal2(_Jet->eta(it), _Jet->phi(it)                  , "ColdCellEtaMPhivsEta");
+            histAddVal2(_Jet->phi(it), jetrawpt                       , "ColdCellEtaMRawPtvsPhi");
+            histAddVal2(jetrawpt, _Jet->pt(it)                        , "ColdCellEtaMPtvsRawPt");
+
+          }
+          // Hot cell, central phi
+          if( (_Jet->phi(it) > -0.4) && (_Jet->phi(it) < 0.2) ){
+
+            histAddVal(_Jet->neutralHadEnergyFraction[it]   , "HotCellEtaMPhi0neHEF");
+            histAddVal(_Jet->neutralEmEnergyFraction[it]    , "HotCellEtaMPhi0neEmEF");
+            histAddVal(_Jet->chargedHadronEnergyFraction[it], "HotCellEtaMPhi0chHEF");
+            histAddVal(_Jet->chargedEmEnergyFraction[it]    , "HotCellEtaMPhi0chEmEF");
+            histAddVal(totalHadronicEF                     , "HotCellEtaMPhi0TotalHadEF");
+            histAddVal(totalEmEF                           , "HotCellEtaMPhi0TotalEmEF");
+            histAddVal(jetrawpt                            , "HotCellEtaMPhi0RawPt");
+            histAddVal( (jetrawpt * _Jet->neutralHadEnergyFraction[it]   ), "HotCellEtaMPhi0neHEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->neutralEmEnergyFraction[it]    ), "HotCellEtaMPhi0neEmEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->chargedHadronEnergyFraction[it]), "HotCellEtaMPhi0chHEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->chargedEmEnergyFraction[it]    ), "HotCellEtaMPhi0chEmEFxRawPt");
+            histAddVal( (jetrawpt * totalHadronicEF                     ), "HotCellEtaMPhi0TotalHadEFxRawPt");
+            histAddVal( (jetrawpt * totalEmEF                           ), "HotCellEtaMPhi0TotalEmEFxRawPt");
+
+            histAddVal2(_Jet->p4(it).Eta(), _Jet->p4(it).Pt(), "HotCellEtaMPhi0PtVsEta");
+            histAddVal2(_Jet->eta(it), jetrawpt              , "HotCellEtaMPhi0RawPtvsEta");
+            histAddVal2(_Jet->eta(it), _Jet->phi(it)         , "HotCellEtaMPhi0PhivsEta");
+            histAddVal2(_Jet->phi(it), jetrawpt              , "HotCellEtaMPhi0RawPtvsPhi");
+            histAddVal2(jetrawpt, _Jet->pt(it)               , "HotCellEtaMPhi0PtvsRawPt");
+
+            histAddVal2(jetrawpt, _Jet->neutralHadEnergyFraction[it]   , "HotCellEtaMPhi0neHEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->neutralEmEnergyFraction[it]    , "HotCellEtaMPhi0neEmEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->chargedHadronEnergyFraction[it], "HotCellEtaMPhi0chHEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->chargedEmEnergyFraction[it]    , "HotCellEtaMPhi0chEmEFvsRawPt");
+            histAddVal2(jetrawpt, totalHadronicEF                     , "HotCellEtaMPhi0TotalHadEFvsRawPt");
+            histAddVal2(jetrawpt, totalEmEF                           , "HotCellEtaMPhi0TotalEmEFvsRawPt");
+          }
+
+          // Hot cell, phi plus
+          if( (_Jet->phi(it) > 1.2) && (_Jet->phi(it) < 2.0) ){
+
+            histAddVal(_Jet->neutralHadEnergyFraction[it]   , "HotCellEtaMPhiPneHEF");
+            histAddVal(_Jet->neutralEmEnergyFraction[it]    , "HotCellEtaMPhiPneEmEF");
+            histAddVal(_Jet->chargedHadronEnergyFraction[it], "HotCellEtaMPhiPchHEF");
+            histAddVal(_Jet->chargedEmEnergyFraction[it]    , "HotCellEtaMPhiPchEmEF");
+            histAddVal(totalHadronicEF                     , "HotCellEtaMPhiPTotalHadEF");
+            histAddVal(totalEmEF                           , "HotCellEtaMPhiPTotalEmEF");
+            histAddVal(jetrawpt                            , "HotCellEtaMPhiPRawPt");
+            histAddVal( (jetrawpt * _Jet->neutralHadEnergyFraction[it]   ), "HotCellEtaMPhiPneHEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->neutralEmEnergyFraction[it]    ), "HotCellEtaMPhiPneEmEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->chargedHadronEnergyFraction[it]), "HotCellEtaMPhiPchHEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->chargedEmEnergyFraction[it]    ), "HotCellEtaMPhiPchEmEFxRawPt");
+            histAddVal( (jetrawpt * totalHadronicEF                     ), "HotCellEtaMPhiPTotalHadEFxRawPt");
+            histAddVal( (jetrawpt * totalEmEF                           ), "HotCellEtaMPhiPTotalEmEFxRawPt");
+
+            histAddVal2(_Jet->p4(it).Eta(), _Jet->p4(it).Pt(), "HotCellEtaMPhiPPtVsEta");
+            histAddVal2(_Jet->eta(it), jetrawpt              , "HotCellEtaMPhiPRawPtvsEta");
+            histAddVal2(_Jet->eta(it), _Jet->phi(it)         , "HotCellEtaMPhiPPhivsEta");
+            histAddVal2(_Jet->phi(it), jetrawpt              , "HotCellEtaMPhiPRawPtvsPhi");
+            histAddVal2(jetrawpt, _Jet->pt(it)               , "HotCellEtaMPhiPPtvsRawPt");
+
+            histAddVal2(jetrawpt, _Jet->neutralHadEnergyFraction[it]   , "HotCellEtaMPhiPneHEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->neutralEmEnergyFraction[it]    , "HotCellEtaMPhiPneEmEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->chargedHadronEnergyFraction[it], "HotCellEtaMPhiPchHEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->chargedEmEnergyFraction[it]    , "HotCellEtaMPhiPchEmEFvsRawPt");
+            histAddVal2(jetrawpt, totalHadronicEF                     , "HotCellEtaMPhiPTotalHadEFvsRawPt");
+            histAddVal2(jetrawpt, totalEmEF                           , "HotCellEtaMPhiPTotalEmEFvsRawPt");
+          }
+
+        }
+
+        if((_Jet->eta(it) > 2.6) && (_Jet->eta(it) < 3.2)){
+
+          jetsetaplus.push_back(it);
+          // Reference cold cell
+          if( (_Jet->phi(it) > -2.8) && (_Jet->phi(it) < -2.2) ){
+
+            histAddVal(_Jet->neutralHadEnergyFraction[it]   , "ColdCellEtaPneHEF");
+            histAddVal(_Jet->neutralEmEnergyFraction[it]    , "ColdCellEtaPneEmEF");
+            histAddVal(_Jet->chargedHadronEnergyFraction[it], "ColdCellEtaPchHEF");
+            histAddVal(_Jet->chargedEmEnergyFraction[it]    , "ColdCellEtaPchEmEF");
+            histAddVal(totalHadronicEF                     , "ColdCellEtaPTotalHadEF");
+            histAddVal(totalEmEF                           , "ColdCellEtaPTotalEmEF");
+            histAddVal(jetrawpt                            , "ColdCellEtaPRawPt");
+            histAddVal( (jetrawpt * _Jet->neutralHadEnergyFraction[it]   ), "ColdCellEtaPneHEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->neutralEmEnergyFraction[it]    ), "ColdCellEtaPneEmEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->chargedHadronEnergyFraction[it]), "ColdCellEtaPchHEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->chargedEmEnergyFraction[it]    ), "ColdCellEtaPchEmEFxRawPt");
+            histAddVal( (jetrawpt * totalHadronicEF                     ), "ColdCellEtaPTotalHadEFxRawPt");
+            histAddVal( (jetrawpt * totalEmEF                           ), "ColdCellEtaPTotalEmEFxRawPt");
+
+            histAddVal2(jetrawpt, _Jet->neutralHadEnergyFraction[it]   , "ColdCellEtaPneHEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->neutralEmEnergyFraction[it]    , "ColdCellEtaPneEmEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->chargedHadronEnergyFraction[it], "ColdCellEtaPchHEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->chargedEmEnergyFraction[it]    , "ColdCellEtaPchEmEFvsRawPt");
+            histAddVal2(jetrawpt, totalHadronicEF                     , "ColdCellEtaPTotalHadEFvsRawPt");
+            histAddVal2(jetrawpt, totalEmEF                           , "ColdCellEtaPTotalEmEFvsRawPt");
+            histAddVal2(_Jet->p4(it).Eta(), _Jet->p4(it).Pt()         , "ColdCellEtaPPtVsEta");
+            histAddVal2(_Jet->eta(it), jetrawpt                       , "ColdCellEtaPRawPtvsEta");
+            histAddVal2(_Jet->eta(it), _Jet->phi(it)                  , "ColdCellEtaPPhivsEta");
+            histAddVal2(_Jet->phi(it), jetrawpt                       , "ColdCellEtaPRawPtvsPhi");
+            histAddVal2(jetrawpt, _Jet->pt(it)                        , "ColdCellEtaPPtvsRawPt");
+
+          }
+
+          // Hot cell, phi minus
+          if( (_Jet->phi(it) > -2.0) && (_Jet->phi(it) < -1.2) ){
+
+            histAddVal(_Jet->neutralHadEnergyFraction[it]   , "HotCellEtaPPhiMneHEF");
+            histAddVal(_Jet->neutralEmEnergyFraction[it]    , "HotCellEtaPPhiMneEmEF");
+            histAddVal(_Jet->chargedHadronEnergyFraction[it], "HotCellEtaPPhiMchHEF");
+            histAddVal(_Jet->chargedEmEnergyFraction[it]    , "HotCellEtaPPhiMchEmEF");
+            histAddVal(totalHadronicEF                     , "HotCellEtaPPhiMTotalHadEF");
+            histAddVal(totalEmEF                           , "HotCellEtaPPhiMTotalEmEF");
+            histAddVal(jetrawpt                            , "HotCellEtaPPhiMRawPt");
+            histAddVal( (jetrawpt * _Jet->neutralHadEnergyFraction[it]   ), "HotCellEtaPPhiMneHEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->neutralEmEnergyFraction[it]    ), "HotCellEtaPPhiMneEmEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->chargedHadronEnergyFraction[it]), "HotCellEtaPPhiMchHEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->chargedEmEnergyFraction[it]    ), "HotCellEtaPPhiMchEmEFxRawPt");
+            histAddVal( (jetrawpt * totalHadronicEF                     ), "HotCellEtaPPhiMTotalHadEFxRawPt");
+            histAddVal( (jetrawpt * totalEmEF                           ), "HotCellEtaPPhiMTotalEmEFxRawPt");
+
+            histAddVal2(_Jet->p4(it).Eta(), _Jet->p4(it).Pt(), "HotCellEtaPPhiMPtVsEta");
+            histAddVal2(_Jet->eta(it), jetrawpt              , "HotCellEtaPPhiMRawPtvsEta");
+            histAddVal2(_Jet->eta(it), _Jet->phi(it)         , "HotCellEtaPPhiMPhivsEta");
+            histAddVal2(_Jet->phi(it), jetrawpt              , "HotCellEtaPPhiMRawPtvsPhi");
+            histAddVal2(jetrawpt, _Jet->pt(it)               , "HotCellEtaPPhiMPtvsRawPt");
+
+            histAddVal2(jetrawpt, _Jet->neutralHadEnergyFraction[it]   , "HotCellEtaPPhiMneHEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->neutralEmEnergyFraction[it]    , "HotCellEtaPPhiMneEmEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->chargedHadronEnergyFraction[it], "HotCellEtaPPhiMchHEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->chargedEmEnergyFraction[it]    , "HotCellEtaPPhiMchEmEFvsRawPt");
+            histAddVal2(jetrawpt, totalHadronicEF                     , "HotCellEtaPPhiMTotalHadEFvsRawPt");
+            histAddVal2(jetrawpt, totalEmEF                           , "HotCellEtaPPhiMTotalEmEFvsRawPt");
+          }
+
+
+          // Hot cell, central phi
+          if( (_Jet->phi(it) > -0.4) && (_Jet->phi(it) < 0.4) ){
+
+            histAddVal(_Jet->neutralHadEnergyFraction[it]   , "HotCellEtaPPhi0neHEF");
+            histAddVal(_Jet->neutralEmEnergyFraction[it]    , "HotCellEtaPPhi0neEmEF");
+            histAddVal(_Jet->chargedHadronEnergyFraction[it], "HotCellEtaPPhi0chHEF");
+            histAddVal(_Jet->chargedEmEnergyFraction[it]    , "HotCellEtaPPhi0chEmEF");
+            histAddVal(totalHadronicEF                     , "HotCellEtaPPhi0TotalHadEF");
+            histAddVal(totalEmEF                           , "HotCellEtaPPhi0TotalEmEF");
+            histAddVal(jetrawpt                            , "HotCellEtaPPhi0RawPt");
+            histAddVal( (jetrawpt * _Jet->neutralHadEnergyFraction[it]   ), "HotCellEtaPPhi0neHEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->neutralEmEnergyFraction[it]    ), "HotCellEtaPPhi0neEmEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->chargedHadronEnergyFraction[it]), "HotCellEtaPPhi0chHEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->chargedEmEnergyFraction[it]    ), "HotCellEtaPPhi0chEmEFxRawPt");
+            histAddVal( (jetrawpt * totalHadronicEF                     ), "HotCellEtaPPhi0TotalHadEFxRawPt");
+            histAddVal( (jetrawpt * totalEmEF                           ), "HotCellEtaPPhi0TotalEmEFxRawPt");
+
+            histAddVal2(_Jet->p4(it).Eta(), _Jet->p4(it).Pt(), "HotCellEtaPPhi0PtVsEta");
+            histAddVal2(_Jet->eta(it), jetrawpt              , "HotCellEtaPPhi0RawPtvsEta");
+            histAddVal2(_Jet->eta(it), _Jet->phi(it)         , "HotCellEtaPPhi0PhivsEta");
+            histAddVal2(_Jet->phi(it), jetrawpt              , "HotCellEtaPPhi0RawPtvsPhi");
+            histAddVal2(jetrawpt, _Jet->pt(it)               , "HotCellEtaPPhi0PtvsRawPt");
+
+            histAddVal2(jetrawpt, _Jet->neutralHadEnergyFraction[it]   , "HotCellEtaPPhi0neHEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->neutralEmEnergyFraction[it]    , "HotCellEtaPPhi0neEmEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->chargedHadronEnergyFraction[it], "HotCellEtaPPhi0chHEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->chargedEmEnergyFraction[it]    , "HotCellEtaPPhi0chEmEFvsRawPt");
+            histAddVal2(jetrawpt, totalHadronicEF                     , "HotCellEtaPPhi0TotalHadEFvsRawPt");
+            histAddVal2(jetrawpt, totalEmEF                           , "HotCellEtaPPhi0TotalEmEFvsRawPt");
+          }
+
+          // Hot cell, phi plus
+          if( (_Jet->phi(it) > 1.0) && (_Jet->phi(it) < 1.6) ){
+
+            histAddVal(_Jet->neutralHadEnergyFraction[it]   , "HotCellEtaPPhiPneHEF");
+            histAddVal(_Jet->neutralEmEnergyFraction[it]    , "HotCellEtaPPhiPneEmEF");
+            histAddVal(_Jet->chargedHadronEnergyFraction[it], "HotCellEtaPPhiPchHEF");
+            histAddVal(_Jet->chargedEmEnergyFraction[it]    , "HotCellEtaPPhiPchEmEF");
+            histAddVal(totalHadronicEF                     , "HotCellEtaPPhiPTotalHadEF");
+            histAddVal(totalEmEF                           , "HotCellEtaPPhiPTotalEmEF");
+            histAddVal(jetrawpt                            , "HotCellEtaPPhiPRawPt");
+            histAddVal( (jetrawpt * _Jet->neutralHadEnergyFraction[it]   ), "HotCellEtaPPhiPneHEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->neutralEmEnergyFraction[it]    ), "HotCellEtaPPhiPneEmEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->chargedHadronEnergyFraction[it]), "HotCellEtaPPhiPchHEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->chargedEmEnergyFraction[it]    ), "HotCellEtaPPhiPchEmEFxRawPt");
+            histAddVal( (jetrawpt * totalHadronicEF                     ), "HotCellEtaPPhiPTotalHadEFxRawPt");
+            histAddVal( (jetrawpt * totalEmEF                           ), "HotCellEtaPPhiPTotalEmEFxRawPt");
+            histAddVal2(_Jet->p4(it).Eta(), _Jet->p4(it).Pt(), "HotCellEtaPPhiPPtVsEta");
+            histAddVal2(_Jet->eta(it), jetrawpt              , "HotCellEtaPPhiPRawPtvsEta");
+            histAddVal2(_Jet->eta(it), _Jet->phi(it)         , "HotCellEtaPPhiPPhivsEta");
+            histAddVal2(_Jet->phi(it), jetrawpt              , "HotCellEtaPPhiPRawPtvsPhi");
+            histAddVal2(jetrawpt, _Jet->pt(it)               , "HotCellEtaPPhiPPtvsRawPt");
+            histAddVal2(jetrawpt, _Jet->neutralHadEnergyFraction[it]   , "HotCellEtaPPhiPneHEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->neutralEmEnergyFraction[it]    , "HotCellEtaPPhiPneEmEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->chargedHadronEnergyFraction[it], "HotCellEtaPPhiPchHEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->chargedEmEnergyFraction[it]    , "HotCellEtaPPhiPchEmEFvsRawPt");
+            histAddVal2(jetrawpt, totalHadronicEF                     , "HotCellEtaPPhiPTotalHadEFvsRawPt");
+            histAddVal2(jetrawpt, totalEmEF                           , "HotCellEtaPPhiPTotalEmEFvsRawPt");
+          }
+
+        }
+
+        if(jetsetaplus.size() > 0 && jetsetaminus.size() > 0){
+          histAddVal(1, "NOSEEnoiseEta");
+          histAddVal(jetsetaplus.size(), "NPosEEnoiseEta");
+          histAddVal(jetsetaminus.size(), "NNegEEnoiseEta");
+          histAddVal2(jetsetaminus.size(), jetsetaplus.size(), "NEEnoiseEtaPosvsNeg");
+
+          for(size_t ip = 0; ip < jetsetaplus.size(); ip++){
+            int index_posj = jetsetaplus.at(ip);
+            for(size_t im = 0; im < jetsetaminus.size(); im++){
+              int index_negj = jetsetaminus.at(im);
+
+              TLorentzVector deltaPEENoiseJets = (_Jet->p4(index_posj) - _Jet->p4( jetsetaminus.at(index_negj)) );
+
+              float totalEmEF = _Jet->neutralEmEnergyFraction[index_posj] + _Jet->chargedEmEnergyFraction[index_posj] + _Jet->neutralEmEnergyFraction[index_negj] + _Jet->chargedEmEnergyFraction[index_negj];
+              float totalHadEF = _Jet->neutralHadEnergyFraction[index_posj] + _Jet->chargedHadronEnergyFraction[index_posj] + _Jet->neutralHadEnergyFraction[index_negj] + _Jet->chargedHadronEnergyFraction[index_negj];
+
+              float totalneutralEmEF = (_Jet->neutralEmEnergyFraction[index_posj] + _Jet->neutralEmEnergyFraction[index_negj]) / totalEmEF;
+              float totalchargedEmEF = (_Jet->chargedEmEnergyFraction[index_posj] + _Jet->chargedEmEnergyFraction[index_negj]) / totalEmEF;
+              float totalneutralHadEF = (_Jet->neutralHadEnergyFraction[index_posj] + _Jet->neutralHadEnergyFraction[index_negj]) / totalHadEF;
+              float totalchargedHadEF = (_Jet->chargedHadronEnergyFraction[index_posj] + _Jet->chargedHadronEnergyFraction[index_negj]) / totalHadEF;
+
+              histAddVal(deltaPEENoiseJets.Pt()                    , "EEnoiseCombDeltaPt");
+              histAddVal((deltaPEENoiseJets.Pt() / _MET->HT())     , "EEnoiseCombDeltaPtHTRatio");
+              histAddVal2(_MET->HT(), deltaPEENoiseJets.Pt()       , "EEnoiseCombDeltaPtvsHT");
+              histAddVal2(deltaPEENoiseJets.Pt(), totalEmEF        , "EEnoiseCombTotalEmEFvsDeltaPt");
+              histAddVal2(deltaPEENoiseJets.Pt(), totalHadEF       , "EEnoiseCombTotalHadEFvsDeltaPt");
+              histAddVal2(deltaPEENoiseJets.Pt(), totalneutralEmEF , "EEnoiseCombTotalNeutralEmEFvsDeltaPt");
+              histAddVal2(deltaPEENoiseJets.Pt(), totalchargedEmEF , "EEnoiseCombTotalChargedEmEFvsDeltaPt");
+              histAddVal2(deltaPEENoiseJets.Pt(), totalneutralHadEF, "EEnoiseCombTotalNeutralHadEFvsDeltaPt");
+              histAddVal2(deltaPEENoiseJets.Pt(), totalchargedHadEF, "EEnoiseCombTotalChargedHadEFvsDeltaPt");
+
+            } 
+          }
+        }
+        else{
+          histAddVal(0, "NOSEEnoiseEta");
+          histAddVal(0, "NPosEEnoiseEta");
+          histAddVal(0, "NNegEEnoiseEta");
+          histAddVal2(0, 0, "NEEnoiseEtaPosvsNeg");
+        }
+
+
+
+        /* ----------------------------------------------------------------------------  */
+
 
         if( _Jet->pstats["Smear"].bfind("SmearTheJet") ){
           std::map<int, std::vector<float> >::iterator smdj = jets_jer_sfs.find(it);

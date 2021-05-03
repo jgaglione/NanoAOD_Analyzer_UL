@@ -5753,6 +5753,8 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
         std::vector<int> jetsetaplus;
         float totalHadronicEF = _Jet->neutralHadEnergyFraction[it] + _Jet->chargedHadronEnergyFraction[it];
         float totalEmEF = _Jet->neutralEmEnergyFraction[it] + _Jet->chargedEmEnergyFraction[it];
+        float totalneutralEF = _Jet->neutralEmEnergyFraction[it] + _Jet->neutralHadEnergyFraction[it];
+        float totalchargedEF = _Jet->chargedEmEnergyFraction[it] + _Jet->chargedHadronEnergyFraction[it];
 
         if((_Jet->eta(it) > -3.2) && (_Jet->eta(it) < -2.6)){
 
@@ -5766,13 +5768,19 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
             histAddVal(_Jet->chargedEmEnergyFraction[it]    , "ColdCellEtaMchEmEF");
             histAddVal(totalHadronicEF                     , "ColdCellEtaMTotalHadEF");
             histAddVal(totalEmEF                           , "ColdCellEtaMTotalEmEF");
+            histAddVal(totalneutralEF                      , "ColdCellEtaMTotalNeutralEF");
+            histAddVal(totalchargedEF                      , "ColdCellEtaMTotalChargedEF");
+            histAddVal(_Jet->numberOfConstituents[it]      , "ColdCellEtaMnumberOfConstituents");
             histAddVal(jetrawpt                            , "ColdCellEtaMRawPt");
             histAddVal( (jetrawpt * _Jet->neutralHadEnergyFraction[it]   ), "ColdCellEtaMneHEFxRawPt");
             histAddVal( (jetrawpt * _Jet->neutralEmEnergyFraction[it]    ), "ColdCellEtaMneEmEFxRawPt");
             histAddVal( (jetrawpt * _Jet->chargedHadronEnergyFraction[it]), "ColdCellEtaMchHEFxRawPt");
             histAddVal( (jetrawpt * _Jet->chargedEmEnergyFraction[it]    ), "ColdCellEtaMchEmEFxRawPt");
-            histAddVal( (jetrawpt * totalHadronicEF                     ), "ColdCellEtaMTotalHadEFxRawPt");
-            histAddVal( (jetrawpt * totalEmEF                           ), "ColdCellEtaMTotalEmEFxRawPt");
+            histAddVal( (jetrawpt * totalHadronicEF                      ), "ColdCellEtaMTotalHadEFxRawPt");
+            histAddVal( (jetrawpt * totalEmEF                            ), "ColdCellEtaMTotalEmEFxRawPt");
+            histAddVal( (jetrawpt * totalneutralEF                       ), "ColdCellEtaMTotalNeutralEFxRawPt");
+            histAddVal( (jetrawpt * totalchargedEF                       ), "ColdCellEtaMTotalChargedEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->numberOfConstituents[it]       ), "ColdCellEtaMnumberOfConstituentsxRawPt");
 
             histAddVal2(jetrawpt, _Jet->neutralHadEnergyFraction[it]   , "ColdCellEtaMneHEFvsRawPt");
             histAddVal2(jetrawpt, _Jet->neutralEmEnergyFraction[it]    , "ColdCellEtaMneEmEFvsRawPt");
@@ -5780,6 +5788,9 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
             histAddVal2(jetrawpt, _Jet->chargedEmEnergyFraction[it]    , "ColdCellEtaMchEmEFvsRawPt");
             histAddVal2(jetrawpt, totalHadronicEF                     , "ColdCellEtaMTotalHadEFvsRawPt");
             histAddVal2(jetrawpt, totalEmEF                           , "ColdCellEtaMTotalEmEFvsRawPt");
+            histAddVal2(jetrawpt, totalneutralEF                      , "ColdCellEtaMTotalNeutralEFvsRawPt");
+            histAddVal2(jetrawpt, totalchargedEF                      , "ColdCellEtaMTotalChargedEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->numberOfConstituents[it]      , "ColdCellEtaMnumberOfConstituentsvsRawPt");
             histAddVal2(_Jet->p4(it).Eta(), _Jet->p4(it).Pt()         , "ColdCellEtaMPtVsEta");
             histAddVal2(_Jet->eta(it), jetrawpt                       , "ColdCellEtaMRawPtvsEta");
             histAddVal2(_Jet->eta(it), _Jet->phi(it)                  , "ColdCellEtaMPhivsEta");
@@ -5796,6 +5807,9 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
             histAddVal(_Jet->chargedEmEnergyFraction[it]    , "HotCellEtaMPhi0chEmEF");
             histAddVal(totalHadronicEF                     , "HotCellEtaMPhi0TotalHadEF");
             histAddVal(totalEmEF                           , "HotCellEtaMPhi0TotalEmEF");
+            histAddVal(totalneutralEF                      , "HotCellEtaMPhi0TotalNeutralEF");
+            histAddVal(totalchargedEF                      , "HotCellEtaMPhi0TotalChargedEF");
+            histAddVal(_Jet->numberOfConstituents[it]      , "HotCellEtaMPhi0numberOfConstituents");
             histAddVal(jetrawpt                            , "HotCellEtaMPhi0RawPt");
             histAddVal( (jetrawpt * _Jet->neutralHadEnergyFraction[it]   ), "HotCellEtaMPhi0neHEFxRawPt");
             histAddVal( (jetrawpt * _Jet->neutralEmEnergyFraction[it]    ), "HotCellEtaMPhi0neEmEFxRawPt");
@@ -5803,6 +5817,9 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
             histAddVal( (jetrawpt * _Jet->chargedEmEnergyFraction[it]    ), "HotCellEtaMPhi0chEmEFxRawPt");
             histAddVal( (jetrawpt * totalHadronicEF                     ), "HotCellEtaMPhi0TotalHadEFxRawPt");
             histAddVal( (jetrawpt * totalEmEF                           ), "HotCellEtaMPhi0TotalEmEFxRawPt");
+            histAddVal( (jetrawpt * totalneutralEF                      ), "HotCellEtaMPhi0TotalNeutralEFxRawPt");
+            histAddVal( (jetrawpt * totalchargedEF                      ), "HotCellEtaMPhi0TotalChargedEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->numberOfConstituents[it]      ), "HotCellEtaMPhi0numberOfConstituentsxRawPt");
 
             histAddVal2(_Jet->p4(it).Eta(), _Jet->p4(it).Pt(), "HotCellEtaMPhi0PtVsEta");
             histAddVal2(_Jet->eta(it), jetrawpt              , "HotCellEtaMPhi0RawPtvsEta");
@@ -5816,6 +5833,10 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
             histAddVal2(jetrawpt, _Jet->chargedEmEnergyFraction[it]    , "HotCellEtaMPhi0chEmEFvsRawPt");
             histAddVal2(jetrawpt, totalHadronicEF                     , "HotCellEtaMPhi0TotalHadEFvsRawPt");
             histAddVal2(jetrawpt, totalEmEF                           , "HotCellEtaMPhi0TotalEmEFvsRawPt");
+            histAddVal2(jetrawpt, totalneutralEF                      , "HotCellEtaMPhi0TotalNeutralEFvsRawPt");
+            histAddVal2(jetrawpt, totalchargedEF                      , "HotCellEtaMPhi0TotalChargedEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->numberOfConstituents[it]      , "HotCellEtaMPhi0numberOfConstituentsvsRawPt");
+
           }
 
           // Hot cell, phi plus
@@ -5828,12 +5849,20 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
             histAddVal(totalHadronicEF                     , "HotCellEtaMPhiPTotalHadEF");
             histAddVal(totalEmEF                           , "HotCellEtaMPhiPTotalEmEF");
             histAddVal(jetrawpt                            , "HotCellEtaMPhiPRawPt");
+            histAddVal(totalneutralEF                      , "HotCellEtaMPhiPTotalNeutralEF");
+            histAddVal(totalchargedEF                      , "HotCellEtaMPhiPTotalChargedEF");
+            histAddVal(_Jet->numberOfConstituents[it]      , "HotCellEtaMPhiPnumberOfConstituents");
+
             histAddVal( (jetrawpt * _Jet->neutralHadEnergyFraction[it]   ), "HotCellEtaMPhiPneHEFxRawPt");
             histAddVal( (jetrawpt * _Jet->neutralEmEnergyFraction[it]    ), "HotCellEtaMPhiPneEmEFxRawPt");
             histAddVal( (jetrawpt * _Jet->chargedHadronEnergyFraction[it]), "HotCellEtaMPhiPchHEFxRawPt");
             histAddVal( (jetrawpt * _Jet->chargedEmEnergyFraction[it]    ), "HotCellEtaMPhiPchEmEFxRawPt");
             histAddVal( (jetrawpt * totalHadronicEF                     ), "HotCellEtaMPhiPTotalHadEFxRawPt");
             histAddVal( (jetrawpt * totalEmEF                           ), "HotCellEtaMPhiPTotalEmEFxRawPt");
+            histAddVal( (jetrawpt * totalneutralEF                      ), "HotCellEtaMPhiPTotalNeutralEFxRawPt");
+            histAddVal( (jetrawpt * totalchargedEF                      ), "HotCellEtaMPhiPTotalChargedEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->numberOfConstituents[it]      ), "HotCellEtaMPhiPnumberOfConstituentsxRawPt");
+
 
             histAddVal2(_Jet->p4(it).Eta(), _Jet->p4(it).Pt(), "HotCellEtaMPhiPPtVsEta");
             histAddVal2(_Jet->eta(it), jetrawpt              , "HotCellEtaMPhiPRawPtvsEta");
@@ -5845,8 +5874,11 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
             histAddVal2(jetrawpt, _Jet->neutralEmEnergyFraction[it]    , "HotCellEtaMPhiPneEmEFvsRawPt");
             histAddVal2(jetrawpt, _Jet->chargedHadronEnergyFraction[it], "HotCellEtaMPhiPchHEFvsRawPt");
             histAddVal2(jetrawpt, _Jet->chargedEmEnergyFraction[it]    , "HotCellEtaMPhiPchEmEFvsRawPt");
-            histAddVal2(jetrawpt, totalHadronicEF                     , "HotCellEtaMPhiPTotalHadEFvsRawPt");
-            histAddVal2(jetrawpt, totalEmEF                           , "HotCellEtaMPhiPTotalEmEFvsRawPt");
+            histAddVal2(jetrawpt, totalHadronicEF                      , "HotCellEtaMPhiPTotalHadEFvsRawPt");
+            histAddVal2(jetrawpt, totalEmEF                            , "HotCellEtaMPhiPTotalEmEFvsRawPt");
+            histAddVal2(jetrawpt, totalneutralEF                       , "HotCellEtaMPhiPTotalNeutralEFvsRawPt");
+            histAddVal2(jetrawpt, totalchargedEF                       , "HotCellEtaMPhiPTotalChargedEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->numberOfConstituents[it]       , "HotCellEtaMPhiPnumberOfConstituentsvsRawPt");
           }
 
         }
@@ -5863,6 +5895,9 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
             histAddVal(_Jet->chargedEmEnergyFraction[it]    , "ColdCellEtaPchEmEF");
             histAddVal(totalHadronicEF                     , "ColdCellEtaPTotalHadEF");
             histAddVal(totalEmEF                           , "ColdCellEtaPTotalEmEF");
+            histAddVal(totalneutralEF                      , "ColdCellEtaPTotalNeutralEF");
+            histAddVal(totalchargedEF                      , "ColdCellEtaPTotalChargedEF");
+            histAddVal(_Jet->numberOfConstituents[it]      , "ColdCellEtaPnumberOfConstituents");
             histAddVal(jetrawpt                            , "ColdCellEtaPRawPt");
             histAddVal( (jetrawpt * _Jet->neutralHadEnergyFraction[it]   ), "ColdCellEtaPneHEFxRawPt");
             histAddVal( (jetrawpt * _Jet->neutralEmEnergyFraction[it]    ), "ColdCellEtaPneEmEFxRawPt");
@@ -5870,6 +5905,9 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
             histAddVal( (jetrawpt * _Jet->chargedEmEnergyFraction[it]    ), "ColdCellEtaPchEmEFxRawPt");
             histAddVal( (jetrawpt * totalHadronicEF                     ), "ColdCellEtaPTotalHadEFxRawPt");
             histAddVal( (jetrawpt * totalEmEF                           ), "ColdCellEtaPTotalEmEFxRawPt");
+            histAddVal( (jetrawpt * totalneutralEF                      ), "ColdCellEtaPTotalNeutralEFxRawPt");
+            histAddVal( (jetrawpt * totalchargedEF                      ), "ColdCellEtaPTotalChargedEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->numberOfConstituents[it]      ), "ColdCellEtaPnumberOfConstituentsxRawPt");
 
             histAddVal2(jetrawpt, _Jet->neutralHadEnergyFraction[it]   , "ColdCellEtaPneHEFvsRawPt");
             histAddVal2(jetrawpt, _Jet->neutralEmEnergyFraction[it]    , "ColdCellEtaPneEmEFvsRawPt");
@@ -5877,11 +5915,14 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
             histAddVal2(jetrawpt, _Jet->chargedEmEnergyFraction[it]    , "ColdCellEtaPchEmEFvsRawPt");
             histAddVal2(jetrawpt, totalHadronicEF                     , "ColdCellEtaPTotalHadEFvsRawPt");
             histAddVal2(jetrawpt, totalEmEF                           , "ColdCellEtaPTotalEmEFvsRawPt");
+            histAddVal2(jetrawpt, totalneutralEF                      , "ColdCellEtaPTotalNeutralEFvsRawPt");
+            histAddVal2(jetrawpt, totalchargedEF                      , "ColdCellEtaPTotalChargedEFvsRawPt");
             histAddVal2(_Jet->p4(it).Eta(), _Jet->p4(it).Pt()         , "ColdCellEtaPPtVsEta");
             histAddVal2(_Jet->eta(it), jetrawpt                       , "ColdCellEtaPRawPtvsEta");
             histAddVal2(_Jet->eta(it), _Jet->phi(it)                  , "ColdCellEtaPPhivsEta");
             histAddVal2(_Jet->phi(it), jetrawpt                       , "ColdCellEtaPRawPtvsPhi");
             histAddVal2(jetrawpt, _Jet->pt(it)                        , "ColdCellEtaPPtvsRawPt");
+            histAddVal2(jetrawpt, _Jet->numberOfConstituents[it]      , "ColdCellEtaPnumberOfConstituentsvsRawPt");
 
           }
 
@@ -5894,6 +5935,10 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
             histAddVal(_Jet->chargedEmEnergyFraction[it]    , "HotCellEtaPPhiMchEmEF");
             histAddVal(totalHadronicEF                     , "HotCellEtaPPhiMTotalHadEF");
             histAddVal(totalEmEF                           , "HotCellEtaPPhiMTotalEmEF");
+            histAddVal(totalneutralEF                      , "HotCellEtaPPhiMTotalNeutralEF");
+            histAddVal(totalchargedEF                      , "HotCellEtaPPhiMTotalChargedEF");
+            histAddVal(_Jet->numberOfConstituents[it]      , "HotCellEtaPPhiMnumberOfConstituents");
+
             histAddVal(jetrawpt                            , "HotCellEtaPPhiMRawPt");
             histAddVal( (jetrawpt * _Jet->neutralHadEnergyFraction[it]   ), "HotCellEtaPPhiMneHEFxRawPt");
             histAddVal( (jetrawpt * _Jet->neutralEmEnergyFraction[it]    ), "HotCellEtaPPhiMneEmEFxRawPt");
@@ -5901,6 +5946,10 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
             histAddVal( (jetrawpt * _Jet->chargedEmEnergyFraction[it]    ), "HotCellEtaPPhiMchEmEFxRawPt");
             histAddVal( (jetrawpt * totalHadronicEF                     ), "HotCellEtaPPhiMTotalHadEFxRawPt");
             histAddVal( (jetrawpt * totalEmEF                           ), "HotCellEtaPPhiMTotalEmEFxRawPt");
+            histAddVal( (jetrawpt * totalneutralEF                      ), "HotCellEtaPPhiMTotalNeutralEFxRawPt");
+            histAddVal( (jetrawpt * totalchargedEF                      ), "HotCellEtaPPhiMTotalChargedEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->numberOfConstituents[it]      ), "HotCellEtaPPhiMnumberOfConstituentsxRawPt");
+
 
             histAddVal2(_Jet->p4(it).Eta(), _Jet->p4(it).Pt(), "HotCellEtaPPhiMPtVsEta");
             histAddVal2(_Jet->eta(it), jetrawpt              , "HotCellEtaPPhiMRawPtvsEta");
@@ -5914,6 +5963,10 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
             histAddVal2(jetrawpt, _Jet->chargedEmEnergyFraction[it]    , "HotCellEtaPPhiMchEmEFvsRawPt");
             histAddVal2(jetrawpt, totalHadronicEF                     , "HotCellEtaPPhiMTotalHadEFvsRawPt");
             histAddVal2(jetrawpt, totalEmEF                           , "HotCellEtaPPhiMTotalEmEFvsRawPt");
+            histAddVal2(jetrawpt, totalneutralEF                      , "HotCellEtaPPhiMTotalNeutralEFvsRawPt");
+            histAddVal2(jetrawpt, totalchargedEF                      , "HotCellEtaPPhiMTotalChargedEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->numberOfConstituents[it]      , "HotCellEtaPPhiMnumberOfConstituentsvsRawPt");
+
           }
 
 
@@ -5926,6 +5979,9 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
             histAddVal(_Jet->chargedEmEnergyFraction[it]    , "HotCellEtaPPhi0chEmEF");
             histAddVal(totalHadronicEF                     , "HotCellEtaPPhi0TotalHadEF");
             histAddVal(totalEmEF                           , "HotCellEtaPPhi0TotalEmEF");
+            histAddVal(totalneutralEF                      , "HotCellEtaPPhi0TotalNeutralEF");
+            histAddVal(totalchargedEF                      , "HotCellEtaPPhi0TotalChargedEF");
+            histAddVal(_Jet->numberOfConstituents[it]      , "HotCellEtaPPhi0numberOfConstituents");
             histAddVal(jetrawpt                            , "HotCellEtaPPhi0RawPt");
             histAddVal( (jetrawpt * _Jet->neutralHadEnergyFraction[it]   ), "HotCellEtaPPhi0neHEFxRawPt");
             histAddVal( (jetrawpt * _Jet->neutralEmEnergyFraction[it]    ), "HotCellEtaPPhi0neEmEFxRawPt");
@@ -5933,6 +5989,9 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
             histAddVal( (jetrawpt * _Jet->chargedEmEnergyFraction[it]    ), "HotCellEtaPPhi0chEmEFxRawPt");
             histAddVal( (jetrawpt * totalHadronicEF                     ), "HotCellEtaPPhi0TotalHadEFxRawPt");
             histAddVal( (jetrawpt * totalEmEF                           ), "HotCellEtaPPhi0TotalEmEFxRawPt");
+            histAddVal( (jetrawpt * totalneutralEF                      ), "HotCellEtaPPhi0TotalNeutralEFxRawPt");
+            histAddVal( (jetrawpt * totalchargedEF                      ), "HotCellEtaPPhi0TotalChargedEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->numberOfConstituents[it]      ), "HotCellEtaPPhi0numberOfConstituentsxRawPt");
 
             histAddVal2(_Jet->p4(it).Eta(), _Jet->p4(it).Pt(), "HotCellEtaPPhi0PtVsEta");
             histAddVal2(_Jet->eta(it), jetrawpt              , "HotCellEtaPPhi0RawPtvsEta");
@@ -5946,6 +6005,9 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
             histAddVal2(jetrawpt, _Jet->chargedEmEnergyFraction[it]    , "HotCellEtaPPhi0chEmEFvsRawPt");
             histAddVal2(jetrawpt, totalHadronicEF                     , "HotCellEtaPPhi0TotalHadEFvsRawPt");
             histAddVal2(jetrawpt, totalEmEF                           , "HotCellEtaPPhi0TotalEmEFvsRawPt");
+            histAddVal2(jetrawpt, totalneutralEF                      , "HotCellEtaPPhi0TotalNeutralEFvsRawPt");
+            histAddVal2(jetrawpt, totalchargedEF                      , "HotCellEtaPPhi0TotalChargedEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->numberOfConstituents[it]      , "HotCellEtaPPhi0numberOfConstituentsvsRawPt");
           }
 
           // Hot cell, phi plus
@@ -5957,6 +6019,9 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
             histAddVal(_Jet->chargedEmEnergyFraction[it]    , "HotCellEtaPPhiPchEmEF");
             histAddVal(totalHadronicEF                     , "HotCellEtaPPhiPTotalHadEF");
             histAddVal(totalEmEF                           , "HotCellEtaPPhiPTotalEmEF");
+            histAddVal(totalneutralEF                      , "HotCellEtaPPhiPTotalNeutralEF");
+            histAddVal(totalchargedEF                      , "HotCellEtaPPhiPTotalChargedEF");
+            histAddVal(_Jet->numberOfConstituents[it]      , "HotCellEtaPPhiPnumberOfConstituents");
             histAddVal(jetrawpt                            , "HotCellEtaPPhiPRawPt");
             histAddVal( (jetrawpt * _Jet->neutralHadEnergyFraction[it]   ), "HotCellEtaPPhiPneHEFxRawPt");
             histAddVal( (jetrawpt * _Jet->neutralEmEnergyFraction[it]    ), "HotCellEtaPPhiPneEmEFxRawPt");
@@ -5964,6 +6029,10 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
             histAddVal( (jetrawpt * _Jet->chargedEmEnergyFraction[it]    ), "HotCellEtaPPhiPchEmEFxRawPt");
             histAddVal( (jetrawpt * totalHadronicEF                     ), "HotCellEtaPPhiPTotalHadEFxRawPt");
             histAddVal( (jetrawpt * totalEmEF                           ), "HotCellEtaPPhiPTotalEmEFxRawPt");
+            histAddVal( (jetrawpt * totalneutralEF                      ), "HotCellEtaPPhiPTotalNeutralEFxRawPt");
+            histAddVal( (jetrawpt * totalchargedEF                      ), "HotCellEtaPPhiPTotalChargedEFxRawPt");
+            histAddVal( (jetrawpt * _Jet->numberOfConstituents[it]      ), "HotCellEtaPPhiPnumberOfConstituentsxRawPt");
+
             histAddVal2(_Jet->p4(it).Eta(), _Jet->p4(it).Pt(), "HotCellEtaPPhiPPtVsEta");
             histAddVal2(_Jet->eta(it), jetrawpt              , "HotCellEtaPPhiPRawPtvsEta");
             histAddVal2(_Jet->eta(it), _Jet->phi(it)         , "HotCellEtaPPhiPPhivsEta");
@@ -5975,15 +6044,19 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
             histAddVal2(jetrawpt, _Jet->chargedEmEnergyFraction[it]    , "HotCellEtaPPhiPchEmEFvsRawPt");
             histAddVal2(jetrawpt, totalHadronicEF                     , "HotCellEtaPPhiPTotalHadEFvsRawPt");
             histAddVal2(jetrawpt, totalEmEF                           , "HotCellEtaPPhiPTotalEmEFvsRawPt");
+            histAddVal2(jetrawpt, totalneutralEF                      , "HotCellEtaPPhiPTotalNeutralEFvsRawPt");
+            histAddVal2(jetrawpt, totalchargedEF                      , "HotCellEtaPPhiPTotalChargedEFvsRawPt");
+            histAddVal2(jetrawpt, _Jet->numberOfConstituents[it]      , "HotCellEtaPPhiPnumberOfConstituentsvsRawPt");
           }
 
         }
 
+        histAddVal(jetsetaplus.size(), "NPosEEnoiseEta");
+        histAddVal(jetsetaminus.size(), "NNegEEnoiseEta");
+        histAddVal2(jetsetaminus.size(), jetsetaplus.size(), "NEEnoiseEtaPosvsNeg");
+
         if(jetsetaplus.size() > 0 && jetsetaminus.size() > 0){
           histAddVal(1, "NOSEEnoiseEta");
-          histAddVal(jetsetaplus.size(), "NPosEEnoiseEta");
-          histAddVal(jetsetaminus.size(), "NNegEEnoiseEta");
-          histAddVal2(jetsetaminus.size(), jetsetaplus.size(), "NEEnoiseEtaPosvsNeg");
 
           for(size_t ip = 0; ip < jetsetaplus.size(); ip++){
             int index_posj = jetsetaplus.at(ip);
@@ -6015,9 +6088,6 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
         }
         else{
           histAddVal(0, "NOSEEnoiseEta");
-          histAddVal(0, "NPosEEnoiseEta");
-          histAddVal(0, "NNegEEnoiseEta");
-          histAddVal2(0, 0, "NEEnoiseEtaPosvsNeg");
         }
 
 

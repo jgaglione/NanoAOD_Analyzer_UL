@@ -5680,8 +5680,10 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
     int index_minjmetdphi = -1, index_maxjmetdphi = -1;
     int index_maxjetptprojonmet_plus = -1, index_maxjetptprojonmet_minus = -1;
 
-    std::vector<int> jetsetaminus;
-    std::vector<int> jetsetaplus;
+    std::vector<int> jetsetaminuseta2p6to3p2;
+    std::vector<int> jetsetapluseta2p6to3p2;
+    std::vector<int> jetsetaminuseta0to4p7;
+    std::vector<int> jetsetapluseta0to4p7;
 
     for(auto it : *active_part->at(ePos)) {
       histAddVal(part->p4(it).Energy(), "Energy");
@@ -5757,9 +5759,15 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
         float totalneutralEF = _Jet->neutralEmEnergyFraction[it] + _Jet->neutralHadEnergyFraction[it];
         float totalchargedEF = _Jet->chargedEmEnergyFraction[it] + _Jet->chargedHadronEnergyFraction[it];
 
+        if(_Jet->eta(it) > 0.0){
+          jetsetapluseta0to4p7.push_back(it);
+        } else if (_Jet->eta(it) < 0.0){
+          jetsetaminuseta0to4p7.push_back(it);
+        }
+
         if((_Jet->eta(it) > -3.15) && (_Jet->eta(it) < -2.66)){
 
-          jetsetaminus.push_back(it);
+          jetsetaminuseta2p6to3p2.push_back(it);
           // Reference cold cell
           if( (_Jet->phi(it) > -2.8) && (_Jet->phi(it) < -2.17) ){
 
@@ -5885,7 +5893,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
 
         if((_Jet->eta(it) > 2.66) && (_Jet->eta(it) < 3.15)){
 
-          jetsetaplus.push_back(it);
+          jetsetapluseta2p6to3p2.push_back(it);
           // Reference cold cell
           if( (_Jet->phi(it) > -2.8) && (_Jet->phi(it) < -2.17) ){
 
@@ -6284,18 +6292,29 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
 
       }
 
-      histAddVal(jetsetaplus.size(), "NPosEEnoiseEta");
-      histAddVal(jetsetaminus.size(), "NNegEEnoiseEta");
-      histAddVal2(jetsetaminus.size(), jetsetaplus.size(), "NEEnoiseEtaPosvsNeg");
+      histAddVal(jetsetapluseta2p6to3p2.size(), "NPosEEnoiseEta");
+      histAddVal(jetsetaminuseta2p6to3p2.size(), "NNegEEnoiseEta");
+      
+      histAddVal2(jetsetaminuseta0to4p7.size(), jetsetapluseta2p6to3p2.size(), "NEEnoiseEtaPosvsTotalNeg");
+      histAddVal2(jetsetaminuseta2p6to3p2.size(), jetsetapluseta0to4p7.size(), "NEEnoiseEtaTotalPosvsNeg");
+      histAddVal2(jetsetaminuseta2p6to3p2.size(), jetsetapluseta2p6to3p2.size(), "NEEnoiseEtaPosvsNeg");
+      histAddVal2(jetsetaminuseta0to4p7.size(), jetsetapluseta0to4p7.size(), "NEtaTotalPosvsTotalNeg");
 
-      if(jetsetaplus.size() > 0 && jetsetaminus.size() > 0){
+      if(jetsetaminuseta2p6to3p2.size() > 0){
+        histAddVal(jetsetapluseta0to4p7.size(), "NNegEEnoiseEtaPlusEta");
+      }
+      if(jetsetapluseta2p6to3p2.size() > 0){
+        histAddVal(jetsetaminuseta0to4p7.size(), "NPlusEEnoiseEtaNegEta");
+      }
+
+      if(jetsetapluseta2p6to3p2.size() > 0 && jetsetaminuseta2p6to3p2.size() > 0){
         histAddVal(1, "NOSEEnoiseEta");
 
-        for(size_t ip = 0; ip < jetsetaplus.size(); ip++){
-          int index_posj = jetsetaplus.at(ip);
+        for(size_t ip = 0; ip < jetsetapluseta2p6to3p2.size(); ip++){
+          int index_posj = jetsetapluseta2p6to3p2.at(ip);
           
-          for(size_t im = 0; im < jetsetaminus.size(); im++){
-            int index_negj = jetsetaminus.at(im);
+          for(size_t im = 0; im < jetsetaminuseta2p6to3p2.size(); im++){
+            int index_negj = jetsetaminuseta2p6to3p2.at(im);
 
             TLorentzVector deltaPEENoiseJets = (_Jet->p4(index_posj) - _Jet->p4(index_negj));
 

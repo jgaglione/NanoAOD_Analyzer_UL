@@ -5680,6 +5680,8 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
     int index_minjmetdphi = -1, index_maxjmetdphi = -1;
     int index_maxjetptprojonmet_plus = -1, index_maxjetptprojonmet_minus = -1;
 
+    std::vector<int> jetsetaminus;
+    std::vector<int> jetsetaplus;
 
     for(auto it : *active_part->at(ePos)) {
       histAddVal(part->p4(it).Energy(), "Energy");
@@ -5749,18 +5751,17 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
         histAddVal2(jetrawpt, _Jet->pt(it), "PtvsRawPt");
 
         /* -----  Histograms to compare neutral/charged EM and hadronic energy fractions */
-        std::vector<int> jetsetaminus;
-        std::vector<int> jetsetaplus;
+
         float totalHadronicEF = _Jet->neutralHadEnergyFraction[it] + _Jet->chargedHadronEnergyFraction[it];
         float totalEmEF = _Jet->neutralEmEnergyFraction[it] + _Jet->chargedEmEnergyFraction[it];
         float totalneutralEF = _Jet->neutralEmEnergyFraction[it] + _Jet->neutralHadEnergyFraction[it];
         float totalchargedEF = _Jet->chargedEmEnergyFraction[it] + _Jet->chargedHadronEnergyFraction[it];
 
-        if((_Jet->eta(it) > -3.2) && (_Jet->eta(it) < -2.6)){
+        if((_Jet->eta(it) > -3.15) && (_Jet->eta(it) < -2.66)){
 
           jetsetaminus.push_back(it);
           // Reference cold cell
-          if( (_Jet->phi(it) > -2.8) && (_Jet->phi(it) < -2.2) ){
+          if( (_Jet->phi(it) > -2.8) && (_Jet->phi(it) < -2.17) ){
 
             histAddVal(_Jet->neutralHadEnergyFraction[it]   , "ColdCellEtaMneHEF");
             histAddVal(_Jet->neutralEmEnergyFraction[it]    , "ColdCellEtaMneEmEF");
@@ -5781,7 +5782,6 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
             histAddVal( (jetrawpt * totalneutralEF                       ), "ColdCellEtaMTotalNeutralEFxRawPt");
             histAddVal( (jetrawpt * totalchargedEF                       ), "ColdCellEtaMTotalChargedEFxRawPt");
             histAddVal( (jetrawpt * _Jet->numberOfConstituents[it]       ), "ColdCellEtaMnumberOfConstituentsxRawPt");
-
             histAddVal2(jetrawpt, _Jet->neutralHadEnergyFraction[it]   , "ColdCellEtaMneHEFvsRawPt");
             histAddVal2(jetrawpt, _Jet->neutralEmEnergyFraction[it]    , "ColdCellEtaMneEmEFvsRawPt");
             histAddVal2(jetrawpt, _Jet->chargedHadronEnergyFraction[it], "ColdCellEtaMchHEFvsRawPt");
@@ -5799,7 +5799,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
 
           }
           // Hot cell, central phi
-          if( (_Jet->phi(it) > -0.4) && (_Jet->phi(it) < 0.2) ){
+          if( (_Jet->phi(it) > -0.42) && (_Jet->phi(it) < 0.21) ){
 
             histAddVal(_Jet->neutralHadEnergyFraction[it]   , "HotCellEtaMPhi0neHEF");
             histAddVal(_Jet->neutralEmEnergyFraction[it]    , "HotCellEtaMPhi0neEmEF");
@@ -5840,7 +5840,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
           }
 
           // Hot cell, phi plus
-          if( (_Jet->phi(it) > 1.2) && (_Jet->phi(it) < 2.0) ){
+          if( (_Jet->phi(it) > 1.19) && (_Jet->phi(it) < 2.03) ){
 
             histAddVal(_Jet->neutralHadEnergyFraction[it]   , "HotCellEtaMPhiPneHEF");
             histAddVal(_Jet->neutralEmEnergyFraction[it]    , "HotCellEtaMPhiPneEmEF");
@@ -5883,11 +5883,11 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
 
         }
 
-        if((_Jet->eta(it) > 2.6) && (_Jet->eta(it) < 3.2)){
+        if((_Jet->eta(it) > 2.66) && (_Jet->eta(it) < 3.15)){
 
           jetsetaplus.push_back(it);
           // Reference cold cell
-          if( (_Jet->phi(it) > -2.8) && (_Jet->phi(it) < -2.2) ){
+          if( (_Jet->phi(it) > -2.8) && (_Jet->phi(it) < -2.17) ){
 
             histAddVal(_Jet->neutralHadEnergyFraction[it]   , "ColdCellEtaPneHEF");
             histAddVal(_Jet->neutralEmEnergyFraction[it]    , "ColdCellEtaPneEmEF");
@@ -5927,7 +5927,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
           }
 
           // Hot cell, phi minus
-          if( (_Jet->phi(it) > -2.0) && (_Jet->phi(it) < -1.2) ){
+          if( (_Jet->phi(it) > -2.03) && (_Jet->phi(it) < -1.19) ){
 
             histAddVal(_Jet->neutralHadEnergyFraction[it]   , "HotCellEtaPPhiMneHEF");
             histAddVal(_Jet->neutralEmEnergyFraction[it]    , "HotCellEtaPPhiMneEmEF");
@@ -5971,7 +5971,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
 
 
           // Hot cell, central phi
-          if( (_Jet->phi(it) > -0.4) && (_Jet->phi(it) < 0.4) ){
+          if( (_Jet->phi(it) > -0.42) && (_Jet->phi(it) < 0.42) ){
 
             histAddVal(_Jet->neutralHadEnergyFraction[it]   , "HotCellEtaPPhi0neHEF");
             histAddVal(_Jet->neutralEmEnergyFraction[it]    , "HotCellEtaPPhi0neEmEF");
@@ -6011,7 +6011,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
           }
 
           // Hot cell, phi plus
-          if( (_Jet->phi(it) > 1.0) && (_Jet->phi(it) < 1.6) ){
+          if( (_Jet->phi(it) > 1.05) && (_Jet->phi(it) < 1.61) ){
 
             histAddVal(_Jet->neutralHadEnergyFraction[it]   , "HotCellEtaPPhiPneHEF");
             histAddVal(_Jet->neutralEmEnergyFraction[it]    , "HotCellEtaPPhiPneEmEF");
@@ -6050,47 +6050,6 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
           }
 
         }
-
-        histAddVal(jetsetaplus.size(), "NPosEEnoiseEta");
-        histAddVal(jetsetaminus.size(), "NNegEEnoiseEta");
-        histAddVal2(jetsetaminus.size(), jetsetaplus.size(), "NEEnoiseEtaPosvsNeg");
-
-        if(jetsetaplus.size() > 0 && jetsetaminus.size() > 0){
-          histAddVal(1, "NOSEEnoiseEta");
-
-          for(size_t ip = 0; ip < jetsetaplus.size(); ip++){
-            int index_posj = jetsetaplus.at(ip);
-            for(size_t im = 0; im < jetsetaminus.size(); im++){
-              int index_negj = jetsetaminus.at(im);
-
-              TLorentzVector deltaPEENoiseJets = (_Jet->p4(index_posj) - _Jet->p4( jetsetaminus.at(index_negj)) );
-
-              float totalEmEF = _Jet->neutralEmEnergyFraction[index_posj] + _Jet->chargedEmEnergyFraction[index_posj] + _Jet->neutralEmEnergyFraction[index_negj] + _Jet->chargedEmEnergyFraction[index_negj];
-              float totalHadEF = _Jet->neutralHadEnergyFraction[index_posj] + _Jet->chargedHadronEnergyFraction[index_posj] + _Jet->neutralHadEnergyFraction[index_negj] + _Jet->chargedHadronEnergyFraction[index_negj];
-
-              float totalneutralEmEF = (_Jet->neutralEmEnergyFraction[index_posj] + _Jet->neutralEmEnergyFraction[index_negj]) / totalEmEF;
-              float totalchargedEmEF = (_Jet->chargedEmEnergyFraction[index_posj] + _Jet->chargedEmEnergyFraction[index_negj]) / totalEmEF;
-              float totalneutralHadEF = (_Jet->neutralHadEnergyFraction[index_posj] + _Jet->neutralHadEnergyFraction[index_negj]) / totalHadEF;
-              float totalchargedHadEF = (_Jet->chargedHadronEnergyFraction[index_posj] + _Jet->chargedHadronEnergyFraction[index_negj]) / totalHadEF;
-
-              histAddVal(deltaPEENoiseJets.Pt()                    , "EEnoiseCombDeltaPt");
-              histAddVal((deltaPEENoiseJets.Pt() / _MET->HT())     , "EEnoiseCombDeltaPtHTRatio");
-              histAddVal2(_MET->HT(), deltaPEENoiseJets.Pt()       , "EEnoiseCombDeltaPtvsHT");
-              histAddVal2(deltaPEENoiseJets.Pt(), totalEmEF        , "EEnoiseCombTotalEmEFvsDeltaPt");
-              histAddVal2(deltaPEENoiseJets.Pt(), totalHadEF       , "EEnoiseCombTotalHadEFvsDeltaPt");
-              histAddVal2(deltaPEENoiseJets.Pt(), totalneutralEmEF , "EEnoiseCombTotalNeutralEmEFvsDeltaPt");
-              histAddVal2(deltaPEENoiseJets.Pt(), totalchargedEmEF , "EEnoiseCombTotalChargedEmEFvsDeltaPt");
-              histAddVal2(deltaPEENoiseJets.Pt(), totalneutralHadEF, "EEnoiseCombTotalNeutralHadEFvsDeltaPt");
-              histAddVal2(deltaPEENoiseJets.Pt(), totalchargedHadEF, "EEnoiseCombTotalChargedHadEFvsDeltaPt");
-
-            } 
-          }
-        }
-        else{
-          histAddVal(0, "NOSEEnoiseEta");
-        }
-
-
 
         /* ----------------------------------------------------------------------------  */
 
@@ -6325,6 +6284,47 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
 
       }
 
+      histAddVal(jetsetaplus.size(), "NPosEEnoiseEta");
+      histAddVal(jetsetaminus.size(), "NNegEEnoiseEta");
+      histAddVal2(jetsetaminus.size(), jetsetaplus.size(), "NEEnoiseEtaPosvsNeg");
+
+      if(jetsetaplus.size() > 0 && jetsetaminus.size() > 0){
+        histAddVal(1, "NOSEEnoiseEta");
+
+        for(size_t ip = 0; ip < jetsetaplus.size(); ip++){
+          int index_posj = jetsetaplus.at(ip);
+          
+          for(size_t im = 0; im < jetsetaminus.size(); im++){
+            int index_negj = jetsetaminus.at(im);
+
+            TLorentzVector deltaPEENoiseJets = (_Jet->p4(index_posj) - _Jet->p4(index_negj));
+
+            float totalEmEF  = _Jet->neutralEmEnergyFraction[index_posj] + _Jet->chargedEmEnergyFraction[index_posj] + _Jet->neutralEmEnergyFraction[index_negj] + _Jet->chargedEmEnergyFraction[index_negj];
+            float totalHadEF = _Jet->neutralHadEnergyFraction[index_posj] + _Jet->chargedHadronEnergyFraction[index_posj] + _Jet->neutralHadEnergyFraction[index_negj] + _Jet->chargedHadronEnergyFraction[index_negj];
+
+            float totalneutralEmEF  = (_Jet->neutralEmEnergyFraction[index_posj] + _Jet->neutralEmEnergyFraction[index_negj]) / totalEmEF;
+            float totalchargedEmEF  = (_Jet->chargedEmEnergyFraction[index_posj] + _Jet->chargedEmEnergyFraction[index_negj]) / totalEmEF;
+            float totalneutralHadEF = (_Jet->neutralHadEnergyFraction[index_posj] + _Jet->neutralHadEnergyFraction[index_negj]) / totalHadEF;
+            float totalchargedHadEF = (_Jet->chargedHadronEnergyFraction[index_posj] + _Jet->chargedHadronEnergyFraction[index_negj]) / totalHadEF;
+
+            histAddVal(deltaPEENoiseJets.Pt()                    , "EEnoiseCombDeltaPt");
+            histAddVal((deltaPEENoiseJets.Pt() / _MET->HT())     , "EEnoiseCombDeltaPtHTRatio");
+            histAddVal2(_MET->HT(), deltaPEENoiseJets.Pt()       , "EEnoiseCombDeltaPtvsHT");
+            histAddVal((deltaPEENoiseJets.Pt() / _MET->pt())     , "EEnoiseCombDeltaPtMetRatio");
+            histAddVal2(_MET->pt(), deltaPEENoiseJets.Pt()       , "EEnoiseCombDeltaPtvsMet");
+            histAddVal2(deltaPEENoiseJets.Pt(), totalEmEF        , "EEnoiseCombTotalEmEFvsDeltaPt");
+            histAddVal2(deltaPEENoiseJets.Pt(), totalHadEF       , "EEnoiseCombTotalHadEFvsDeltaPt");
+            histAddVal2(deltaPEENoiseJets.Pt(), totalneutralEmEF , "EEnoiseCombTotalNeutralEmEFvsDeltaPt");
+            histAddVal2(deltaPEENoiseJets.Pt(), totalchargedEmEF , "EEnoiseCombTotalChargedEmEFvsDeltaPt");
+            histAddVal2(deltaPEENoiseJets.Pt(), totalneutralHadEF, "EEnoiseCombTotalNeutralHadEFvsDeltaPt");
+            histAddVal2(deltaPEENoiseJets.Pt(), totalchargedHadEF, "EEnoiseCombTotalChargedHadEFvsDeltaPt");
+
+          } 
+        }
+      } else{
+        histAddVal(0, "NOSEEnoiseEta");
+      }
+      
     }
 
     if((part->type != PType::Jet ) && active_part->at(ePos)->size() > 0) {

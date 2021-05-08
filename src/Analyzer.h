@@ -122,6 +122,7 @@ public:
 
   bool passHEMveto2018();
   bool passJetVetoEEnoise2017(int);
+  void passAdditionalEENoiseVeto(CUTS ePos, const PartStats& stats, std::string year);
   void getAdditionalBadEENoiseRecoJets(const PartStats& stats);
 
   bool skimSignalMC(int);

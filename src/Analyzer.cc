@@ -73,7 +73,8 @@ const std::unordered_map<std::string, CUTS> Analyzer::cut_num = {
   {"NElectron1Jet1Combinations", CUTS::eElec1Jet1},     {"NElectron1Jet2Combinations", CUTS::eElec1Jet2},
   {"NElectron2Jet1Combinations", CUTS::eElec2Jet1},     {"NElectron2Jet2Combinations", CUTS::eElec2Jet2},
   {"NLeadJetCombinations", CUTS::eSusyCom},             {"METCut", CUTS::eMET},
-  {"NRecoWJet", CUTS::eRWjet},                          {"NRecoVertex", CUTS::eRVertex}
+  {"NRecoWJet", CUTS::eRWjet},                          {"NRecoVertex", CUTS::eRVertex},
+  {"EENoiseVeto", CUTS::eREENoiseVeto}
 };
 
 const std::map<PType, float> leptonmasses = {
@@ -846,6 +847,10 @@ void Analyzer::preprocess(int event, std::string year){ // This function no long
   // ---------------- Trigger requirement ------------------ //
   TriggerCuts(CUTS::eRTrig1);
   TriggerCuts(CUTS::eRTrig2);
+
+  // ---------------- Additional EE noise veto -------------- //
+  passAdditionalEENoiseVeto(CUTS::eREENoiseVeto, _Jet->pstats["Jet1"], year);
+  
 
   for(size_t i=0; i < syst_names.size(); i++) {
   	std::string systname = syst_names.at(i);
@@ -3568,6 +3573,114 @@ bool Analyzer::passJetVetoEEnoise2017(int jet_index){
 
    }
  }
+
+ void Analyzer::passAdditionalEENoiseVeto(CUTS ePos, const PartStats& stats, std::string year) {
+
+  if(! neededCuts.isPresent(ePos)) return;
+
+  if(year.compare("2017") != 0 || distats["Run"].bfind("ApplyAdditionalEEnoiseVeto2017") == 0){
+    active_part->at(ePos)->push_back(0);
+    return;
+  }
+
+   int i=0;
+
+   std::vector<int> jetsminuseta3p2to2p6;
+   std::vector<int> jetspluseta2p6to3p2;
+   std::vector<int> jetsminuseta4p7to0;
+   std::vector<int> jetspluseta0to4p7;
+
+   for(auto lvec: *_Jet) {
+
+     bool passCuts = true;
+
+     passCuts = passCuts && (lvec.Pt() > stats.dmap.at("PtCut"));
+
+     for( auto cut: stats.bset) {
+       if(!passCuts) break;
+       else if(cut == "Apply2017EEnoiseVeto") passCuts = passCuts && passJetVetoEEnoise2017(i);
+       else if(cut == "ApplyLooseID"){
+         if(stats.bfind("ApplyPileupJetID") && lvec.Pt() <= 50.0){
+           if(!stats.bfind("FailPUJetID")){
+             passCuts = passCuts && _Jet->getPileupJetID(i, stats.dmap.at("PUJetIDCut"));
+           } else {
+             passCuts = passCuts && (_Jet->getPileupJetID(i,0) == 0);
+           }
+         } else {
+           passCuts = passCuts && _Jet->passedLooseJetID(i);
+         }
+       }
+       else if(cut == "ApplyTightID"){
+         if(stats.bfind("ApplyPileupJetID") && lvec.Pt() <= 50.0){
+           if(!stats.bfind("FailPUJetID")){
+             passCuts = passCuts && _Jet->getPileupJetID(i, stats.dmap.at("PUJetIDCut")); // Only apply this cut to low pt jets
+           } else {
+             passCuts = passCuts && (_Jet->getPileupJetID(i,0) == 0);
+           }
+         } else {
+           passCuts = passCuts && _Jet->passedTightJetID(i);
+         }
+       }
+       else if(cut == "ApplyTightLepVetoID"){
+         if(stats.bfind("ApplyPileupJetID") && lvec.Pt() <= 50.0){
+           if(!stats.bfind("FailPUJetID")){
+             passCuts = passCuts && _Jet->getPileupJetID(i, stats.dmap.at("PUJetIDCut")); // Only apply this cut to low pt jets
+           } else {
+             passCuts = passCuts && (_Jet->getPileupJetID(i,0) == 0);
+           }
+         } else {
+           passCuts = passCuts && _Jet->passedTightLepVetoJetID(i);
+         }
+       }
+       else if(cut == "RemoveOverlapWithJs") passCuts = passCuts && !isOverlapingC(lvec, *_FatJet, CUTS::eRWjet, stats.dmap.at("JMatchingDeltaR"));
+       else if(cut == "RemoveOverlapWithBs") passCuts = passCuts && !isOverlapingB(lvec, *_Jet, CUTS::eRBJet, stats.dmap.at("BJMatchingDeltaR"));
+       // ----anti-overlap requirements
+       else if(cut == "RemoveOverlapWithMuon1s") passCuts = passCuts && !isOverlaping(lvec, *_Muon, CUTS::eRMuon1, stats.dmap.at("Muon1MatchingDeltaR"));
+       else if (cut =="RemoveOverlapWithMuon2s") passCuts = passCuts && !isOverlaping(lvec, *_Muon, CUTS::eRMuon2, stats.dmap.at("Muon2MatchingDeltaR"));
+       else if(cut == "RemoveOverlapWithElectron1s") passCuts = passCuts && !isOverlaping(lvec, *_Electron, CUTS::eRElec1, stats.dmap.at("Electron1MatchingDeltaR"));
+       else if(cut == "RemoveOverlapWithElectron2s") passCuts = passCuts && !isOverlaping(lvec, *_Electron, CUTS::eRElec2, stats.dmap.at("Electron2MatchingDeltaR"));
+       else if(cut == "RemoveOverlapWithTau1s") passCuts = passCuts && !isOverlaping(lvec, *_Tau, CUTS::eRTau1, stats.dmap.at("Tau1MatchingDeltaR"));
+       else if (cut =="RemoveOverlapWithTau2s") passCuts = passCuts && !isOverlaping(lvec, *_Tau, CUTS::eRTau2, stats.dmap.at("Tau2MatchingDeltaR"));
+     }
+
+     if(passCuts){
+      // Check if it is in the positive or negative eta region
+      if(lvec.Eta() < 0){ jetsminuseta4p7to0.push_back(i);  }
+      else if(lvec.Eta() > 0){ jetspluseta0to4p7.push_back(i); }
+
+      if( (lvec.Eta() > -3.15) && (lvec.Eta() < -2.66)){ jetsminuseta3p2to2p6.push_back(i); }
+      if( (lvec.Eta() > 2.66) && (lvec.Eta() > 3.15 )){ jetspluseta2p6to3p2.push_back(i); }
+     }
+
+     i++;
+
+   }
+
+   bool passVeto = true;
+   // Check the different cases possible for this veto
+   if( (jetsminuseta3p2to2p6.size() > 0) && (jetspluseta2p6to3p2.size() == 0)){
+      if(jetspluseta0to4p7.size() == 0){
+        passVeto = false;
+      }
+   } else if( (jetsminuseta3p2to2p6.size() == 0) && (jetspluseta2p6to3p2.size() > 0)){
+      if(jetsminuseta4p7to0.size() == 0){
+        passVeto = false;
+      }
+   } else if( (jetsminuseta3p2to2p6.size() == 1) && (jetspluseta2p6to3p2.size() == 1)){
+    // Apply a deltaPt cut
+    TLorentzVector deltaP = _Jet->p4(jetspluseta2p6to3p2.at(0)) - _Jet->p4(jetsminuseta3p2to2p6.at(0));
+
+    float ratio_deltaPtHT = deltaP.Pt() / _MET->HT();
+
+    if(ratio_deltaPtHT < 0.4) passVeto = false;
+   }
+
+   if(passVeto){
+      active_part->at(ePos)->push_back(0);
+      return;
+   }
+
+}
 
 
 ////Jet specific function for finding the number of jets that pass the cuts.

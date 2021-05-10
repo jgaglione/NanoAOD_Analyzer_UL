@@ -5798,6 +5798,15 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
     std::vector<int> jetsetaminuseta0to4p7;
     std::vector<int> jetsetapluseta0to4p7;
 
+    std::vector<int> noisyjetscoldcellminuseta;
+    std::vector<int> noisyjetshotcell0minuseta;
+    std::vector<int> noisyjetshotcellPminuseta;
+
+    std::vector<int> noisyjetscoldcellpluseta;
+    std::vector<int> noisyjetshotcellMpluseta;
+    std::vector<int> noisyjetshotcell0pluseta;
+    std::vector<int> noisyjetshotcellPpluseta;
+
     for(auto it : *active_part->at(ePos)) {
       histAddVal(part->p4(it).Energy(), "Energy");
       histAddVal(part->p4(it).Pt(), "Pt");
@@ -5884,6 +5893,8 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
           // Reference cold cell
           if( (_Jet->phi(it) > -2.8) && (_Jet->phi(it) < -2.17) ){
 
+            noisyjetscoldcellminuseta.push_back(it);
+
             histAddVal(_Jet->neutralHadEnergyFraction[it]   , "ColdCellEtaMneHEF");
             histAddVal(_Jet->neutralEmEnergyFraction[it]    , "ColdCellEtaMneEmEF");
             histAddVal(_Jet->chargedHadronEnergyFraction[it], "ColdCellEtaMchHEF");
@@ -5921,6 +5932,8 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
           }
           // Hot cell, central phi
           if( (_Jet->phi(it) > -0.42) && (_Jet->phi(it) < 0.21) ){
+
+            noisyjetshotcell0minuseta.push_back(it);
 
             histAddVal(_Jet->neutralHadEnergyFraction[it]   , "HotCellEtaMPhi0neHEF");
             histAddVal(_Jet->neutralEmEnergyFraction[it]    , "HotCellEtaMPhi0neEmEF");
@@ -5962,6 +5975,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
 
           // Hot cell, phi plus
           if( (_Jet->phi(it) > 1.19) && (_Jet->phi(it) < 2.03) ){
+            noisyjetshotcellPminuseta.push_back(it);
 
             histAddVal(_Jet->neutralHadEnergyFraction[it]   , "HotCellEtaMPhiPneHEF");
             histAddVal(_Jet->neutralEmEnergyFraction[it]    , "HotCellEtaMPhiPneEmEF");
@@ -6010,6 +6024,8 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
           // Reference cold cell
           if( (_Jet->phi(it) > -2.8) && (_Jet->phi(it) < -2.17) ){
 
+            noisyjetscoldcellpluseta.push_back(it);
+
             histAddVal(_Jet->neutralHadEnergyFraction[it]   , "ColdCellEtaPneHEF");
             histAddVal(_Jet->neutralEmEnergyFraction[it]    , "ColdCellEtaPneEmEF");
             histAddVal(_Jet->chargedHadronEnergyFraction[it], "ColdCellEtaPchHEF");
@@ -6049,6 +6065,8 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
 
           // Hot cell, phi minus
           if( (_Jet->phi(it) > -2.03) && (_Jet->phi(it) < -1.19) ){
+
+            noisyjetshotcellMpluseta.push_back(it);
 
             histAddVal(_Jet->neutralHadEnergyFraction[it]   , "HotCellEtaPPhiMneHEF");
             histAddVal(_Jet->neutralEmEnergyFraction[it]    , "HotCellEtaPPhiMneEmEF");
@@ -6094,6 +6112,8 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
           // Hot cell, central phi
           if( (_Jet->phi(it) > -0.42) && (_Jet->phi(it) < 0.42) ){
 
+            noisyjetshotcell0pluseta.push_back(it);
+
             histAddVal(_Jet->neutralHadEnergyFraction[it]   , "HotCellEtaPPhi0neHEF");
             histAddVal(_Jet->neutralEmEnergyFraction[it]    , "HotCellEtaPPhi0neEmEF");
             histAddVal(_Jet->chargedHadronEnergyFraction[it], "HotCellEtaPPhi0chHEF");
@@ -6133,6 +6153,8 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
 
           // Hot cell, phi plus
           if( (_Jet->phi(it) > 1.05) && (_Jet->phi(it) < 1.61) ){
+
+            noisyjetshotcellPpluseta.push_back(it);
 
             histAddVal(_Jet->neutralHadEnergyFraction[it]   , "HotCellEtaPPhiPneHEF");
             histAddVal(_Jet->neutralEmEnergyFraction[it]    , "HotCellEtaPPhiPneEmEF");
@@ -6404,6 +6426,17 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
         histAddVal2(minDeltaPhiMet, _MET->pt(), "GenUnmatchedMetVsMinAbsDPhiMet");
 
       }
+
+      histAddVal(noisyjetscoldcellminuseta.size(), "NColdCellEtaM");
+      histAddVal(noisyjetscoldcellpluseta.size(), "NColdCellEtaP");
+
+      histAddVal(noisyjetshotcell0minuseta.size(), "NHotCellEtaMPhi0");
+      histAddVal(noisyjetshotcellPminuseta.size(), "NHotCellEtaMPhiP");
+
+      histAddVal(noisyjetshotcellMpluseta.size(), "NHotCellEtaPPhiM");
+      histAddVal(noisyjetshotcell0pluseta.size(), "NHotCellEtaPPhi0");
+      histAddVal(noisyjetshotcellPpluseta.size(), "NHotCellEtaPPhiP");
+
 
       histAddVal(jetsetapluseta2p6to3p2.size(), "NPosEEnoiseEta");
       histAddVal(jetsetaminuseta2p6to3p2.size(), "NNegEEnoiseEta");

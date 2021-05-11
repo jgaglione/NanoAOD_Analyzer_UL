@@ -3658,15 +3658,15 @@ bool Analyzer::passJetVetoEEnoise2017(int jet_index){
       if( (lvec.Eta() > -3.15) && (lvec.Eta() < -2.66)){ 
         jetsminuseta3p2to2p6.push_back(i); 
         
-        if( (lvec.Phi() > -0.42) && (lvec.Phi() < 0.21) ){ noisyjetshotcell0minuseta.push_back(i);}
-        else if( (lvec.Phi() > 1.19) && (lvec.Phi() < 2.03) ){ noisyjetshotcellPminuseta.push_back(i); }
+        if( (lvec.Phi() > -0.14) && (lvec.Phi() < 0.21) ){ noisyjetshotcell0minuseta.push_back(i);}
+        else if( (lvec.Phi() > 1.40) && (lvec.Phi() < 1.75) ){ noisyjetshotcellPminuseta.push_back(i); }
       }
       
       if( (lvec.Eta() > 2.66) && (lvec.Eta() < 3.15 )){ 
         jetspluseta2p6to3p2.push_back(i); 
-        if( (lvec.Phi() > -2.03) && (lvec.Phi() < -1.19) ){ noisyjetshotcellMpluseta.push_back(i); }
-        else if( (lvec.Phi() > -0.42) && (lvec.Phi() < 0.42) ){ noisyjetshotcell0pluseta.push_back(i); }
-        else if ( (lvec.Phi() > 1.05) && (lvec.Phi() < 1.61) ){ noisyjetshotcellPpluseta.push_back(i); }
+        if( (lvec.Phi() > -1.82) && (lvec.Phi() < -1.26) ){ noisyjetshotcellMpluseta.push_back(i); }
+        else if( (lvec.Phi() > -0.35) && (lvec.Phi() < 0.28) ){ noisyjetshotcell0pluseta.push_back(i); }
+        else if ( (lvec.Phi() > 1.12) && (lvec.Phi() < 1.54) ){ noisyjetshotcellPpluseta.push_back(i); }
       }
     }
 
@@ -5977,7 +5977,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
 
           }
           // Hot cell, central phi
-          if( (_Jet->phi(it) > -0.42) && (_Jet->phi(it) < 0.21) ){
+          if( (_Jet->phi(it) > -0.07) && (_Jet->phi(it) < 0.21) ){
 
             noisyjetshotcell0minuseta.push_back(it);
 
@@ -6020,7 +6020,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
           }
 
           // Hot cell, phi plus
-          if( (_Jet->phi(it) > 1.19) && (_Jet->phi(it) < 2.03) ){
+          if( (_Jet->phi(it) > 1.40) && (_Jet->phi(it) < 1.75) ){
             noisyjetshotcellPminuseta.push_back(it);
 
             histAddVal(_Jet->neutralHadEnergyFraction[it]   , "HotCellEtaMPhiPneHEF");
@@ -6110,7 +6110,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
           }
 
           // Hot cell, phi minus
-          if( (_Jet->phi(it) > -2.03) && (_Jet->phi(it) < -1.19) ){
+          if( (_Jet->phi(it) > -1.82) && (_Jet->phi(it) < -1.26) ){
 
             noisyjetshotcellMpluseta.push_back(it);
 
@@ -6156,7 +6156,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
 
 
           // Hot cell, central phi
-          if( (_Jet->phi(it) > -0.42) && (_Jet->phi(it) < 0.42) ){
+          if( (_Jet->phi(it) > -0.35) && (_Jet->phi(it) < 0.28) ){
 
             noisyjetshotcell0pluseta.push_back(it);
 
@@ -6198,7 +6198,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
           }
 
           // Hot cell, phi plus
-          if( (_Jet->phi(it) > 1.05) && (_Jet->phi(it) < 1.61) ){
+          if( (_Jet->phi(it) > 1.12) && (_Jet->phi(it) < 1.54) ){
 
             noisyjetshotcellPpluseta.push_back(it);
 

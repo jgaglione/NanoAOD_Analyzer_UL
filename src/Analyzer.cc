@@ -3585,10 +3585,17 @@ bool Analyzer::passJetVetoEEnoise2017(int jet_index){
 
    int i=0;
 
-   std::vector<int> jetsminuseta3p2to2p6;
-   std::vector<int> jetspluseta2p6to3p2;
-   std::vector<int> jetsminuseta4p7to0;
-   std::vector<int> jetspluseta0to4p7;
+  std::vector<int> jetsminuseta3p2to2p6;
+  std::vector<int> jetspluseta2p6to3p2;
+  std::vector<int> jetsminuseta4p7to0;
+  std::vector<int> jetspluseta0to4p7;
+
+  std::vector<int> noisyjetshotcell0minuseta;
+  std::vector<int> noisyjetshotcellPminuseta;
+
+  std::vector<int> noisyjetshotcellMpluseta;
+  std::vector<int> noisyjetshotcell0pluseta;
+  std::vector<int> noisyjetshotcellPpluseta;
 
    for(auto lvec: *_Jet) {
 
@@ -3643,36 +3650,53 @@ bool Analyzer::passJetVetoEEnoise2017(int jet_index){
        else if (cut =="RemoveOverlapWithTau2s") passCuts = passCuts && !isOverlaping(lvec, *_Tau, CUTS::eRTau2, stats.dmap.at("Tau2MatchingDeltaR"));
      }
 
-     if(passCuts){
+    if(passCuts){
       // Check if it is in the positive or negative eta region
       if(lvec.Eta() < 0){ jetsminuseta4p7to0.push_back(i);  }
       else if(lvec.Eta() > 0){ jetspluseta0to4p7.push_back(i); }
 
-      if( (lvec.Eta() > -3.15) && (lvec.Eta() < -2.66)){ jetsminuseta3p2to2p6.push_back(i); }
-      if( (lvec.Eta() > 2.66) && (lvec.Eta() < 3.15 )){ jetspluseta2p6to3p2.push_back(i); }
-     }
+      if( (lvec.Eta() > -3.15) && (lvec.Eta() < -2.66)){ 
+        jetsminuseta3p2to2p6.push_back(i); 
+        
+        if( (lvec.Phi() > -0.42) && (lvec.Phi() < 0.21) ){ noisyjetshotcell0minuseta.push_back(i);}
+        else if( (lvec.Phi() > 1.19) && (lvec.Phi() < 2.03) ){ noisyjetshotcellPminuseta.push_back(i); }
+      }
+      
+      if( (lvec.Eta() > 2.66) && (lvec.Eta() < 3.15 )){ 
+        jetspluseta2p6to3p2.push_back(i); 
+        if( (lvec.Phi() > -2.03) && (lvec.Phi() < -1.19) ){ noisyjetshotcellMpluseta.push_back(i); }
+        else if( (lvec.Phi() > -0.42) && (lvec.Phi() < 0.42) ){ noisyjetshotcell0pluseta.push_back(i); }
+        else if ( (lvec.Phi() > 1.05) && (lvec.Phi() < 1.61) ){ noisyjetshotcellPpluseta.push_back(i); }
+      }
+    }
 
-     i++;
+    i++;
 
    }
 
   bool passVeto = true;
-  // Check the different cases possible for this veto
-  if( (jetsminuseta3p2to2p6.size() > 0) && (jetspluseta0to4p7.size() == 0) ){
-      passVeto = false;
-  } 
+  if(distats["Run"].bfind("ApplyVetoTypeI")){  
+    // Check the different cases possible for this veto
+    if( (jetsminuseta3p2to2p6.size() > 0) && (jetspluseta0to4p7.size() == 0) ){
+        passVeto = false;
+    } 
 
-  if( (jetspluseta2p6to3p2.size() > 0) && (jetsminuseta4p7to0.size() == 0) ){
-      passVeto = false;
-  } 
+    if( (jetspluseta2p6to3p2.size() > 0) && (jetsminuseta4p7to0.size() == 0) ){
+        passVeto = false;
+    } 
 
-  if( (jetsminuseta3p2to2p6.size() == 1) && (jetspluseta2p6to3p2.size() == 1)){
-    // Apply a deltaPt cut
-    TLorentzVector deltaP = _Jet->p4(jetspluseta2p6to3p2.at(0)) - _Jet->p4(jetsminuseta3p2to2p6.at(0));
+    if( (jetsminuseta3p2to2p6.size() == 1) && (jetspluseta2p6to3p2.size() == 1)){
+      // Apply a deltaPt cut
+      TLorentzVector deltaP = _Jet->p4(jetspluseta2p6to3p2.at(0)) - _Jet->p4(jetsminuseta3p2to2p6.at(0));
 
-    float ratio_deltaPtHT = deltaP.Pt() / _MET->HT();
+      float ratio_deltaPtHT = deltaP.Pt() / _MET->HT();
 
-    if(ratio_deltaPtHT < 0.4) passVeto = false;
+      if(ratio_deltaPtHT < 0.4) passVeto = false;
+    }
+  } else if(distats["Run"].bfind("ApplyVetoTypeII")){ 
+    int totalnoisyjets = noisyjetshotcell0minuseta.size() + noisyjetshotcellPminuseta.size() + noisyjetshotcellMpluseta.size() + noisyjetshotcell0pluseta.size() + noisyjetshotcellPpluseta.size();
+
+    if(totalnoisyjets > 0) passVeto = false;
   }
 
   if(passVeto){

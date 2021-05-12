@@ -5977,7 +5977,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
 
           }
           // Hot cell, central phi
-          if( (_Jet->phi(it) > -0.07) && (_Jet->phi(it) < 0.21) ){
+          if( (_Jet->phi(it) > -0.42) && (_Jet->phi(it) < 0.21) ){
 
             noisyjetshotcell0minuseta.push_back(it);
 
@@ -6020,7 +6020,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
           }
 
           // Hot cell, phi plus
-          if( (_Jet->phi(it) > 1.40) && (_Jet->phi(it) < 1.75) ){
+          if( (_Jet->phi(it) > 1.19) && (_Jet->phi(it) < 2.03) ){
             noisyjetshotcellPminuseta.push_back(it);
 
             histAddVal(_Jet->neutralHadEnergyFraction[it]   , "HotCellEtaMPhiPneHEF");
@@ -6110,7 +6110,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
           }
 
           // Hot cell, phi minus
-          if( (_Jet->phi(it) > -1.82) && (_Jet->phi(it) < -1.26) ){
+          if( (_Jet->phi(it) > -2.03) && (_Jet->phi(it) < -1.19) ){
 
             noisyjetshotcellMpluseta.push_back(it);
 
@@ -6156,7 +6156,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
 
 
           // Hot cell, central phi
-          if( (_Jet->phi(it) > -0.35) && (_Jet->phi(it) < 0.28) ){
+          if( (_Jet->phi(it) > -0.42) && (_Jet->phi(it) < 0.42) ){
 
             noisyjetshotcell0pluseta.push_back(it);
 
@@ -6198,7 +6198,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
           }
 
           // Hot cell, phi plus
-          if( (_Jet->phi(it) > 1.12) && (_Jet->phi(it) < 1.54) ){
+          if( (_Jet->phi(it) > 1.05) && (_Jet->phi(it) < 1.61) ){
 
             noisyjetshotcellPpluseta.push_back(it);
 
@@ -6482,6 +6482,14 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
       histAddVal(noisyjetshotcellMpluseta.size(), "NHotCellEtaPPhiM");
       histAddVal(noisyjetshotcell0pluseta.size(), "NHotCellEtaPPhi0");
       histAddVal(noisyjetshotcellPpluseta.size(), "NHotCellEtaPPhiP");
+
+      int njethotcelletaminus = noisyjetshotcell0minuseta.size() + noisyjetshotcellPminuseta.size();
+      int njethotcelletaplus = noisyjetshotcellMpluseta.size() + noisyjetshotcell0pluseta.size() + noisyjetshotcellPpluseta.size(); 
+
+      histAddVal(njethotcelletaminus, "NHotCellEtaM");
+      histAddVal(njethotcelletaplus, "NHotCellEtaP");
+      histAddVal((njethotcelletaminus + njethotcelletaplus) , "NHotCellEtaTotal");
+      histAddVal2(njethotcelletaminus, njethotcelletaplus , "NHotCellEtaPlusvsMinus");
 
 
       histAddVal(jetsetapluseta2p6to3p2.size(), "NPosEEnoiseEta");

@@ -3693,6 +3693,31 @@ bool Analyzer::passJetVetoEEnoise2017(int jet_index){
 
       if(ratio_deltaPtHT < 0.4) passVeto = false;
     }
+
+    if(passVeto == true){
+
+      int n_noisyjets = 0;
+      
+      if(jetsminuseta3p2to2p6.size() > 0){
+        for(size_t i=0; i < jetsminuseta3p2to2p6.size(); i++){
+          TLorentzVector jetp4 = _Jet->p4(jetsminuseta3p2to2p6.at(i));
+          if(jetp4.Pt() < 80.0){ n_noisyjets++; }
+        }
+     } 
+
+     if(n_noisyjets > 0){ passVeto = false; }
+
+      if( (passVeto == true) && (jetspluseta2p6to3p2.size() > 0)){
+        for(size_t i=0; i < jetspluseta2p6to3p2.size(); i++){
+          TLorentzVector jetp4 = _Jet->p4(jetspluseta2p6to3p2.at(i));
+          if(jetp4.Pt() < 80.0){ n_noisyjets++; }
+        }
+      }
+
+      if(n_noisyjets > 0){ passVeto = false; }
+
+    }
+
   } else if(distats["Run"].bfind("ApplyVetoTypeII")){ 
     int totalnoisyjets = noisyjetshotcell0minuseta.size() + noisyjetshotcellPminuseta.size() + noisyjetshotcellMpluseta.size() + noisyjetshotcell0pluseta.size() + noisyjetshotcellPpluseta.size();
     if(totalnoisyjets > 0) passVeto = false;
@@ -3708,14 +3733,16 @@ bool Analyzer::passJetVetoEEnoise2017(int jet_index){
         }
     } 
 
-    if(jetspluseta2p6to3p2.size() > 0){
+    if(n_noisyjets > 0){ passVeto = false; }
+
+    if( (passVeto == true) && (jetspluseta2p6to3p2.size() > 0)){
         for(size_t i=0; i < jetspluseta2p6to3p2.size(); i++){
           TLorentzVector jetp4 = _Jet->p4(jetspluseta2p6to3p2.at(i));
           if(jetp4.Pt() < 80.0){ n_noisyjets++; }
         }
     }
 
-    if(n_noisyjets > 0){ passVeto = false; } 
+    if(n_noisyjets > 0){ passVeto = false; }
 
   }
 

@@ -151,6 +151,7 @@ public:
   void getGoodGenHadronicTauNeutrinos(const PartStats&);
   TLorentzVector getGenVisibleTau4Vector(int, int);
   void getGoodGen(const PartStats&);
+  std::unordered_map<int, int> genMotherPartIndex;
   void getGoodRecoLeptons(const Lepton&, const CUTS, const CUTS, const PartStats&, const int);
   void getGoodRecoJets(CUTS, const PartStats&, const int);
   void getGoodRecoLeadJets(CUTS, const PartStats&, const int);

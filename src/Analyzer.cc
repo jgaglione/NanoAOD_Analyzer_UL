@@ -36,7 +36,8 @@ const std::string PUSPACE = "Pileup/";
 const std::vector<CUTS> Analyzer::genCuts = {
   CUTS::eGTau, CUTS::eGNuTau, CUTS::eGTop,
   CUTS::eGElec, CUTS::eGMuon, CUTS::eGZ,
-  CUTS::eGW, CUTS::eGHiggs, CUTS::eGJet, CUTS::eGBJet, CUTS::eGHadTau, CUTS::eGMatchedHadTau
+  CUTS::eGW, CUTS::eGHiggs, CUTS::eGJet, 
+  CUTS::eGBJet, CUTS::eGHadTau, CUTS::eGMatchedHadTau,
 };
 
 const std::vector<CUTS> Analyzer::jetCuts = {
@@ -54,7 +55,7 @@ const std::unordered_map<std::string, CUTS> Analyzer::cut_num = {
   {"NGenZ", CUTS::eGZ},                                 {"NGenW", CUTS::eGW},
   {"NGenHiggs", CUTS::eGHiggs},                         {"NGenJet", CUTS::eGJet},
   {"NGenBJet", CUTS::eGBJet},                           {"NGenHadTau", CUTS::eGHadTau},
-  {"NMatchedGenHadTau", CUTS::eGMatchedHadTau},
+  {"NMatchedGenHadTau", CUTS::eGMatchedHadTau},         
   {"NRecoMuon1", CUTS::eRMuon1},                        {"NRecoMuon2", CUTS::eRMuon2},
   {"NRecoElectron1", CUTS::eRElec1},                    {"NRecoElectron2",CUTS::eRElec2},
   {"NRecoTau1", CUTS::eRTau1},                          {"NRecoTau2", CUTS::eRTau2},
@@ -772,6 +773,8 @@ void Analyzer::preprocess(int event, std::string year){ // This function no long
     _Gen->setOrigReco();
     _GenHadTau->setOrigReco();
     _GenJet->setOrigReco();
+
+    genMotherPartIndex.clear();
 
     getGoodGen(_Gen->pstats["Gen"]);
     getGoodGenHadronicTaus(_GenHadTau->pstats["Gen"]);
@@ -2739,6 +2742,7 @@ TLorentzVector Analyzer::matchLeptonToGen(const TLorentzVector& recoLepton4Vecto
   int pidx = -1;
 
   if( !stats.bfind("UseMotherID") ){
+    int i = 0;
     for(auto it : *active_part->at(ePos)) {
 
       tmpDeltaR = recoLepton4Vector.DeltaR(_Gen->p4(it));
@@ -2747,11 +2751,16 @@ TLorentzVector Analyzer::matchLeptonToGen(const TLorentzVector& recoLepton4Vecto
         minDeltaR = tmpDeltaR;
         pidx = it;
       }
+      i++;
     }
   } else {
     for(auto it : *active_part->at(ePos)) {
+      
+      int motherpart_idx = genMotherPartIndex[it];
+      int motherpart_id = abs(_Gen->pdg_id[motherpart_idx]);
 
-      if( abs(_Gen->pdg_id[_Gen->genPartIdxMother[it]]) != stats.dmap.at("MotherID") ) continue;
+      if( motherpart_id != stats.dmap.at("MotherID") ) continue;
+
       tmpDeltaR = recoLepton4Vector.DeltaR(_Gen->p4(it));
 
       if(tmpDeltaR < minDeltaR){
@@ -2761,32 +2770,20 @@ TLorentzVector Analyzer::matchLeptonToGen(const TLorentzVector& recoLepton4Vecto
     }
   }
 
-
   if(minDeltaR <= stats.dmap.at("GenMatchingDeltaR")){
+    // Calculate differences in pt
+    float relDeltaPt = abs(recoLepton4Vector.Pt() - _Gen->p4(pidx).Pt());
+    float sigmathreshold = 5.0 * sqrt(recoLepton4Vector.Pt());
+    
+    if(relDeltaPt > sigmathreshold){ return TLorentzVector(0,0,0,0); }
+
     return _Gen->p4(pidx);
   }
 
   return TLorentzVector(0,0,0,0);
 }
 
-/*
-TLorentzVector Analyzer::matchLeptonToGen(int recoLeptonIndex, const PartStats& stats, CUTS ePos) {
 
-  if(ePos == CUTS::eGTau) {
-    return matchTauToGen(recoLeptonIndex, stats.dmap.at("GenMatchingFlavor"));
-  }
-  if(ePos == CUTS::eGHadTau){
-    return matchHadTauToGen(recoLeptonIndex, stats.dmap.at("GenMatchingDeltaR"));
-  }
-  for(auto it : *active_part->at(ePos)) {
-    if(recoLepton4Vector.DeltaR(_Gen->p4(it)) <= stats.dmap.at("GenMatchingDeltaR")) {
-      if(stats.bfind("UseMotherID") && abs(_Gen->pdg_id[_Gen->genPartIdxMother[it]]) != stats.dmap.at("MotherID")) continue;
-      return _Gen->p4(it);
-    }
-  }
-  return TLorentzVector(0,0,0,0);
-}
-*/
 ///Tau specific matching function.  Works by seeing if a tau doesn't decay into a muon/electron and has
 //a matching tau neutrino showing that the tau decayed and decayed hadronically
 
@@ -2807,29 +2804,7 @@ TLorentzVector Analyzer::matchTauToGen(const TLorentzVector& lvec, double lDelta
   return genVec;
 }
 
-/*
-TLorentzVector Analyzer::matchTauToGen(int recoTauIndex, int genPartFlavor){
 
-  // Look for the index of the matching particle in the Gen particle collection (tau status-2, meaning not decayed)
-  int matchingTauIdx = _Tau->genPartIdx[recoTauIndex];
-  int tauGenPartFlavor = static_cast<unsigned>(_Tau->genPartFlav[recoTauIndex]);
-
-  if(matchingTauIdx != -1){
-
-    if((genPartFlav == -1) && (tauGenPartFlavor == 3 || tauGenPartFlavor == 4 || tauGenPartFlavor == 5) ){ // include all possible tau decays (tau->e decay, tau->mu decay, hadronic tau decay)
-      return _Gen->p4(matchingTauIdx);
-    } else if ( (genPartFlav == 0) && (tauGenPartFlavor == 0) ){
-      return _Gen->p4(matchingTauIdx);
-    } else {
-      if(tauGenPartFlavor == genPartFlav){
-        return _Gen->p4(matchingTauIdx);
-      }
-    }
-  }
-
-  return TLorentzVector(0,0,0,0);
-}
-*/
 ///Tau specific matching function.  Works by seeing if a tau doesn't decay into a muon/electron and has
 //a matching tau neutrino showing that the tau decayed and decayed hadronically
 TLorentzVector Analyzer::matchHadTauToGen(const TLorentzVector& recoTau4Vector, double recogenDeltaR) {
@@ -2853,30 +2828,6 @@ TLorentzVector Analyzer::matchHadTauToGen(const TLorentzVector& recoTau4Vector, 
   //return genTau4Vector;
   return TLorentzVector(0,0,0,0);
 }
-
-/*
-TLorentzVector Analyzer::matchHadTauToGen(const TLorentzVector& recoTau4Vector, double recogenDeltaR) {
-
-  for(vec_iter genhadtau_it = active_part->at(CUTS::eGHadTau)->begin(); genhadtau_it != active_part->at(CUTS::eGHadTau)->end(); genhadtau_it++){ // (genhadtau_it) is the index of the gen-level hadronic tau in the gen-hadtau vector.
-
-    // Compare the separation between the reco and gen hadronic tau candidates. If it's greather than the requirement, continue with the next gen-tau_h candidate.
-    if(recoTau4Vector.DeltaR(_GenHadTau->p4(*genhadtau_it)) > recogenDeltaR) continue;
-    // If the requirement DeltaR <= recogenDeltaR, the code will get to this point. Then we want to fill a vector that only stores the matched gen taus
-
-    if(std::find(active_part->at(CUTS::eGMatchedHadTau)->begin(), active_part->at(CUTS::eGMatchedHadTau)->end(), *genhadtau_it) == active_part->at(CUTS::eGMatchedHadTau)->end()){
-      // The if condition above will make sure to not double count the gen-taus that have already been matched. It will only fill the CUTS::eGMatchedHadTau if it's not already in there.
-         active_part->at(CUTS::eGMatchedHadTau)->push_back(*genhadtau_it);
-    }
-
-    active_part->at(CUTS::eGMatchedHadTau)->push_back(*genhadtau_it);
-
-    // And we also return the gen-tau p4 vector, which we are interested in.
-    return _GenHadTau->p4(*genhadtau_it);
-  }
-  //return genTau4Vector;
-  return TLorentzVector(0,0,0,0);
-}
-*/
 
 
 ////checks if reco object matchs a gen object.  If so, then reco object is for sure a correctly identified particle
@@ -2949,84 +2900,48 @@ void Analyzer::getGoodGen(const PartStats& stats) {
       active_part->at(genMaper.at(5)->ePos)->push_back(j);
     }
     else if(genMaper.find(particle_id) != genMaper.end() && _Gen->status[j] == genMaper.at(particle_id)->status) {
+      
+      int motherpart_idx = _Gen->genPartIdxMother[j];
+      int mother_pid = abs(_Gen->pdg_id[motherpart_idx]);
+      // std::cout << "GenPart #" << j << ", particle id = " << particle_id << ", motherpart_idx = " << motherpart_idx << ", mother_pid = " << mother_pid << std::endl;
+
+      if(mother_pid == particle_id){
+        // std::cout << "Lepton with same ID for mother particle" << std::endl;
+        int motherpart_idx_tmp = motherpart_idx;
+        int mother_pid_tmp = mother_pid;            
+
+        while(mother_pid_tmp == particle_id){
+          motherpart_idx = _Gen->genPartIdxMother[motherpart_idx_tmp];
+          mother_pid_tmp = abs(_Gen->pdg_id[motherpart_idx]);
+          motherpart_idx_tmp = motherpart_idx;
+        }
+         
+        mother_pid = mother_pid_tmp;
+        motherpart_idx = motherpart_idx_tmp;
+        // std::cout << "Final mother ID = " << mother_pid << ", index = " << motherpart_idx << std::endl;
+       }
 
       if(particle_id == 15){
 
       	if(stats.bfind("DiscrTauByPtAndEta") &&  (_Gen->pt(j) < stats.pmap.at("TauPtCut").first || _Gen->pt(j) > stats.pmap.at("TauPtCut").second || abs(_Gen->eta(j)) > stats.dmap.at("TauEtaCut"))) continue;
+   
+        if(stats.bfind("DiscrTauByMotherID") && ((mother_pid != stats.pmap.at("TauMotherIDs").first) && (mother_pid != stats.pmap.at("TauMotherIDs").second)) ) continue;
 
-	if(stats.bfind("DiscrTauByMotherID")){
-	   int motherpart_idx = _Gen->genPartIdxMother[j];
-           int mother_pid = abs(_Gen->pdg_id[motherpart_idx]);   
-
-           if(mother_pid == particle_id){
-               // std::cout << "Lepton with same ID for mother particle" << std::endl;
-               int motherpart_idx_tmp = motherpart_idx;
-               int mother_pid_tmp = mother_pid;            
-
-               while(mother_pid_tmp == particle_id){
-                  motherpart_idx = _Gen->genPartIdxMother[motherpart_idx_tmp];
-                  mother_pid_tmp = abs(_Gen->pdg_id[motherpart_idx]);
-                  motherpart_idx_tmp = motherpart_idx;
-               }
-             
-                mother_pid = mother_pid_tmp;
-                //std::cout << "Final mother ID = " << mother_pid << std::endl;
-           }
-           
-           if( (mother_pid != stats.pmap.at("TauMotherIDs").first) && (mother_pid != stats.pmap.at("TauMotherIDs").second) ) continue;
-        }
       } else if(particle_id == 11){
       	if(stats.bfind("DiscrElecByPtAndEta") &&  (_Gen->pt(j) < stats.pmap.at("ElecPtCut").first || _Gen->pt(j) > stats.pmap.at("ElecPtCut").second || abs(_Gen->eta(j)) > stats.dmap.at("ElecEtaCut"))) continue;
 
-        if(stats.bfind("DiscrElecByMotherID")){
-            int motherpart_idx = _Gen->genPartIdxMother[j];
-            int mother_pid = abs(_Gen->pdg_id[motherpart_idx]);
-            
-            if(mother_pid == particle_id){
-                //std::cout << "Lepton with same ID for mother particle" << std::endl;
-                int motherpart_idx_tmp = motherpart_idx;
-                int mother_pid_tmp = mother_pid;
-                
-                while(mother_pid_tmp == particle_id){
-                   motherpart_idx = _Gen->genPartIdxMother[motherpart_idx_tmp];
-                   mother_pid_tmp = abs(_Gen->pdg_id[motherpart_idx]);
-                   motherpart_idx_tmp = motherpart_idx;
-                } 
-              
-                 mother_pid = mother_pid_tmp;
-                 //std::cout << "Final mother ID = " << mother_pid << std::endl;
-            }
-            
-            if( (mother_pid != stats.pmap.at("ElecMotherIDs").first) && (mother_pid != stats.pmap.at("ElecMotherIDs").second) ) continue;
-        }
+        if(stats.bfind("DiscrElecByMotherID") && ( (mother_pid != stats.pmap.at("ElecMotherIDs").first) && (mother_pid != stats.pmap.at("ElecMotherIDs").second) ) ) continue; 
       } else if(particle_id == 13){
 
          if(stats.bfind("DiscrMuonByPtAndEta") &&  (_Gen->pt(j) < stats.pmap.at("MuonPtCut").first || _Gen->pt(j) > stats.pmap.at("MuonPtCut").second || abs(_Gen->eta(j)) > stats.dmap.at("MuonEtaCut"))) continue;
 
-         if(stats.bfind("DiscrTauByMotherID")){
-            int motherpart_idx = _Gen->genPartIdxMother[j];
-            int mother_pid = abs(_Gen->pdg_id[motherpart_idx]);
-            
-            if(mother_pid == particle_id){
-                // std::cout << "Lepton with same ID for mother particle" << std::endl;
-                int motherpart_idx_tmp = motherpart_idx;
-                int mother_pid_tmp = mother_pid;
-                
-                while(mother_pid_tmp == particle_id){
-                   motherpart_idx = _Gen->genPartIdxMother[motherpart_idx_tmp];
-                   mother_pid_tmp = abs(_Gen->pdg_id[motherpart_idx]);
-                   motherpart_idx_tmp = motherpart_idx;
-                } 
-              
-                 mother_pid = mother_pid_tmp;
-                 //std::cout << "Final mother ID = " << mother_pid << std::endl;
-            }
-            
-            if( (mother_pid != stats.pmap.at("MuonMotherIDs").first) && (mother_pid != stats.pmap.at("MuonMotherIDs").second) ) continue;
-         }
+         if(stats.bfind("DiscrMuonByMotherID") && (mother_pid != stats.pmap.at("MuonMotherIDs").first) && (mother_pid != stats.pmap.at("MuonMotherIDs").second)) continue; 
       }
 
       active_part->at(genMaper.at(particle_id)->ePos)->push_back(j);
+      genMotherPartIndex[j] = motherpart_idx;
+
+      // std::cout << "in genMotherPartIndex: key = " << j << ", value = " << genMotherPartIndex[j] << std::endl;
       //if(genMaper.at(particle_id)->ePos == CUTS::eGTau) std::cout << "index of Gen collection stored = " << j << std::endl;
     }
 
@@ -3260,14 +3175,19 @@ void Analyzer::getGoodRecoLeptons(const Lepton& lep, const CUTS ePos, const CUTS
 
   int i = 0;
   for(auto lvec: lep) {
+    
 
     bool passCuts = true;
     if (fabs(lvec.Eta()) > stats.dmap.at("EtaCut")) passCuts = passCuts && false;
     else if (lvec.Pt() < stats.pmap.at("PtCut").first || lvec.Pt() > stats.pmap.at("PtCut").second) passCuts = passCuts && false;
 
     if((lep.pstats.at("Smear").bfind("MatchToGen")) && (!isData)) {   /////check
-      if(matchLeptonToGen(lvec, lep.pstats.at("Smear") ,eGenPos) == TLorentzVector(0,0,0,0)) continue;
+      if(matchLeptonToGen(lvec, lep.pstats.at("Smear") ,eGenPos) == TLorentzVector(0,0,0,0)){ 
+        i++;
+        continue;
+      }
     }
+
 
     for( auto cut: stats.bset) {
       if(!passCuts) break;
@@ -3331,6 +3251,11 @@ void Analyzer::getGoodRecoLeptons(const Lepton& lep, const CUTS ePos, const CUTS
         else if(cut == "decayModeFindingNewDMs") passCuts = passCuts && _Tau->DecayModeNewDMs[i] != 0;
         // else if(cut == "decayModeFinding") passCuts = passCuts && _Tau->DecayMode[i] != 0; // original
         else if(cut == "decayModeFinding") passCuts = passCuts && _Tau->DecayModeOldDMs[i] != 0;
+        else if(cut == "DiscrByStatus"){ 
+          int genPartFlavor =  static_cast<int>(_Tau->genPartFlav[i]);
+          passCuts = passCuts && ( (genPartFlavor >= stats.pmap.at("StatusRange").first) && (genPartFlavor <= stats.pmap.at("StatusRange").second));
+          // std::cout << "Tau #" << i << ", status = " << genPartFlavor << ", passCut? " << std::boolalpha <<  ((genPartFlavor >= stats.pmap.at("StatusRange").first) && (genPartFlavor <= stats.pmap.at("StatusRange").second)) << std::endl;
+        }
               // ----anti-overlap requirements
         else if(cut == "RemoveOverlapWithMuon1s") passCuts = passCuts && !isOverlaping(lvec, *_Muon, CUTS::eRMuon1, stats.dmap.at("Muon1MatchingDeltaR"));
         else if(cut == "RemoveOverlapWithMuon2s") passCuts = passCuts && !isOverlaping(lvec, *_Muon, CUTS::eRMuon2, stats.dmap.at("Muon2MatchingDeltaR"));
@@ -3339,8 +3264,12 @@ void Analyzer::getGoodRecoLeptons(const Lepton& lep, const CUTS ePos, const CUTS
       }
       else std::cout << "cut: " << cut << " not listed" << std::endl;
     }
+    
+
     if(passCuts) active_part->at(ePos)->push_back(i);
+
     i++;
+    
   }
 
   return;
@@ -5884,8 +5813,21 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
       histAddVal(part->p4(it).Eta(), "Eta");
       histAddVal(part->p4(it).Phi(), "Phi");
       histAddVal(part->p4(it).DeltaPhi(_MET->p4()), "MetDphi");
+
       if(part->type == PType::Tau) {
         histAddVal(_Tau->charge(it), "Charge");
+        int tauiso = static_cast<int>(_Tau->TauIdDiscr[it]);
+        int antiele =static_cast<int>(_Tau->againstElectron[it]);
+        int antimu = static_cast<int>(_Tau->againstMuon[it]);
+
+        histAddVal(tauiso, "IsolationWP");
+        histAddVal(antiele, "AntiEleWP");
+        histAddVal(antimu, "AntiMuWP");
+
+        if(!isData){
+          int genPartonFlavor = static_cast<int>(_Tau->genPartFlav[it]);
+          histAddVal(genPartonFlavor, "GenStatus")
+        }
       }
       if(part->type != PType::Jet) {
         histAddVal(calculateLeptonMetMt(part->p4(it)), "MetMt");

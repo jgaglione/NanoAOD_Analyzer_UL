@@ -36,7 +36,7 @@ const std::string PUSPACE = "Pileup/";
 const std::vector<CUTS> Analyzer::genCuts = {
   CUTS::eGTau, CUTS::eGNuTau, CUTS::eGTop,
   CUTS::eGElec, CUTS::eGMuon, CUTS::eGZ,
-  CUTS::eGW, CUTS::eGHiggs, CUTS::eGJet, 
+  CUTS::eGW, CUTS::eGHiggs, CUTS::eGJet,
   CUTS::eGBJet, CUTS::eGHadTau, CUTS::eGMatchedHadTau,
 };
 
@@ -55,7 +55,7 @@ const std::unordered_map<std::string, CUTS> Analyzer::cut_num = {
   {"NGenZ", CUTS::eGZ},                                 {"NGenW", CUTS::eGW},
   {"NGenHiggs", CUTS::eGHiggs},                         {"NGenJet", CUTS::eGJet},
   {"NGenBJet", CUTS::eGBJet},                           {"NGenHadTau", CUTS::eGHadTau},
-  {"NMatchedGenHadTau", CUTS::eGMatchedHadTau},         
+  {"NMatchedGenHadTau", CUTS::eGMatchedHadTau},
   {"NRecoMuon1", CUTS::eRMuon1},                        {"NRecoMuon2", CUTS::eRMuon2},
   {"NRecoElectron1", CUTS::eRElec1},                    {"NRecoElectron2",CUTS::eRElec2},
   {"NRecoTau1", CUTS::eRTau1},                          {"NRecoTau2", CUTS::eRTau2},
@@ -853,7 +853,7 @@ void Analyzer::preprocess(int event, std::string year){ // This function no long
 
   // ---------------- Additional EE noise veto -------------- //
   passAdditionalEENoiseVeto(CUTS::eREENoiseVeto, _Jet->pstats["Jet1"], year);
-  
+
 
   for(size_t i=0; i < syst_names.size(); i++) {
   	std::string systname = syst_names.at(i);
@@ -2755,7 +2755,7 @@ TLorentzVector Analyzer::matchLeptonToGen(const TLorentzVector& recoLepton4Vecto
     }
   } else {
     for(auto it : *active_part->at(ePos)) {
-      
+
       int motherpart_idx = genMotherPartIndex[it];
       int motherpart_id = abs(_Gen->pdg_id[motherpart_idx]);
 
@@ -2774,7 +2774,7 @@ TLorentzVector Analyzer::matchLeptonToGen(const TLorentzVector& recoLepton4Vecto
     // Calculate differences in pt
     float relDeltaPt = abs(recoLepton4Vector.Pt() - _Gen->p4(pidx).Pt());
     float sigmathreshold = 5.0 * sqrt(recoLepton4Vector.Pt());
-    
+
     if(relDeltaPt > sigmathreshold){ return TLorentzVector(0,0,0,0); }
 
     return _Gen->p4(pidx);
@@ -2900,7 +2900,7 @@ void Analyzer::getGoodGen(const PartStats& stats) {
       active_part->at(genMaper.at(5)->ePos)->push_back(j);
     }
     else if(genMaper.find(particle_id) != genMaper.end() && _Gen->status[j] == genMaper.at(particle_id)->status) {
-      
+
       int motherpart_idx = _Gen->genPartIdxMother[j];
       int mother_pid = abs(_Gen->pdg_id[motherpart_idx]);
       // std::cout << "GenPart #" << j << ", particle id = " << particle_id << ", motherpart_idx = " << motherpart_idx << ", mother_pid = " << mother_pid << std::endl;
@@ -2908,14 +2908,14 @@ void Analyzer::getGoodGen(const PartStats& stats) {
       if(mother_pid == particle_id){
         // std::cout << "Lepton with same ID for mother particle" << std::endl;
         int motherpart_idx_tmp = motherpart_idx;
-        int mother_pid_tmp = mother_pid;            
+        int mother_pid_tmp = mother_pid;
 
         while(mother_pid_tmp == particle_id){
           motherpart_idx = _Gen->genPartIdxMother[motherpart_idx_tmp];
           mother_pid_tmp = abs(_Gen->pdg_id[motherpart_idx]);
           motherpart_idx_tmp = motherpart_idx;
         }
-         
+
         mother_pid = mother_pid_tmp;
         motherpart_idx = motherpart_idx_tmp;
         // std::cout << "Final mother ID = " << mother_pid << ", index = " << motherpart_idx << std::endl;
@@ -2924,18 +2924,18 @@ void Analyzer::getGoodGen(const PartStats& stats) {
       if(particle_id == 15){
 
       	if(stats.bfind("DiscrTauByPtAndEta") &&  (_Gen->pt(j) < stats.pmap.at("TauPtCut").first || _Gen->pt(j) > stats.pmap.at("TauPtCut").second || abs(_Gen->eta(j)) > stats.dmap.at("TauEtaCut"))) continue;
-   
+
         if(stats.bfind("DiscrTauByMotherID") && ((mother_pid != stats.pmap.at("TauMotherIDs").first) && (mother_pid != stats.pmap.at("TauMotherIDs").second)) ) continue;
 
       } else if(particle_id == 11){
       	if(stats.bfind("DiscrElecByPtAndEta") &&  (_Gen->pt(j) < stats.pmap.at("ElecPtCut").first || _Gen->pt(j) > stats.pmap.at("ElecPtCut").second || abs(_Gen->eta(j)) > stats.dmap.at("ElecEtaCut"))) continue;
 
-        if(stats.bfind("DiscrElecByMotherID") && ( (mother_pid != stats.pmap.at("ElecMotherIDs").first) && (mother_pid != stats.pmap.at("ElecMotherIDs").second) ) ) continue; 
+        if(stats.bfind("DiscrElecByMotherID") && ( (mother_pid != stats.pmap.at("ElecMotherIDs").first) && (mother_pid != stats.pmap.at("ElecMotherIDs").second) ) ) continue;
       } else if(particle_id == 13){
 
          if(stats.bfind("DiscrMuonByPtAndEta") &&  (_Gen->pt(j) < stats.pmap.at("MuonPtCut").first || _Gen->pt(j) > stats.pmap.at("MuonPtCut").second || abs(_Gen->eta(j)) > stats.dmap.at("MuonEtaCut"))) continue;
 
-         if(stats.bfind("DiscrMuonByMotherID") && (mother_pid != stats.pmap.at("MuonMotherIDs").first) && (mother_pid != stats.pmap.at("MuonMotherIDs").second)) continue; 
+         if(stats.bfind("DiscrMuonByMotherID") && (mother_pid != stats.pmap.at("MuonMotherIDs").first) && (mother_pid != stats.pmap.at("MuonMotherIDs").second)) continue;
       }
 
       active_part->at(genMaper.at(particle_id)->ePos)->push_back(j);
@@ -3175,14 +3175,14 @@ void Analyzer::getGoodRecoLeptons(const Lepton& lep, const CUTS ePos, const CUTS
 
   int i = 0;
   for(auto lvec: lep) {
-    
+
 
     bool passCuts = true;
     if (fabs(lvec.Eta()) > stats.dmap.at("EtaCut")) passCuts = passCuts && false;
     else if (lvec.Pt() < stats.pmap.at("PtCut").first || lvec.Pt() > stats.pmap.at("PtCut").second) passCuts = passCuts && false;
 
     if((lep.pstats.at("Smear").bfind("MatchToGen")) && (!isData)) {   /////check
-      if(matchLeptonToGen(lvec, lep.pstats.at("Smear") ,eGenPos) == TLorentzVector(0,0,0,0)){ 
+      if(matchLeptonToGen(lvec, lep.pstats.at("Smear") ,eGenPos) == TLorentzVector(0,0,0,0)){
         i++;
         continue;
       }
@@ -3251,7 +3251,7 @@ void Analyzer::getGoodRecoLeptons(const Lepton& lep, const CUTS ePos, const CUTS
         else if(cut == "decayModeFindingNewDMs") passCuts = passCuts && _Tau->DecayModeNewDMs[i] != 0;
         // else if(cut == "decayModeFinding") passCuts = passCuts && _Tau->DecayMode[i] != 0; // original
         else if(cut == "decayModeFinding") passCuts = passCuts && _Tau->DecayModeOldDMs[i] != 0;
-        else if(cut == "DiscrByStatus"){ 
+        else if(cut == "DiscrByGenStatus"){
           int genPartFlavor =  static_cast<int>(_Tau->genPartFlav[i]);
           passCuts = passCuts && ( (genPartFlavor >= stats.pmap.at("StatusRange").first) && (genPartFlavor <= stats.pmap.at("StatusRange").second));
           // std::cout << "Tau #" << i << ", status = " << genPartFlavor << ", passCut? " << std::boolalpha <<  ((genPartFlavor >= stats.pmap.at("StatusRange").first) && (genPartFlavor <= stats.pmap.at("StatusRange").second)) << std::endl;
@@ -3264,12 +3264,12 @@ void Analyzer::getGoodRecoLeptons(const Lepton& lep, const CUTS ePos, const CUTS
       }
       else std::cout << "cut: " << cut << " not listed" << std::endl;
     }
-    
+
 
     if(passCuts) active_part->at(ePos)->push_back(i);
 
     i++;
-    
+
   }
 
   return;
@@ -3584,15 +3584,15 @@ bool Analyzer::passJetVetoEEnoise2017(int jet_index){
       if(lvec.Eta() < 0){ jetsminuseta4p7to0.push_back(i);  }
       else if(lvec.Eta() > 0){ jetspluseta0to4p7.push_back(i); }
 
-      if( (lvec.Eta() > -3.15) && (lvec.Eta() < -2.66)){ 
-        jetsminuseta3p2to2p6.push_back(i); 
-        
+      if( (lvec.Eta() > -3.15) && (lvec.Eta() < -2.66)){
+        jetsminuseta3p2to2p6.push_back(i);
+
         if( (lvec.Phi() > -0.14) && (lvec.Phi() < 0.21) ){ noisyjetshotcell0minuseta.push_back(i);}
         else if( (lvec.Phi() > 1.40) && (lvec.Phi() < 1.75) ){ noisyjetshotcellPminuseta.push_back(i); }
       }
-      
-      if( (lvec.Eta() > 2.66) && (lvec.Eta() < 3.15 )){ 
-        jetspluseta2p6to3p2.push_back(i); 
+
+      if( (lvec.Eta() > 2.66) && (lvec.Eta() < 3.15 )){
+        jetspluseta2p6to3p2.push_back(i);
         if( (lvec.Phi() > -1.82) && (lvec.Phi() < -1.26) ){ noisyjetshotcellMpluseta.push_back(i); }
         else if( (lvec.Phi() > -0.35) && (lvec.Phi() < 0.28) ){ noisyjetshotcell0pluseta.push_back(i); }
         else if ( (lvec.Phi() > 1.12) && (lvec.Phi() < 1.54) ){ noisyjetshotcellPpluseta.push_back(i); }
@@ -3604,15 +3604,15 @@ bool Analyzer::passJetVetoEEnoise2017(int jet_index){
    }
 
   bool passVeto = true;
-  if(distats["Run"].bfind("ApplyVetoTypeI")){  
+  if(distats["Run"].bfind("ApplyVetoTypeI")){
     // Check the different cases possible for this veto
     if( (jetsminuseta3p2to2p6.size() > 0) && (jetspluseta0to4p7.size() == 0) ){
         passVeto = false;
-    } 
+    }
 
     if( (jetspluseta2p6to3p2.size() > 0) && (jetsminuseta4p7to0.size() == 0) ){
         passVeto = false;
-    } 
+    }
 
     if( (jetsminuseta3p2to2p6.size() == 1) && (jetspluseta2p6to3p2.size() == 1)){
       // Apply a deltaPt cut
@@ -3626,13 +3626,13 @@ bool Analyzer::passJetVetoEEnoise2017(int jet_index){
     if(passVeto == true){
 
       int n_noisyjets = 0;
-      
+
       if(jetsminuseta3p2to2p6.size() > 0){
         for(size_t i=0; i < jetsminuseta3p2to2p6.size(); i++){
           TLorentzVector jetp4 = _Jet->p4(jetsminuseta3p2to2p6.at(i));
           if(jetp4.Pt() < 80.0){ n_noisyjets++; }
         }
-     } 
+     }
 
      if(n_noisyjets > 0){ passVeto = false; }
 
@@ -3647,12 +3647,12 @@ bool Analyzer::passJetVetoEEnoise2017(int jet_index){
 
     }
 
-  } else if(distats["Run"].bfind("ApplyVetoTypeII")){ 
+  } else if(distats["Run"].bfind("ApplyVetoTypeII")){
     int totalnoisyjets = noisyjetshotcell0minuseta.size() + noisyjetshotcellPminuseta.size() + noisyjetshotcellMpluseta.size() + noisyjetshotcell0pluseta.size() + noisyjetshotcellPpluseta.size();
     if(totalnoisyjets > 0) passVeto = false;
-  } else if(distats["Run"].bfind("ApplyVetoTypeIII")){ 
+  } else if(distats["Run"].bfind("ApplyVetoTypeIII")){
     // Check the different cases possible for this veto
-    
+
     int n_noisyjets = 0;
 
     if(jetsminuseta3p2to2p6.size() > 0){
@@ -3660,7 +3660,7 @@ bool Analyzer::passJetVetoEEnoise2017(int jet_index){
           TLorentzVector jetp4 = _Jet->p4(jetsminuseta3p2to2p6.at(i));
           if(jetp4.Pt() < 80.0){ n_noisyjets++; }
         }
-    } 
+    }
 
     if(n_noisyjets > 0){ passVeto = false; }
 
@@ -5484,7 +5484,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
     for(size_t i=0; i<goodGenLeptons.size(); i++){
         int igen = goodGenLeptons.at(i);
 	// std::cout << "Gen pdg_id = " << (abs(_Gen->pdg_id[igen])) << ", status = " << _Gen->status[igen] << std::endl;
-       
+
         if(lep1!=TLorentzVector(0,0,0,0)){
           lep2= _Gen->p4(igen);
           mass=(lep1+lep2).M();
@@ -5823,6 +5823,8 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
         histAddVal(tauiso, "IsolationWP");
         histAddVal(antiele, "AntiEleWP");
         histAddVal(antimu, "AntiMuWP");
+
+        histAddVal(_Tau->decayModeInt[it], "DecayMode");
 
         if(!isData){
           int genPartonFlavor = static_cast<int>(_Tau->genPartFlav[it]);
@@ -6451,7 +6453,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
       histAddVal(noisyjetshotcellPpluseta.size(), "NHotCellEtaPPhiP");
 
       int njethotcelletaminus = noisyjetshotcell0minuseta.size() + noisyjetshotcellPminuseta.size();
-      int njethotcelletaplus = noisyjetshotcellMpluseta.size() + noisyjetshotcell0pluseta.size() + noisyjetshotcellPpluseta.size(); 
+      int njethotcelletaplus = noisyjetshotcellMpluseta.size() + noisyjetshotcell0pluseta.size() + noisyjetshotcellPpluseta.size();
 
       histAddVal(njethotcelletaminus, "NHotCellEtaM");
       histAddVal(njethotcelletaplus, "NHotCellEtaP");
@@ -6461,7 +6463,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
 
       histAddVal(jetsetapluseta2p6to3p2.size(), "NPosEEnoiseEta");
       histAddVal(jetsetaminuseta2p6to3p2.size(), "NNegEEnoiseEta");
-      
+
       histAddVal2(jetsetaminuseta0to4p7.size(), jetsetapluseta2p6to3p2.size(), "NEEnoiseEtaPosvsTotalNeg");
       histAddVal2(jetsetaminuseta2p6to3p2.size(), jetsetapluseta0to4p7.size(), "NEEnoiseEtaTotalPosvsNeg");
       histAddVal2(jetsetaminuseta2p6to3p2.size(), jetsetapluseta2p6to3p2.size(), "NEEnoiseEtaPosvsNeg");
@@ -6479,7 +6481,7 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
 
         for(size_t ip = 0; ip < jetsetapluseta2p6to3p2.size(); ip++){
           int index_posj = jetsetapluseta2p6to3p2.at(ip);
-          
+
           for(size_t im = 0; im < jetsetaminuseta2p6to3p2.size(); im++){
             int index_negj = jetsetaminuseta2p6to3p2.at(im);
 
@@ -6505,12 +6507,12 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
             histAddVal2(deltaPEENoiseJets.Pt(), totalneutralHadEF, "EEnoiseCombTotalNeutralHadEFvsDeltaPt");
             histAddVal2(deltaPEENoiseJets.Pt(), totalchargedHadEF, "EEnoiseCombTotalChargedHadEFvsDeltaPt");
 
-          } 
+          }
         }
       } else{
         histAddVal(0, "NOSEEnoiseEta");
       }
-      
+
     }
 
     if((part->type != PType::Jet ) && active_part->at(ePos)->size() > 0) {

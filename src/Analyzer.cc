@@ -3587,15 +3587,15 @@ bool Analyzer::passJetVetoEEnoise2017(int jet_index){
       if( (lvec.Eta() > -3.15) && (lvec.Eta() < -2.66)){
         jetsminuseta3p2to2p6.push_back(i);
 
-        if( (lvec.Phi() > -0.14) && (lvec.Phi() < 0.21) ){ noisyjetshotcell0minuseta.push_back(i);}
-        else if( (lvec.Phi() > 1.40) && (lvec.Phi() < 1.75) ){ noisyjetshotcellPminuseta.push_back(i); }
+        if( (lvec.Phi() > -0.42) && (lvec.Phi() < 0.21) ){ noisyjetshotcell0minuseta.push_back(i);}
+        else if( (lvec.Phi() > 1.19) && (lvec.Phi() < 2.03) ){ noisyjetshotcellPminuseta.push_back(i); }
       }
 
       if( (lvec.Eta() > 2.66) && (lvec.Eta() < 3.15 )){
         jetspluseta2p6to3p2.push_back(i);
-        if( (lvec.Phi() > -1.82) && (lvec.Phi() < -1.26) ){ noisyjetshotcellMpluseta.push_back(i); }
-        else if( (lvec.Phi() > -0.35) && (lvec.Phi() < 0.28) ){ noisyjetshotcell0pluseta.push_back(i); }
-        else if ( (lvec.Phi() > 1.12) && (lvec.Phi() < 1.54) ){ noisyjetshotcellPpluseta.push_back(i); }
+        if( (lvec.Phi() > -2.03) && (lvec.Phi() < -1.19) ){ noisyjetshotcellMpluseta.push_back(i); }
+        else if( (lvec.Phi() > -0.42) && (lvec.Phi() < 0.42) ){ noisyjetshotcell0pluseta.push_back(i); }
+        else if ( (lvec.Phi() > 1.05) && (lvec.Phi() < 1.61) ){ noisyjetshotcellPpluseta.push_back(i); }
       }
     }
 
@@ -3621,30 +3621,6 @@ bool Analyzer::passJetVetoEEnoise2017(int jet_index){
       float ratio_deltaPtHT = deltaP.Pt() / _MET->HT();
 
       if(ratio_deltaPtHT < 0.4) passVeto = false;
-    }
-
-    if(passVeto == true){
-
-      int n_noisyjets = 0;
-
-      if(jetsminuseta3p2to2p6.size() > 0){
-        for(size_t i=0; i < jetsminuseta3p2to2p6.size(); i++){
-          TLorentzVector jetp4 = _Jet->p4(jetsminuseta3p2to2p6.at(i));
-          if(jetp4.Pt() < 80.0){ n_noisyjets++; }
-        }
-     }
-
-     if(n_noisyjets > 0){ passVeto = false; }
-
-      if( (passVeto == true) && (jetspluseta2p6to3p2.size() > 0)){
-        for(size_t i=0; i < jetspluseta2p6to3p2.size(); i++){
-          TLorentzVector jetp4 = _Jet->p4(jetspluseta2p6to3p2.at(i));
-          if(jetp4.Pt() < 80.0){ n_noisyjets++; }
-        }
-      }
-
-      if(n_noisyjets > 0){ passVeto = false; }
-
     }
 
   } else if(distats["Run"].bfind("ApplyVetoTypeII")){

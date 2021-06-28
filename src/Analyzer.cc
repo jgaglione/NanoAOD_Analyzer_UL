@@ -2940,11 +2940,36 @@ void Analyzer::getGoodGen(const PartStats& stats) {
 
   int particle_id = 0;
 
-  std::vector<int> intermiedateP4CorrPart;
+  staus.clear();
+  staus.shrink_to_fit();
+  directstaus.clear();
+  directstaus.shrink_to_fit();
+  neu1s.clear();
+  neu1s.shrink_to_fit();
+  neu2s.clear();
+  neu2s.shrink_to_fit();
+  chi1s.clear();
+  chi1s.shrink_to_fit();
+
 
   for(size_t j = 0; j < _Gen->size(); j++) {
 
     particle_id = abs(_Gen->pdg_id[j]);
+
+    if(particle_id == 1000022 && _Gen->status[j] == 1){
+      neu1s.push_back(j);
+    } else if(particle_id == 1000023 && _Gen->status[j] == 62){
+      neu2s.push_back(j);
+    } else if(particle_id == 1000024 && _Gen->status[j] == 62){
+      chi1s.push_back(j);
+    } else if(particle_id == 1000015){
+      if(_Gen->status[j] == 62 && abs(_Gen->pdg_id[_Gen->genPartIdxMother[j]]) == 1000015){
+        directstaus.push_back(j);
+      } else if(_Gen->status[j] == 22 && abs(_Gen->pdg_id[_Gen->genPartIdxMother[j]]) > 1000022){
+        staus.push_back(j);
+      }
+    }
+
 
     if( (particle_id < 5 || particle_id == 9 || particle_id == 21) && genMaper.find(particle_id) != genMaper.end() && _Gen->status[j] == genMaper.at(5)->status){
       active_part->at(genMaper.at(5)->ePos)->push_back(j);
@@ -3003,6 +3028,28 @@ void Analyzer::getGoodGen(const PartStats& stats) {
     }
 
   }
+
+
+/*    std::cout << "Number of neu2 = " << neu2s.size() << std::endl;
+    for(size_t i=0; i<neu2s.size(); i++){
+      std::cout << "Neutralino2 #" << i << ": index = " << neu2s.at(i) << ", mass = " << _Gen->mass(neu2s.at(i)) << std::endl;
+    }
+    std::cout << "Number of chi1 = " << chi1s.size() << std::endl;
+    for(size_t i=0; i<chi1s.size(); i++){
+      std::cout << "Chargino1 #" << i << ": index = " << chi1s.at(i) << ", mass = " << _Gen->mass(chi1s.at(i)) << std::endl;
+    }
+    std::cout << "Number of neu1 = " << neu1s.size() << std::endl;
+    for(size_t i=0; i<neu1s.size(); i++){
+      std::cout << "Neutralino1 #" << i << ": index = " << neu1s.at(i) << ", mass = " << _Gen->mass(neu1s.at(i)) << std::endl;
+    }
+    std::cout << "Number of staus = " << staus.size() << std::endl;
+    for(size_t i=0; i<staus.size(); i++){
+      std::cout << "Stau #" << i << ": index = " << staus.at(i) << ", mass = " << _Gen->mass(staus.at(i)) << std::endl;
+    }
+    std::cout << "Number of direct staus = " << directstaus.size() << std::endl;
+    for(size_t i=0; i<directstaus.size(); i++){
+      std::cout << "Direct stau #" << i << ": index = " << directstaus.at(i) << ", mass = " << _Gen->mass(directstaus.at(i)) << std::endl;
+    }*/
 }
 
 // --- Function that applies selections to hadronic taus at gen-level (stored in the GenVisTau list) --- //
@@ -5132,8 +5179,6 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
       histAddVal(_Gen->p4(igen).Eta(), "LeptonEta");
       histAddVal(_Gen->p4(igen).Phi(), "LeptonPhi");
       histAddVal(_Gen->p4(igen).E(), "LeptonE");
-
-        //nb_leptons++;
     }
 
     histAddVal(mass, "DiLeptonMass");
@@ -5154,6 +5199,164 @@ void Analyzer::fill_Folder(std::string group, const int max, Histogramer &ihisto
     histAddVal(genmet_pt, "MetPt");
     histAddVal(genmet_phi, "MetPhi");
 
+    histAddVal2(neu2s.size(), chi1s.size(), "NChi1vsNeu2");
+    histAddVal2(neu2s.size(), staus.size(), "NStauvsNeu2");
+    histAddVal2(chi1s.size(), staus.size(), "NStauvsChi1");
+    histAddVal(neu2s.size(), "NNeu2");
+    histAddVal(chi1s.size(), "NChi1");
+    histAddVal(neu1s.size(), "NNeu1");
+    histAddVal(staus.size(), "NStau");
+    histAddVal(directstaus.size(), "NDirectStau");
+
+    if(chi1s.size() == 1 && neu2s.size() == 1){
+      histAddVal(0, "SUSYCompRatio");
+      histAddVal(staus.size(), "NChi1Neu2Stau");
+      if(_Gen->pdg_id[chi1s.at(0)] > 0){
+        histAddVal(1, "Neu2Chi1ChargeChi1");
+      }
+      if(_Gen->pdg_id[chi1s.at(0)] < 0){
+        histAddVal(-1, "Neu2Chi1ChargeChi1");
+      }
+      
+      for(size_t j=0; j < _Gen->size(); j++){
+        if(_Gen->genPartIdxMother[j] != chi1s.at(0)) continue;
+
+        if(abs(_Gen->pdg_id[j]) == 15 ){
+           for(size_t k=0; k<staus.size(); k++){
+              if(_Gen->genPartIdxMother[j] != staus.at(k) ) continue;
+              histAddVal(_Gen->pt(j), "TauPtFromEWKinoPair");
+           }
+        }
+
+        if(abs(_Gen->pdg_id[j]) > 1000000){
+          int newpdgid = abs(_Gen->pdg_id[j]) - 1000000 + 75;
+          histAddVal(newpdgid, "Neu2Chi1DaughterPIDChi1");
+        } else{
+          histAddVal(abs(_Gen->pdg_id[j]), "Neu2Chi1DaughterPIDChi1");
+        }
+      }
+
+      for(size_t j=0; j < _Gen->size(); j++){
+        if(abs(_Gen->pdg_id[j]) == 15 && _Gen->genPartIdxMother[j] == neu2s.at(0)){
+           histAddVal(_Gen->pt(j), "TauPtFromEWKinoPair");
+        } else if(abs(_Gen->pdg_id[j]) == 15 && _Gen->genPartIdxMother[j] != neu2s.at(0)){
+           for(size_t k=0; k<staus.size(); k++){
+              if(_Gen->genPartIdxMother[j] != staus.at(k) ) continue;
+              histAddVal(_Gen->pt(j), "TauPtFromEWKinoPair");
+	   }           
+          }
+
+        if(_Gen->genPartIdxMother[j] != neu2s.at(0)) continue;
+
+        if(abs(_Gen->pdg_id[j]) > 1000000){
+          int newpdgid = abs(_Gen->pdg_id[j]) - 1000000 + 75;
+          histAddVal(newpdgid, "Neu2Chi1DaughterPIDNeu2");
+        } else{
+          histAddVal(abs(_Gen->pdg_id[j]), "Neu2Chi1DaughterPIDNeu2");
+        }
+      }
+
+    } else if(chi1s.size() == 2 && neu2s.size() == 0){
+      histAddVal(1, "SUSYCompRatio");
+      histAddVal(staus.size(), "NChi1Chi1Stau");
+
+      int chargecomb = (_Gen->pdg_id[chi1s.at(0)]) * (_Gen->pdg_id[chi1s.at(1)]) / abs( (_Gen->pdg_id[chi1s.at(0)]) * (_Gen->pdg_id[chi1s.at(1)]) );
+      histAddVal(chargecomb, "Chi1Chi1ChargeComb");
+
+      for(size_t i=0; i < chi1s.size(); i++){
+
+        if(_Gen->pdg_id[chi1s.at(i)] > 0){
+          histAddVal(1, "Chi1Chi1ChargeChi1");
+        }
+        if(_Gen->pdg_id[chi1s.at(i)] < 0){
+          histAddVal(-1, "Chi1Chi1ChargeChi1");
+        }
+
+        for(size_t j=0; j < _Gen->size(); j++){
+
+         if(abs(_Gen->pdg_id[j]) == 15 ){
+	    for(size_t k=0; k<staus.size(); k++){
+               if(_Gen->genPartIdxMother[j] != staus.at(k) ) continue;
+               histAddVal(_Gen->pt(j), "TauPtFromEWKinoPair");
+               histAddVal(_Gen->pt(j), "TauPtFromChi1Chi1Pair");
+            }
+ 	 }
+
+         if(_Gen->genPartIdxMother[j] != chi1s.at(i)) continue;
+
+         if(abs(_Gen->pdg_id[j]) > 1000000){
+            int newpdgid = abs(_Gen->pdg_id[j]) - 1000000 + 75;
+            histAddVal(newpdgid, "Chi1Chi1DaughterPIDChi1");
+          } else{
+            histAddVal(abs(_Gen->pdg_id[j]), "Chi1Chi1DaughterPIDChi1");
+          }
+        }
+      }
+
+    } else if(neu2s.size() == 2 && chi1s.size() == 0){
+      histAddVal(2, "SUSYCompRatio");
+      histAddVal(staus.size(), "NNeu2Neu2Stau");
+      for(size_t i=0; i < neu2s.size(); i++){
+        for(size_t j=0; j < _Gen->size(); j++){
+
+         if(abs(_Gen->pdg_id[j]) == 15 && _Gen->genPartIdxMother[j] == neu2s.at(i)){
+            histAddVal(_Gen->pt(j), "TauPtFromEWKinoPair");
+         } else if(abs(_Gen->pdg_id[j]) == 15 && _Gen->genPartIdxMother[j] != neu2s.at(i)){
+            for(size_t k=0; k<staus.size(); k++){
+               if(_Gen->genPartIdxMother[j] != staus.at(k) ) continue;
+               histAddVal(_Gen->pt(j), "TauPtFromEWKinoPair");
+            }
+         }
+         
+         if(_Gen->genPartIdxMother[j] != neu2s.at(i)) continue;
+
+          if(abs(_Gen->pdg_id[j]) > 1000000){
+            int newpdgid = abs(_Gen->pdg_id[j]) - 1000000 + 75;
+            histAddVal(newpdgid, "Neu2Neu2DaughterPIDNeu2");
+          } else{
+            histAddVal(abs(_Gen->pdg_id[j]), "Neu2Neu2DaughterPIDNeu2");
+          }
+        }
+      }
+    } else if((chi1s.size() == 1 && neu1s.size() == 2) && neu2s.size() == 0){
+      histAddVal(3, "SUSYCompRatio");
+      histAddVal(staus.size(), "NChi1Neu1Stau");
+    } else if( (neu2s.size() == 1 && neu1s.size() == 2) && chi1s.size() == 0){
+      histAddVal(4, "SUSYCompRatio");
+      histAddVal(staus.size(), "NNeu2Neu1Stau");
+    } else if(directstaus.size() == 2 && (neu2s.size() == 0 && chi1s.size() == 0) ){
+      histAddVal(5, "SUSYCompRatio"); 
+
+       for(size_t i=0; i < directstaus.size(); i++){
+         for(size_t j=0; j < _Gen->size(); j++){
+           if(_Gen->genPartIdxMother[j] != directstaus.at(i)) continue;
+           
+          if(abs(_Gen->pdg_id[j]) == 15){
+             histAddVal(_Gen->pt(j), "TauPtFromDirectStaus");
+          }
+           
+         }
+       }
+
+    } else if(directstaus.size() == 0 && (neu2s.size() == 0 && chi1s.size() == 0) && neu1s.size() == 2){
+      histAddVal(6, "SUSYCompRatio");
+    }
+
+    for(size_t i=0; i<neu1s.size(); i++){
+      histAddVal(_Gen->mass(neu1s.at(i)), "Neu1Mass");
+    }
+    for(size_t i=0; i<neu2s.size(); i++){
+      histAddVal(_Gen->mass(neu2s.at(i)), "Neu2Mass");
+    }
+    for(size_t i=0; i<chi1s.size(); i++){
+      histAddVal(_Gen->mass(chi1s.at(i)), "Chi1Mass");
+    }
+    for(size_t i=0; i<staus.size(); i++){
+      histAddVal(_Gen->mass(staus.at(i)), "StauMass");
+    }
+    for(size_t i=0; i<directstaus.size(); i++){
+      histAddVal(_Gen->mass(directstaus.at(i)), "DirectStauMass");
+    }
   } else if(group == "FillJetPtProjMet"){
 
     if(_Jet->size() > 0){

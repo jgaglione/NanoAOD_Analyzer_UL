@@ -367,6 +367,12 @@ public:
   clock_t start_time;
   std::chrono::time_point<std::chrono::system_clock> start;
 
+  std::vector<int> staus;
+  std::vector<int> directstaus;
+  std::vector<int> neu2s;
+  std::vector<int> neu1s;
+  std::vector<int> chi1s;
+
 };
 
 

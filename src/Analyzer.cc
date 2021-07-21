@@ -2052,7 +2052,7 @@ void Analyzer::setupJetCorrections(std::string year, std::string outputfilename)
    static std::map<std::string, std::string> jecTagsMC = {
      {"2016" , "Summer16_07Aug2017_V11_MC"},
      {"2017" , "Fall17_17Nov2017_V32_MC"},
-     {"2018" , "Autumn18_V19_MC"}
+     {"2018" , "Summer19UL18_V5_MC"}
    };
 
    static std::map<std::string, std::string> jecTagsFastSim = {
@@ -2064,7 +2064,7 @@ void Analyzer::setupJetCorrections(std::string year, std::string outputfilename)
    static std::map<std::string, std::string> archiveTagsDATA = {
      {"2016" , "Summer16_07Aug2017_V11_DATA"},
      {"2017" , "Fall17_17Nov2017_V32_DATA"},
-     {"2018" , "Autumn18_V19_DATA"}
+     {"2018" , "Summer19UL18_V5_DATA"}
    };
 
    static std::map<std::string, std::string> jecTagsDATA = {
@@ -2080,16 +2080,16 @@ void Analyzer::setupJetCorrections(std::string year, std::string outputfilename)
      {"2017D" , "Fall17_17Nov2017DE_V32_DATA"},
      {"2017E" , "Fall17_17Nov2017DE_V32_DATA"},
      {"2017F" , "Fall17_17Nov2017F_V32_DATA"},
-     {"2018A" , "Autumn18_RunA_V19_DATA"},
-     {"2018B" , "Autumn18_RunB_V19_DATA"},
-     {"2018C" , "Autumn18_RunC_V19_DATA"},
-     {"2018D" , "Autumn18_RunD_V19_DATA"}
+     {"2018A" , "Summer19UL18_RunA_V5_DATA"},
+     {"2018B" , "Summer19UL18_RunB_V5_DATA"},
+     {"2018C" , "Summer19UL18_RunC_V5_DATA"},
+     {"2018D" , "Summer19UL18_RunD_V5_DATA"}
    };
 
    static std::map<std::string, std::string> jerTagsMC = {
      {"2016" , "Summer16_25nsV1_MC"},
      {"2017" , "Fall17_V3_MC"},
-     {"2018" , "Autumn18_V7_MC"}
+     {"2018" , "Summer19UL18_JRV2_MC"}
    };
 
    std::string jertag = jerTagsMC.begin()->second;

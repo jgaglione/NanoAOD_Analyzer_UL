@@ -1501,14 +1501,12 @@ bool Analyzer::passMetFilters(std::string year, int ievent){
     // in 2016, this filter is not recommended... therefore we set it always to true.
     ecalbadcalibrationfilter = true;
     //UL 2017 and 2018 addition
-    badpfmuondzfilter = true;
     eebadscfilter = true;
   }
   else{
     // ECAL bad calibration filter (2017 + 2018).
     SetBranch("Flag_ecalBadCalibFilter", ecalbadcalibrationfilter);
     //UL 2017 and 2018 addition
-    SetBranch("Flag_BadPFMuonDzFilter", badpfmuondzfilter);
     SetBranch("Flag_eeBadScFilter", eebadscfilter);
   }
 
@@ -1516,7 +1514,7 @@ bool Analyzer::passMetFilters(std::string year, int ievent){
   BOOM->GetEntry(ievent);
 
   // Check if the current event passed all the flags
-  allmetfilters = primaryvertexfilter && beamhalofilter && hbhenoisefilter && ecaltpfilter && badpfmuonfilter && ecalbadcalibrationfilter && badpfmuondzfilter && eebadscfilter;
+  allmetfilters = primaryvertexfilter && beamhalofilter && hbhenoisefilter && ecaltpfilter && badpfmuonfilter && ecalbadcalibrationfilter && eebadscfilter;
 
   return allmetfilters;
 

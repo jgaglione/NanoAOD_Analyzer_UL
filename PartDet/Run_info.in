@@ -1,44 +1,42 @@
-###################################
+###############################i####
                 Run
 ####################################
 
-CalculatePUSystematics false
-DataHistos PileUpReweighting2017.root       # 2016: PileUpReweighting2016.root, 2017: PileUpReweighting2017.root, 2018: PileUpReweighting2018.root
-MCHistos mc2017_pileup_Dec2018reReco.root   # 2016: mc2016_pileup_Dec2018reReco.root, 2017: mc2017_pileup_Dec2018reReco.root, 2018: 2016: mc2018_pileup_Dec2018reReco.root
+CalculatePUSystematics true
+DataHistos PileUpReweighting2018.root       # 2016: PileUpReweighting2016.root, 2017: PileUpReweighting2017.root, 2018: PileUpReweighting2018.root
+MCHistos mc2018_pileup_Dec2018reReco.root   # 2016: mc2016_pileup_Dec2018reReco.root, 2017: mc2017_pileup_Dec2018reReco.root, 2018: 2016: mc2018_pileup_Dec2018reReco.root
 DataPUHistName pileup
 MCPUHistName pileup
 
 SpecialMCPUCalculation false
 SpecialMCPUHistos new_mc2017_pileupReweighting_NanoAODv6.root
-# SpecialMCPUHistos new_mc2017_pileupReweighting_NanoAODv6_wanddylo_incl.root
+/// SpecialMCPUHistos new_mc2017_pileupReweighting_NanoAODv6_wanddylo_incl.root
 
-ApplyTauIDSF false
+ApplyTauIDSF true
 TauIdSFsByDM false # Tau ID scale factors that are decay mode (DM) - dependent. If using di-tau triggers and tau-pt > 40 GeV, this are the recommended SFs.
 TauSFforEmbeddedSamples false
 
-ApplyTauAntiEleSF false
-ApplyTauAntiMuSF false
-
-UsePileUpWeight false
-ApplyNPVWeight false
+ApplyTauAntiEleSF true
+ApplyTauAntiMuSF true
 
 ApplyISRZBoostSF false # Z-boost weight corrections derived for ISR+stau analysis (SUS-19-002)
 ApplySUSYZBoostSF false # Official Z-boost weight corrections derived by the SUSY PAG.
-ApplyVBFSusyZBoostSF false # Weights derived by the VBF SUSY team - Run II
+ApplyVBFSusyZBoostSF true # Weights derived by the VBF SUSY team - Run II
 
-isData true
-ApplyGenWeight  false
+isData false
+ApplyGenWeight  true
+UsePileUpWeight true
+ApplyNPVweights false
 
 ApplyL1PrefiringWeight false
-ApplyHEMVeto2018 false
 
 /// ------ Data-specific cuts ------///
 FilterDataByGoldenJSON true
-ApplyEEnoiseVeto2017EF true
+ApplyHEMVeto2018 true
 
 /// ------ MC Gen-level cuts ------///
 /// --- HT filter --- ///
-DiscrByGenHT false
+DiscrByGenHT fale
 LowerGenHtCut 0.0
 UpperGenHtCut 100.0
 
@@ -48,12 +46,12 @@ GenDilepMassRange 80.0 100.0
 
 /// ------ Triggers ----- ///
 
-Trigger1FirstRequirement HLT_IsoMu24
-Trigger1SecondRequirement HLT_IsoMu27
-UseTriggerWildcard false
+Trigger1FirstRequirement HLT_DoubleMediumChargedIsoPFTau
+Trigger1SecondRequirement HLT_DoubleMediumChargedIsoPFTauHPS
+UseTriggerWildcard true
 
-# Trigger2FirstRequirement HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg
-# Trigger2SecondRequirement HLT_DoubleMediumIsoPFTau40_Trk1_eta2p1_Reg
+/// Trigger2FirstRequirement HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg
+/// Trigger2SecondRequirement HLT_DoubleMediumIsoPFTau40_Trk1_eta2p1_Reg
 
 ///---Treat Muon as Neutrino---///
 
@@ -65,15 +63,18 @@ TreatMuonsAsTaus 0
 ApplyMetFilters true
 ApplyMETxyShiftCorrections true
 MT2Mass 0.
-DiscrByMet true
-MetCut 125.0 175.0
+DiscrByMet false
+MetCut 230.0 10000.0
 
 DiscrByMHT false
 MhtCut 50.0
 DiscrByHT false
 HtCut 30.0
 
-JetPtForMhtAndHt 30.0
-JetEtaForMhtAndHt 4.7
+JetPtForMhtAndHt 30.0        
+JetEtaForMhtAndHt 5.0        
 ApplyJetLooseIDforMhtAndHt false
 ApplyJetTightIDforMhtAndHt true
+
+/// --- MC selection --- ///
+InitializeMCSelection false

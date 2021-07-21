@@ -322,6 +322,10 @@ public:
   bool ecalbadcalibrationfilter = false;
   bool allmetfilters = false;
   bool passedmetfilters = false;
+  //additional recommended for UL 2017 and 2018
+  bool badpfmuondzfilter = false;
+  bool eebadscfilter = false;
+  
 
   // B-tagging scale factors - calibration + readers
   BTagCalibration btagcalib;

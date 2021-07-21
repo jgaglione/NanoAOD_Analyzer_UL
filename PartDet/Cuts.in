@@ -28,29 +28,27 @@ NGenW		0  -1
 NGenHiggs	0  -1
 NGenTau		0  -1
 
-***NRecoVertex        1   -1
-***NRecoTriggers1     1   -1   
-***NRecoMuon1         2    2   
-***NRecoMuon2         2    2
-***NDiMuonCombinations     1   1
-
-***NRecoBJet          0    0    
-***NRecoElectron1     0    0
-***NRecoTau1          0    0
-
-***NRecoJet1	      1   -1   
-***NRecoJet2	      1   -1   
-***NDiJetCombinations 0    0
-
-METCut 				  0   -1
-NRecoElectron2	      0   -1
+***NRecoVertex        1   -1   ///at least one good vertex
+***NRecoTriggers1     1   -1   ///events must fire the HLT_IsoMu24 trigger
+***NRecoTau1          2   2
+***NDiTauCombinations	   1   1
+***NRecoElectron1        0   0
+***NRecoMuon1	      0   0   
+***NRecoJet1          1   -1
+***NRecoFirstLeadingJet       1   -1   ///only 0 or 1
+***NRecoBJet          0   0
+METCut             0   -1   ///met cut
+NRecoMuon2            0   -1
+NDiMuonCombinations	   0   -1
+NRecoJet2	      0   -1   
+NDiJetCombinations    0   -1  
 NRecoMuon2	      0   -1
+NRecoElectron2	      0   -1
+NRecoTau2	      0   -1
 NRecoCentralJet	      0   -1
 NRecoTriggers2	      0   -1           ///only 0 or 1
 NRecoSecondLeadingJet 0   -1    ///only 0 or 1
 NDiElectronCombinations	   0   -1
-NDiMuonCombinations	   0   -1
-NRecoFirstLeadingJet       0   -1   ///only 0 or 1  
 NRecoSecondLeadingJet 	   0   -1    ///only 0 or 1
 NLeadJetCombinations       0   -1   ///only 0 or 1
 NMuon1Tau1Combinations        0   -1
@@ -66,4 +64,8 @@ NMuon1Electron2Combinations   0   -1
 NMuon2Electron1Combinations   0   -1
 NMuon2Electron2Combinations   0   -1
 
-# ***EENoiseVeto        1    -1
+
+
+
+
+

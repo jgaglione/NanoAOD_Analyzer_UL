@@ -155,12 +155,7 @@ Analyzer::Analyzer(std::vector<std::string> infiles, std::string outfile, bool s
 
   _Photon   = new Photon(BOOM, filespace + "Photon_info.in", syst_names, year);
 
-  if(year.compare("2017") == 0){
-    _MET      = new Met(BOOM, "METFixEE2017" , syst_names, distats["Run"].dmap.at("MT2Mass"));
-  }
-  else{
-    _MET      = new Met(BOOM, "MET" , syst_names, distats["Run"].dmap.at("MT2Mass"));
-  }
+  _MET      = new Met(BOOM, "MET" , syst_names, distats["Run"].dmap.at("MT2Mass"));
 
 
   // B-tagging scale factor stuff
@@ -1505,18 +1500,23 @@ bool Analyzer::passMetFilters(std::string year, int ievent){
   if(year.compare("2016") == 0){
     // in 2016, this filter is not recommended... therefore we set it always to true.
     ecalbadcalibrationfilter = true;
+    //UL 2017 and 2018 addition
+    badpfmuondzfilter = true;
+    eebadscfilter = true;
   }
   else{
     // ECAL bad calibration filter (2017 + 2018).
-    // SetBranch("Flag_ecalBadCalibFilter", ecalbadcalibrationfilter);
-    SetBranch("Flag_ecalBadCalibFilterV2", ecalbadcalibrationfilter);
+    SetBranch("Flag_ecalBadCalibFilter", ecalbadcalibrationfilter);
+    //UL 2017 and 2018 addition
+    SetBranch("Flag_BadPFMuonDzFilter", badpfmuondzfilter);
+    SetBranch("Flag_eeBadScFilter", eebadscfilter);
   }
 
   // Call get entry so all the branches assigned here are filled with the proper values for each event.
   BOOM->GetEntry(ievent);
 
   // Check if the current event passed all the flags
-  allmetfilters = primaryvertexfilter && beamhalofilter && hbhenoisefilter && ecaltpfilter && badpfmuonfilter && ecalbadcalibrationfilter;
+  allmetfilters = primaryvertexfilter && beamhalofilter && hbhenoisefilter && ecaltpfilter && badpfmuonfilter && ecalbadcalibrationfilter && badpfmuondzfilter && eebadscfilter;
 
   return allmetfilters;
 

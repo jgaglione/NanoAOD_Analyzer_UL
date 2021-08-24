@@ -157,74 +157,74 @@ void Met::applyXYshiftCorr(std::string const& year, std::string const& runera, i
    // Check what the run era is and calculate the correction based on the NPV of the event.
    if(year == "2016" && isdata){ // In this case, we use normal MET (not v2 as in 2017)
      if(runera == "2016B"){
-       metxcorr = -(-0.0478335*npv - 0.108032);
-       metycorr = -(0.125148*npv + 0.355672);
+       metxcorr = -(-0.0214894*npv +-0.188255);
+       metycorr = -(0.0876624*npv +0.812885);
      } else if(runera == "2016C"){
-       metxcorr = -(-0.0916985*npv + 0.393247);
-       metycorr = -(0.151445*npv + 0.114491);
+       metxcorr = -(-0.032209*npv +0.067288);
+       metycorr = -(0.113917*npv +0.743906);
      } else if(runera == "2016D"){
-       metxcorr = -(-0.0581169*npv + 0.567316);
-       metycorr = -(0.147549*npv + 0.403088);
+       metxcorr = -(-0.0293663*npv +0.21106);
+       metycorr = -(0.11331*npv +0.815787);
      } else if(runera == "2016E"){
-       metxcorr = -(-0.065622*npv + 0.536856);
-       metycorr = -(0.188532*npv + 0.495346);
+       metxcorr = -(-0.0132046*npv +0.20073);
+       metycorr = -(0.134809*npv +0.679068);
      } else if(runera == "2016F"){
-       metxcorr = -(-0.0313322*npv + 0.39866);
-       metycorr = -(0.16081*npv + 0.960177);
+       metxcorr = -(-0.0543566*npv +0.816597);
+       metycorr = -(0.114225*npv +1.17266);
      } else if(runera == "2016G"){
-       metxcorr = -(0.040803*npv - 0.290384);
-       metycorr = -(0.0961935*npv + 0.666096);
+       metxcorr = -(0.121809*npv +-0.584893);
+       metycorr = -(0.0558974*npv +0.891234);
      } else if(runera == "2016H"){
-       metxcorr = -(0.0330868*npv - 0.209534);
-       metycorr = -(0.141513*npv + 0.816732);
+       metxcorr = -(0.0868828*npv +-0.703489);
+       metycorr = -(0.0888774*npv +0.902632);
      }
    } else if(year == "2016" && !isdata && runera == "2016MC"){ // In this case, we use normal MET (not v2 as in 2017)
 
-       metxcorr = -(-0.195191*npv - 0.170948);
-       metycorr = -(-0.0311891*npv + 0.787627);
+       metxcorr = -(-0.153497*npv +-0.231751);
+       metycorr = -(0.00731978*npv +0.243323);
 
    } else if(year == "2017" && isdata){ // In this case, we use MET v2 (subtracting EE noise)
 
      if(runera == "2017B"){
-       metxcorr = -(-0.19563*npv + 1.51859);
-       metycorr = -(0.306987*npv - 1.84713);
+       metxcorr = -(-0.211161*npv +0.419333);
+       metycorr = -(0.251789*npv +-1.28089);
      } else if(runera == "2017C"){
-       metxcorr = -(-0.161661*npv + 0.589933);
-       metycorr = -(0.233569*npv - 0.995546);
+       metxcorr = -(-0.185184*npv +-0.164009);
+       metycorr = -(0.200941*npv +-0.56853);
      } else if(runera == "2017D"){
-       metxcorr = -(-0.180911*npv + 1.23553);
-       metycorr = -(0.240155*npv - 1.27449);
+       metxcorr = -(-0.201606*npv +0.426502);
+       metycorr = -(0.188208*npv +-0.58313);
      } else if(runera == "2017E"){
-       metxcorr = -(-0.149494*npv + 0.901305);
-       metycorr = -(0.178212*npv - 0.535537);
+       metxcorr = -(-0.162472*npv +0.176329);
+       metycorr = -(0.138076*npv +-0.250239);
      } else if(runera == "2017F"){
-       metxcorr = -(-0.165154*npv + 1.02018);
-       metycorr = -(0.253794*npv + 0.75776);
+       metxcorr = -(-0.210639*npv +0.72934);
+       metycorr = -(0.198626*npv +1.028);
      }
 
    } else if(year == "2017" && !isdata && runera == "2017MC"){ // In this case, we use MET v2 (subtracting EE noise)
 
-     metxcorr = -(-0.182569*npv + 0.276542);
-     metycorr = -(0.155652*npv - 0.417633);
+     metxcorr = -(-0.300155*npv +1.90608);
+     metycorr = -(0.300213*npv +-2.02232);
 
    } else if(year == "2018" && isdata){ // In this case, we use normal MET (not v2 as in 2017)
      if(runera == "2018A"){
-       metxcorr = -(0.362865*npv - 1.94505);
-       metycorr = -(0.0709085*npv - 0.307365);
+       metxcorr = -(0.263733*npv +-1.91115);
+       metycorr = -(0.0431304*npv +-0.112043);
      } else if(runera == "2018B"){
-       metxcorr = -(0.492083*npv - 2.93552);
-       metycorr = -(0.17874*npv - 0.786844);
+       metxcorr = -(0.400466*npv +-3.05914);
+       metycorr = -(0.146125*npv +-0.533233);
      } else if(runera == "2018C"){
-       metxcorr = -(0.521349*npv - 1.44544);
-       metycorr = -(0.118956*npv - 1.96434);
+       metxcorr = -(0.430911*npv +-1.42865);
+       metycorr = -(0.0620083*npv +-1.46021);
      } else if(runera == "2018D"){
-       metxcorr = -(0.531151*npv -1.37568);
-       metycorr = -(0.0884639*npv -1.57089);
+       metxcorr = -(0.457327*npv +-1.56856);
+       metycorr = -(0.0684071*npv +-0.928372);
      }
    } else if(year == "2018" && !isdata && runera == "2018MC"){ // In this case, we use normal MET (not v2 as in 2017)
 
-     metxcorr = -(0.296713*npv - 0.141506);
-     metycorr = -(0.115685*npv + 0.0128193);
+     metxcorr = -(0.183518*npv +0.546754);
+     metycorr = -(0.192263*npv +-0.42121);
 
    }
 

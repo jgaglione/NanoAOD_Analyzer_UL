@@ -25,7 +25,7 @@ ApplyVBFSusyZBoostSF true # Weights derived by the VBF SUSY team - Run II
 
 isData false
 ApplyGenWeight  true
-UsePileUpWeight true
+UsePileUpWeight false
 ApplyNPVweights false
 
 ApplyL1PrefiringWeight false
@@ -36,7 +36,7 @@ ApplyHEMVeto2018 true
 
 /// ------ MC Gen-level cuts ------///
 /// --- HT filter --- ///
-DiscrByGenHT fale
+DiscrByGenHT false
 LowerGenHtCut 0.0
 UpperGenHtCut 100.0
 

@@ -2049,7 +2049,7 @@ void Analyzer::setupJetCorrections(std::string year, std::string outputfilename)
    // ------------------------ NEW: Jet Energy Scale and Resolution corrections initialization ------------------- //
    static std::map<std::string, std::string> jecTagsMC = {
      {"2016" , "Summer16_07Aug2017_V11_MC"},
-     {"2017" , "Fall17_17Nov2017_V32_MC"},
+     {"2017" , "Summer19UL17_V5_MC"},
      {"2018" , "Summer19UL18_V5_MC"}
    };
 
@@ -2061,7 +2061,7 @@ void Analyzer::setupJetCorrections(std::string year, std::string outputfilename)
 
    static std::map<std::string, std::string> archiveTagsDATA = {
      {"2016" , "Summer16_07Aug2017_V11_DATA"},
-     {"2017" , "Fall17_17Nov2017_V32_DATA"},
+     {"2017" , "Summer19UL17_V5_DATA"},
      {"2018" , "Summer19UL18_V5_DATA"}
    };
 
@@ -2073,11 +2073,11 @@ void Analyzer::setupJetCorrections(std::string year, std::string outputfilename)
      {"2016F" , "Summer16_07Aug2017EF_V11_DATA"},
      {"2016G" , "Summer16_07Aug2017GH_V11_DATA"},
      {"2016H" , "Summer16_07Aug2017GH_V11_DATA"},
-     {"2017B" , "Fall17_17Nov2017B_V32_DATA"},
-     {"2017C" , "Fall17_17Nov2017C_V32_DATA"},
-     {"2017D" , "Fall17_17Nov2017DE_V32_DATA"},
-     {"2017E" , "Fall17_17Nov2017DE_V32_DATA"},
-     {"2017F" , "Fall17_17Nov2017F_V32_DATA"},
+     {"2017B" , "Summer19UL17_RunB_V5_DATA"},
+     {"2017C" , "Summer19UL17_RunC_V5_DATA"},
+     {"2017D" , "Summer19UL17_RunD_V5_DATA"},
+     {"2017E" , "Summer19UL17_RunE_V5_DATA"},
+     {"2017F" , "Summer19UL17_RunF_V5_DATA"},
      {"2018A" , "Summer19UL18_RunA_V5_DATA"},
      {"2018B" , "Summer19UL18_RunB_V5_DATA"},
      {"2018C" , "Summer19UL18_RunC_V5_DATA"},
@@ -2086,7 +2086,7 @@ void Analyzer::setupJetCorrections(std::string year, std::string outputfilename)
 
    static std::map<std::string, std::string> jerTagsMC = {
      {"2016" , "Summer16_25nsV1_MC"},
-     {"2017" , "Fall17_V3_MC"},
+     {"2017" , "Summer19UL17_JRV2_MC"},
      {"2018" , "Summer19UL18_JRV2_MC"}
    };
 

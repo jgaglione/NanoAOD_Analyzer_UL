@@ -31,7 +31,7 @@ NGenTau		0  -1
 ***NRecoVertex        1   -1   ///at least one good vertex
 ***NRecoTriggers1     1   -1   ///events must fire the HLT_IsoMu24 trigger
 ***NRecoTau1          2   2
-***NDiTauCombinations	   1   1
+***NDiTauCombinations	   1   -1
 ***NRecoElectron1        0   0
 ***NRecoMuon1	      0   0   
 ***NRecoJet1          1   -1

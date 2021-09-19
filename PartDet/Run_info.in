@@ -3,8 +3,8 @@
 ####################################
 
 CalculatePUSystematics true
-DataHistos PileUpReweighting2018.root       # 2016: PileUpReweighting2016.root, 2017: PileUpReweighting2017.root, 2018: PileUpReweighting2018.root
-MCHistos mc2018_pileup_Dec2018reReco.root   # 2016: mc2016_pileup_Dec2018reReco.root, 2017: mc2017_pileup_Dec2018reReco.root, 2018: 2016: mc2018_pileup_Dec2018reReco.root
+DataHistos PileUpReweighting2017.root       # 2016: PileUpReweighting2016.root, 2017: PileUpReweighting2017.root, 2018: PileUpReweighting2018.root
+MCHistos mc2017_pileup_Dec2018reReco.root   # 2016: mc2016_pileup_Dec2018reReco.root, 2017: mc2017_pileup_Dec2018reReco.root, 2018: 2016: mc2018_pileup_Dec2018reReco.root
 DataPUHistName pileup
 MCPUHistName pileup
 
@@ -28,11 +28,11 @@ ApplyGenWeight  true
 UsePileUpWeight false
 ApplyNPVweights false
 
-ApplyL1PrefiringWeight false
+ApplyL1PrefiringWeight true
 
 /// ------ Data-specific cuts ------///
 FilterDataByGoldenJSON true
-ApplyHEMVeto2018 true
+ApplyHEMVeto2018 false
 
 /// ------ MC Gen-level cuts ------///
 /// --- HT filter --- ///
@@ -47,7 +47,7 @@ GenDilepMassRange 80.0 100.0
 /// ------ Triggers ----- ///
 
 Trigger1FirstRequirement HLT_DoubleMediumChargedIsoPFTau
-Trigger1SecondRequirement HLT_DoubleMediumChargedIsoPFTauHPS
+Trigger1SecondRequirement HLT_DoubleMediumChargedIsoPFTau
 UseTriggerWildcard true
 
 /// Trigger2FirstRequirement HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg

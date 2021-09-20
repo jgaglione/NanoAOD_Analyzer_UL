@@ -2165,6 +2165,8 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
     _MET->applyXYshiftCorr(year, runera, bestVertices, isData, systname, syst);
   }
 
+  // Define the deltas to be applied to MET at the end (2017). These deltas account for the unclustered and clustered energy
+  float delta_x_EEnoise_rawJets = 0.0, delta_y_EEnoise_rawJets = 0.0, delta_x_EEnoise_T1Jets = 0.0, delta_y_EEnoise_T1Jets = 0.0;
   // Define the jet energy threshold below which we consider it to be unclustered energy.
   float jetUnclEnThreshold = 15.0;
 
@@ -2651,7 +2653,9 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
     // Only propagate JECs to MET if the corrected pt without the muon is above the unclustered energy threshold.
     if(jetL1L2L3_noMuonP4.Pt() > jetUnclEnThreshold && jetTotalEmEF < 0.9){
 
-      if(systname.find("orig") != std::string::npos ){
+      if( ( ( year.compare("2016") == 0 ) || (year.compare("2018") == 0) ) ){
+        // Do the normal propagation of JEC & JER to 2016 and 2018 and those jets outside the problematic EE noise jet eta and pt regions for 2017.
+        if(systname.find("orig") != std::string::npos ){
           _MET->propagateJetEnergyCorr(jetL1L2L3_jerNom_noMuonP4, jetL1L2L3_jerNom_noMuonP4.Pt(), jetL1_noMuonP4.Pt(), systname, syst);
         } else if( !stats.bfind("SmearTheJet") && systname.find("_Scale_") != std::string::npos ){
           _MET->propagateJetEnergyCorr(jetL1L2L3_T1_noMuon_jesShiftedP4, jetL1L2L3_T1_noMuon_jesShiftedP4.Pt(), jetL1_noMuonP4.Pt(), systname, syst);
@@ -2660,11 +2664,40 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
         } else if( stats.bfind("SmearTheJet") && systname.find("_Res_") != std::string::npos ){
           _MET->propagateJetEnergyCorr(jetL1L2L3_jerShifted_noMuonP4, jetL1L2L3_jerShifted_noMuonP4.Pt(), jetL1_noMuonP4.Pt(), systname, syst);
         }
+
+      } else if( year.compare("2017") == 0 ){
+        if( ! ((abs(rawJetP4_noMuon.Eta()) > 2.65 && abs(rawJetP4_noMuon.Eta()) < 3.14 ) && (rawJetP4_noMuon.Pt() < 50.0) ) ){
+          // Do the normal propagation of JEC & JER to 2016 and 2018 and those jets outside the problematic EE noise jet eta and pt regions for 2017.
+
+          if(systname.find("orig") != std::string::npos ){
+            _MET->propagateJetEnergyCorr(jetL1L2L3_jerNom_noMuonP4, jetL1L2L3_jerNom_noMuonP4.Pt(), jetL1_noMuonP4.Pt(), systname, syst);
+          } else if( !stats.bfind("SmearTheJet") && systname.find("_Scale_") != std::string::npos ){
+            _MET->propagateJetEnergyCorr(jetL1L2L3_T1_noMuon_jesShiftedP4, jetL1L2L3_T1_noMuon_jesShiftedP4.Pt(), jetL1_noMuonP4.Pt(), systname, syst);
+          } else if( stats.bfind("SmearTheJet") && systname.find("_Scale_") != std::string::npos ){
+            _MET->propagateJetEnergyCorr(jetL1L2L3_jer_noMuon_jesShiftedP4, jetL1L2L3_jer_noMuon_jesShiftedP4.Pt(), jetL1_noMuonP4.Pt(), systname, syst);
+          } else if( stats.bfind("SmearTheJet") && systname.find("_Res_") != std::string::npos ){
+            _MET->propagateJetEnergyCorr(jetL1L2L3_jerShifted_noMuonP4, jetL1L2L3_jerShifted_noMuonP4.Pt(), jetL1_noMuonP4.Pt(), systname, syst);
+          }
+        } else if( (abs(rawJetP4_noMuon.Eta()) > 2.65 && abs(rawJetP4_noMuon.Eta()) < 3.14 ) && rawJetP4_noMuon.Pt() < 50.0 ){
+          // get the delta for removing raw jets in the EE region from the raw MET
+          delta_x_EEnoise_rawJets += rawJetP4_noMuon.Pt() * cos(rawJetP4_noMuon.Phi());
+          delta_y_EEnoise_rawJets += rawJetP4_noMuon.Pt() * sin(rawJetP4_noMuon.Phi());
+
+          // Get the delta for removing L1L2L3-L1 corrected jets in the EE region from the default MET branch
+          delta_x_EEnoise_T1Jets += (jetL1L2L3_noMuonP4.Pt() - jetL1_noMuonP4.Pt()) * cos(jetL1L2L3_noMuonP4.Phi()) + rawJetP4_noMuon.Pt() * cos(rawJetP4_noMuon.Phi());
+          delta_y_EEnoise_T1Jets += (jetL1L2L3_noMuonP4.Pt() - jetL1_noMuonP4.Pt()) * sin(jetL1L2L3_noMuonP4.Phi()) + rawJetP4_noMuon.Pt() * sin(rawJetP4_noMuon.Phi());
+        }
       }
+    }
   }
-}
 
     // Propagate "unclustered energy" uncertainty to MET to finalize the 2017 MET recipe v2
+    if(year.compare("2017") == 0){
+      // Remove the L1L2L3-L1 corrected jets in the EE region from the default MET branch
+      _MET->removeEEnoiseUnclEnergy(delta_x_EEnoise_T1Jets, delta_y_EEnoise_T1Jets, delta_x_EEnoise_rawJets, delta_y_EEnoise_rawJets, systname, syst);
+    }
+
+}
 
 // --- Old function that smeares the jet energy resolution: this is done only in MC to improve the agreement between data and MC --- //
 
@@ -3200,7 +3233,7 @@ void Analyzer::getGoodRecoLeptons(const Lepton& lep, const CUTS ePos, const CUTS
           // passCuts = passCuts && passProng(stats.smap.at("ProngType"), _Tau->decayMode[i]); //original.
           passCuts = passCuts && passProng(stats.smap.at("ProngType"), _Tau->decayModeInt[i]);
         }
-        //else if(cut == "decayModeFindingNewDMs") passCuts = passCuts && _Tau->DecayModeNewDMs[i] != 0;  //DecayModeNewDMs is a preselection for UL NanoAODv9
+        else if(cut == "decayModeFindingNewDMs") passCuts = passCuts && _Tau->DecayModeNewDMs[i] != 0;
         // else if(cut == "decayModeFinding") passCuts = passCuts && _Tau->DecayMode[i] != 0; // original
         else if(cut == "decayModeFinding") passCuts = passCuts && _Tau->DecayModeOldDMs[i] != 0;
         else if(cut == "DiscrByGenMatchingStatus"){

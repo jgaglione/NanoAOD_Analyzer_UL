@@ -47,7 +47,7 @@ TauIDSFTool::TauIDSFTool(const std::string& datapath, const std::string& year, c
 
   bool verbose = false;
   //std::string datapath                = Form("%s/src/TauPOG/TauIDSFs/data",getenv("CMSSW_BASE"));
-  std::vector<std::string> years      = {"2016Legacy","2017ReReco","2018ReReco"};
+  std::vector<std::string> years      = {"UL2016_preVFP","UL2016_postVFP","UL2017","UL2018"};
   std::vector<std::string> antiJetIDs = {"MVAoldDM2017v2","DeepTau2017v2p1VSjet"};
   std::vector<std::string> antiEleIDs = {"antiEleMVA6",   "DeepTau2017v2p1VSe"};
   std::vector<std::string> antiMuIDs  = {"antiMu3",       "DeepTau2017v2p1VSmu"};
@@ -127,7 +127,14 @@ TauIDSFTool::TauIDSFTool(const std::string& datapath, const std::string& year, c
           std::cerr << "SF for ID " << ID << " not available for the embedded samples!" << std::endl;
           assert(0);
       }
-      TString filename = Form("%s/TauID_SF_eta_%s_%s.root",datapath.data(),ID.data(),year.data());
+      //apply pre-legacy anti-mu SF. TO BE REMOVED WHEN UL ANTI-MU ARE AVAILABLE
+      static std::map<std::string, std::string> oldYears = {
+        {"UL2016", "2016Legacy"},
+        {"UL2017", "2017ReReco"},
+        {"UL2018", "2018ReReco"}
+      };
+      std::cerr << "anti-mu IDs not yet available for UL. Using Legacy" << std::endl;
+      TString filename = Form("%s/TauID_SF_eta_%s_%s.root",datapath.data(),ID.data(),oldYears[year].data());
       TFile* file = ensureTFile(filename,verbose);
       hist = extractTH1(file,WP);
       hist->SetDirectory(nullptr);
@@ -201,7 +208,7 @@ float TauIDSFTool::getSFvsEta(double eta, int genmatch, const std::string& unc) 
 TauESTool::TauESTool(const std::string& datapath, const std::string& year, const std::string& id): ID(id){
 
   bool verbose = false;
-  std::vector<std::string> years      = {"2016Legacy","2017ReReco","2018ReReco"};
+  std::vector<std::string> years      = {"UL2016_preVFP","UL2016_postVFP","UL2017","UL2018"};
   std::vector<std::string> antiJetIDs = {"MVAoldDM2017v2","DeepTau2017v2p1VSjet"};
 
   if(std::find(years.begin(),years.end(),year)==years.end()){
@@ -216,9 +223,15 @@ TauESTool::TauESTool(const std::string& datapath, const std::string& year, const
   }
 
   if(std::find(antiJetIDs.begin(),antiJetIDs.end(),ID)!=antiJetIDs.end()){
+      static std::map<std::string, std::string> oldYears = {
+        {"UL2016", "2016Legacy"},
+        {"UL2017", "2017ReReco"},
+        {"UL2018", "2018ReReco"}
+      };
+ 
 
     TString filename_lowpt = Form("%s/TauES_dm_%s_%s.root",datapath.data(),ID.data(),year.data());
-    TString filename_highpt = Form("%s/TauES_dm_%s_%s_ptgt100.root",datapath.data(),ID.data(),year.data());
+    TString filename_highpt = Form("%s/TauES_dm_%s_%s_ptgt100.root",datapath.data(),ID.data(),oldYears[year].data()); //ReReco recommended for high pT UL
 
     TFile* file_lowpt = ensureTFile(filename_lowpt,verbose);
     TFile* file_highpt = ensureTFile(filename_highpt,verbose);
@@ -314,7 +327,7 @@ float TauESTool::getTES_highpt(int dm, const std::string& unc){
 TauFESTool::TauFESTool(const std::string& datapath, const std::string& year, const std::string& id): ID(id){
 
   bool verbose = false;
-  std::vector<std::string> years      = {"2016Legacy","2017ReReco","2018ReReco"};
+  std::vector<std::string> years      = {"UL2016_preVFP","UL2016_postVFP","UL2017","UL2018"};
   std::vector<std::string> antiEleIDs = {"DeepTau2017v2p1VSe"};
 
   if(std::find(years.begin(),years.end(),year)==years.end()){
@@ -327,10 +340,19 @@ TauFESTool::TauFESTool(const std::string& datapath, const std::string& year, con
     std::cerr << std::endl;
     assert(0);
   }
+ 
 
+  
   if(ID.find("DeepTau2017v2p1VSe") != std::string::npos){
-
-    TString filename = Form("%s/TauFES_eta-dm_%s_%s.root",datapath.data(),ID.data(),year.data());
+    
+     static std::map<std::string, std::string> oldYears = {
+        {"UL2016", "2016Legacy"},
+        {"UL2017", "2017ReReco"},
+        {"UL2018", "2018ReReco"}
+      };
+ 
+   
+    TString filename = Form("%s/TauFES_eta-dm_%s_%s.root",datapath.data(),ID.data(),oldYears[year].data()); //ReReco Recomended for UL FES
 
     TFile* file = ensureTFile(filename,verbose);
     TGraphAsymmErrors *graph = dynamic_cast<TGraphAsymmErrors* >((const_cast<TFile*>(file))->Get("fes"));

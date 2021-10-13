@@ -129,11 +129,11 @@ TauIDSFTool::TauIDSFTool(const std::string& datapath, const std::string& year, c
       }
       //apply pre-legacy anti-mu SF. TO BE REMOVED WHEN UL ANTI-MU ARE AVAILABLE
       static std::map<std::string, std::string> oldYears = {
-        {"UL2016", "2016Legacy"},
+        {"UL2016_preVFP", "2016Legacy"},
+        {"UL2016_postVFP", "2016Legacy"},
         {"UL2017", "2017ReReco"},
         {"UL2018", "2018ReReco"}
       };
-      std::cerr << "anti-mu IDs not yet available for UL. Using Legacy" << std::endl;
       TString filename = Form("%s/TauID_SF_eta_%s_%s.root",datapath.data(),ID.data(),oldYears[year].data());
       TFile* file = ensureTFile(filename,verbose);
       hist = extractTH1(file,WP);
@@ -224,7 +224,8 @@ TauESTool::TauESTool(const std::string& datapath, const std::string& year, const
 
   if(std::find(antiJetIDs.begin(),antiJetIDs.end(),ID)!=antiJetIDs.end()){
       static std::map<std::string, std::string> oldYears = {
-        {"UL2016", "2016Legacy"},
+        {"UL2016_preVFP", "2016Legacy"},
+        {"UL2016_postVFP", "2016Legacy"},
         {"UL2017", "2017ReReco"},
         {"UL2018", "2018ReReco"}
       };
@@ -346,7 +347,8 @@ TauFESTool::TauFESTool(const std::string& datapath, const std::string& year, con
   if(ID.find("DeepTau2017v2p1VSe") != std::string::npos){
     
      static std::map<std::string, std::string> oldYears = {
-        {"UL2016", "2016Legacy"},
+        {"UL2016_preVFP", "2016Legacy"},
+        {"UL2016_postVFP", "2016Legacy"},
         {"UL2017", "2017ReReco"},
         {"UL2018", "2018ReReco"}
       };

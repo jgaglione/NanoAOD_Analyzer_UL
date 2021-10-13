@@ -1040,11 +1040,16 @@ bool Analyzer::select_mc_background(){
 void Analyzer::setupTauIDSFsInfo(std::string tauidalgoname, std::string year, bool applyDMsfs, bool applyEmbedding){
 
   static std::map<std::string, std::string> tauidyearmap = {
-    {"2016", "UL2016"},
+    {"2016", ""},
     {"2017", "UL2017"},
     {"2018", "UL2018"}
   };
-
+  if (year == "2016" && distats["Run"].bfind("is2016APV")){
+    tauidyearmap["2016"] = "UL2016_preVFP";
+  }
+  else {
+     tauidyearmap["2016"] = "UL2016_postVFP";
+  }
   tauidyear = tauidyearmap[year];
 
   // Read the corresponding ID algorithm:
@@ -1903,10 +1908,13 @@ void Analyzer::setupJetCorrections(std::string year, std::string outputfilename)
 
    // ------------------------ NEW: Jet Energy Scale and Resolution corrections initialization ------------------- //
    static std::map<std::string, std::string> jecTagsMC = {
-     {"2016" , "Summer16_07Aug2017_V11_MC"},
+     {"2016" , "Summer19UL16_V7_MC"},
      {"2017" , "Summer19UL17_V5_MC"},
      {"2018" , "Summer19UL18_V5_MC"}
    };
+   if (year == "2016" && distats["Run"].bfind("is2016APV")){
+     jecTagsMC["2016"] = "Summer19UL16APV_V7_MC";
+   }
 
    static std::map<std::string, std::string> jecTagsFastSim = {
      {"2016" , "Summer16_FastSimV1_MC"},
@@ -1915,19 +1923,22 @@ void Analyzer::setupJetCorrections(std::string year, std::string outputfilename)
    };
 
    static std::map<std::string, std::string> archiveTagsDATA = {
-     {"2016" , "Summer16_07Aug2017_V11_DATA"},
+     {"2016" , "Summer19UL16_V7_DATA"},
      {"2017" , "Summer19UL17_V5_DATA"},
      {"2018" , "Summer19UL18_V5_DATA"}
    };
+   if (year == "2016" && distats["Run"].bfind("is2016APV")){
+     archiveTagsDATA["2016"] = "Summer19UL16APV_V7_DATA";
+   }
 
    static std::map<std::string, std::string> jecTagsDATA = {
-     {"2016B" , "Summer16_07Aug2017BCD_V11_DATA"},
-     {"2016C" , "Summer16_07Aug2017BCD_V11_DATA"},
-     {"2016D" , "Summer16_07Aug2017BCD_V11_DATA"},
-     {"2016E" , "Summer16_07Aug2017EF_V11_DATA"},
-     {"2016F" , "Summer16_07Aug2017EF_V11_DATA"},
-     {"2016G" , "Summer16_07Aug2017GH_V11_DATA"},
-     {"2016H" , "Summer16_07Aug2017GH_V11_DATA"},
+     {"2016B" , "Summer19UL16APV_RunBCD_V7_DATA"},
+     {"2016C" , "Summer19UL16APV_RunBCD_V7_DATA"},
+     {"2016D" , "Summer19UL16APV_RunBCD_V7_DATA"},
+     {"2016E" , "Summer19UL16APV_RunEF_V7_DATA"},
+     {"2016F" , "Summer19UL16APV_RunEF_V7_DATA"},
+     {"2016G" , "Summer19UL16_RunFGH_V7_DATA"},
+     {"2016H" , "Summer19UL16_RunFGH_V7_DATA"},
      {"2017B" , "Summer19UL17_RunB_V5_DATA"},
      {"2017C" , "Summer19UL17_RunC_V5_DATA"},
      {"2017D" , "Summer19UL17_RunD_V5_DATA"},
@@ -1940,10 +1951,14 @@ void Analyzer::setupJetCorrections(std::string year, std::string outputfilename)
    };
 
    static std::map<std::string, std::string> jerTagsMC = {
-     {"2016" , "Summer16_25nsV1_MC"},
+     {"2016" , "Summer20UL16_JRV3_MC"},
      {"2017" , "Summer19UL17_JRV2_MC"},
      {"2018" , "Summer19UL18_JRV2_MC"}
    };
+   if (year == "2016" && distats["Run"].bfind("is2016APV")){
+    jerTagsMC["2016"] = "Summer20UL16_JRV3_MC";
+   }
+
 
    std::string jertag = jerTagsMC.begin()->second;
    std::string jectag = jecTagsMC.begin()->second;
@@ -2017,7 +2032,7 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
 
   // Include the phi-corrections to raw MET -- this is equivalent to apply them to type0-I MET
   if(distats["Run"].bfind("ApplyMETxyShiftCorrections")){
-    _MET->applyXYshiftCorr(year, runera, bestVertices, isData, systname, syst);
+    _MET->applyXYshiftCorr(year, runera, bestVertices, isData, systname, syst, distats["Run"].bfind("is2016APV"));
   }
 
   // Define the jet energy threshold below which we consider it to be unclustered energy.

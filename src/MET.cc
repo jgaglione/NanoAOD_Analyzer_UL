@@ -144,7 +144,7 @@ void Met::removeEEnoiseUnclEnergy(double const& delta_x_T1Jet, double const& del
 
 }
 
-void Met::applyXYshiftCorr(std::string const& year, std::string const& runera, int npv, bool const& isdata, std::string& systname, int syst){
+void Met::applyXYshiftCorr(std::string const& year, std::string const& runera, int npv, bool const& isdata, std::string& systname, int syst, bool const& isAPV){
    // Reference: https://lathomas.web.cern.ch/lathomas/METStuff/XYCorrections/XYMETCorrection.h
    if(systRawMetVec.at(syst) == nullptr) return;
 
@@ -178,11 +178,15 @@ void Met::applyXYshiftCorr(std::string const& year, std::string const& runera, i
        metxcorr = -(0.0868828*npv +-0.703489);
        metycorr = -(0.0888774*npv +0.902632);
      }
-   } else if(year == "2016" && !isdata && runera == "2016MC"){ // In this case, we use normal MET (not v2 as in 2017)
+
+   } else if(year == "2016" && !isdata && runera == "2016MC" && !isAPV){ // In this case, we use normal MET (not v2 as in 2017)
 
        metxcorr = -(-0.153497*npv +-0.231751);
        metycorr = -(0.00731978*npv +0.243323);
+   } else if(year == "2016" && !isdata && runera == "2016MC" && isAPV){ 
 
+       metxcorr = -(-0.188743*npv +0.136539);
+       metycorr = -(0.0127927*npv +0.117747);
    } else if(year == "2017" && isdata){ // In this case, we use MET v2 (subtracting EE noise)
 
      if(runera == "2017B"){

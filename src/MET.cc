@@ -155,7 +155,7 @@ void Met::applyXYshiftCorr(std::string const& year, std::string const& runera, i
    float metxcorr = 0.0, metycorr = 0.0;
 
    // Check what the run era is and calculate the correction based on the NPV of the event.
-   if(year == "2016" && isdata){ // In this case, we use normal MET (not v2 as in 2017)
+   if(year == "2016" && isdata && isAPV){ // In this case, we use normal MET (not v2 as in 2017)
      if(runera == "2016B"){
        metxcorr = -(-0.0214894*npv +-0.188255);
        metycorr = -(0.0876624*npv +0.812885);
@@ -171,6 +171,30 @@ void Met::applyXYshiftCorr(std::string const& year, std::string const& runera, i
      } else if(runera == "2016F"){
        metxcorr = -(-0.0543566*npv +0.816597);
        metycorr = -(0.114225*npv +1.17266);
+     } else if(runera == "2016G"){
+       metxcorr = -(0.121809*npv +-0.584893);
+       metycorr = -(0.0558974*npv +0.891234);
+     } else if(runera == "2016H"){
+       metxcorr = -(0.0868828*npv +-0.703489);
+       metycorr = -(0.0888774*npv +0.902632);
+     }
+     
+   } else if (year == "2016" && isdata && !isAPV){
+     if(runera == "2016B"){
+       metxcorr = -(-0.0214894*npv +-0.188255);
+       metycorr = -(0.0876624*npv +0.812885);
+     } else if(runera == "2016C"){
+       metxcorr = -(-0.032209*npv +0.067288);
+       metycorr = -(0.113917*npv +0.743906);
+     } else if(runera == "2016D"){
+       metxcorr = -(-0.0293663*npv +0.21106);
+       metycorr = -(0.11331*npv +0.815787);
+     } else if(runera == "2016E"){
+       metxcorr = -(-0.0132046*npv +0.20073);
+       metycorr = -(0.134809*npv +0.679068);
+     } else if(runera == "2016F"){
+       metxcorr = -(0.134616*npv +-0.89965);
+       metycorr = -(0.0397736*npv +1.0385);
      } else if(runera == "2016G"){
        metxcorr = -(0.121809*npv +-0.584893);
        metycorr = -(0.0558974*npv +0.891234);

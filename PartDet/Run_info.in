@@ -8,7 +8,7 @@ MCHistos mc2018_pileup_Dec2018reReco.root   # 2016: mc2016_pileup_Dec2018reReco.
 DataPUHistName pileup
 MCPUHistName pileup
 
-is2016APV  false
+is2016APV  true
 SpecialMCPUCalculation false
 SpecialMCPUHistos new_mc2017_pileupReweighting_NanoAODv6.root
 /// SpecialMCPUHistos new_mc2017_pileupReweighting_NanoAODv6_wanddylo_incl.root

@@ -1949,6 +1949,10 @@ void Analyzer::setupJetCorrections(std::string year, std::string outputfilename)
      {"2018C" , "Summer19UL18_RunC_V5_DATA"},
      {"2018D" , "Summer19UL18_RunD_V5_DATA"}
    };
+  if (year == "2016" && !distats["Run"].bfind("is2016APV")){
+     jecTagsDATA["2016F"] = "Summer19UL16_RunFGH_V7_DATA";
+  }
+       
 
    static std::map<std::string, std::string> jerTagsMC = {
      {"2016" , "Summer20UL16_JRV3_MC"},

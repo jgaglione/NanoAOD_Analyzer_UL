@@ -19,8 +19,8 @@ TauMatchingDeltaR  0.3
 EtaCut 0. 2.4
 PtCut 30.0
 
-ApplyLooseID 0
-ApplyTightID 1
+ApplyLooseID 1
+ApplyTightID 0
 
 RemoveOverlapWithMuon1s 1
 RemoveOverlapWithMuon2s 1
@@ -54,8 +54,8 @@ DPhiMetCut 0.7 9999.5
 EtaCut 0. 5.0
 PtCut 30.0
 
-ApplyLooseID 0
-ApplyTightID 1
+ApplyLooseID 1
+ApplyTightID 0
 
 RemoveOverlapWithMuon1s 1
 RemoveOverlapWithMuon2s 1
@@ -88,8 +88,8 @@ DPhiMetCut 0.7 9999.5
 
 PtCut 30.0
 
-ApplyLooseID 0
-ApplyTightID 1
+ApplyLooseID 1
+ApplyTightID 0
 
 RemoveOverlapWithMuon1s 1
 RemoveOverlapWithMuon2s 1
@@ -119,8 +119,8 @@ DoDiscrByThisJet 1
 EtaCut 0.0 2.4
 PtCut 100.0
 
-ApplyLooseID 0
-ApplyTightID 1
+ApplyLooseID 1
+ApplyTightID 0
 
 RemoveOverlapWithMuon1s 1 
 RemoveOverlapWithMuon2s 1
@@ -150,8 +150,8 @@ DoDiscrByThisJet 1
 EtaCut 0.0 5.0
 PtCut 30.0
 
-ApplyLooseID 0
-ApplyTightID 1
+ApplyLooseID 1
+ApplyTightID 0
 
 RemoveOverlapWithMuon1s 1
 RemoveOverlapWithMuon2s 1
@@ -201,7 +201,7 @@ ApplyJetBTaggingDeepCSV 1
 ApplyJetBTaggingDeepFlav 0
 
 JetBTaggingWP   medium
-JetBTaggingCut  0.4148
+JetBTaggingCut  0.6321
 MatchBToGen     0
 UseBtagSF       1
 RemoveBJetsFromJets 0

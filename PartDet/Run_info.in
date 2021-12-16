@@ -3,14 +3,10 @@
 ####################################
 
 CalculatePUSystematics true
-DataHistos PileUpReweighting2016ULNonAPV.root       # 2016: PileUpReweighting2016.root, 2017: PileUpReweighting2017.root, 2018: PileUpReweighting2018.root
+DataHistos PileUpReweighting2016ULNonAPV.root       # 2016 APV: PileUpReweighting2016ULAPV.root, 2016 Non-APV: PileUpReweighting2016ULNonAPV.root 2017: PileUpReweighting2017UL.root, 2018: PileUpReweighting2018UL.root
 MCHistos mc2016NonAPV_pileup_20UL16.root   # 2016: mc2016_pileup_Dec2018reReco.root, 2017: mc2017_pileup_Dec2018reReco.root, 2018: 2016: mc2018_pileup_Dec2018reReco.root
 DataPUHistName pileup
 MCPUHistName pileup
-
-SpecialMCPUCalculation false
-SpecialMCPUHistos new_mc2017_pileupReweighting_NanoAODv6.root
-/// SpecialMCPUHistos new_mc2017_pileupReweighting_NanoAODv6_wanddylo_incl.root
 
 ApplyTauIDSF true
 TauIdSFsByDM false # Tau ID scale factors that are decay mode (DM) - dependent. If using di-tau triggers and tau-pt > 40 GeV, this are the recommended SFs.

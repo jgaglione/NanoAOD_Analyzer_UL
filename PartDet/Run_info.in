@@ -3,8 +3,8 @@
 ####################################
 
 CalculatePUSystematics true
-DataHistos PileUpReweighting2016.root       # 2016: PileUpReweighting2016.root, 2017: PileUpReweighting2017.root, 2018: PileUpReweighting2018.root
-MCHistos mc2016_pileup_Dec2018reReco.root   # 2016: mc2016_pileup_Dec2018reReco.root, 2017: mc2017_pileup_Dec2018reReco.root, 2018: 2016: mc2018_pileup_Dec2018reReco.root
+DataHistos PileUpReweighting2016ULNonAPV.root       # 2016: PileUpReweighting2016.root, 2017: PileUpReweighting2017.root, 2018: PileUpReweighting2018.root
+MCHistos mc2016NonAPV_pileup_20UL16.root   # 2016: mc2016_pileup_Dec2018reReco.root, 2017: mc2017_pileup_Dec2018reReco.root, 2018: 2016: mc2018_pileup_Dec2018reReco.root
 DataPUHistName pileup
 MCPUHistName pileup
 
@@ -19,14 +19,14 @@ TauSFforEmbeddedSamples false
 ApplyTauAntiEleSF true
 ApplyTauAntiMuSF true
 
-ApplyISRZBoostSF false # Z-boost weight corrections derived for ISR+stau analysis (SUS-19-002)
+ApplyISRZBoostSF true # Z-boost weight corrections derived for ISR+stau analysis (SUS-19-002)
 ApplySUSYZBoostSF false # Official Z-boost weight corrections derived by the SUSY PAG.
-ApplyVBFSusyZBoostSF true # Weights derived by the VBF SUSY team - Run II
+ApplyVBFSusyZBoostSF false # Weights derived by the VBF SUSY team - Run II
 
-isData false
 is2016APV false
+isData false
 ApplyGenWeight  true
-UsePileUpWeight false
+UsePileUpWeight true
 ApplyNPVweights false
 
 ApplyL1PrefiringWeight true
@@ -74,8 +74,8 @@ HtCut 30.0
 
 JetPtForMhtAndHt 30.0        
 JetEtaForMhtAndHt 5.0        
-ApplyJetLooseIDforMhtAndHt true
-ApplyJetTightIDforMhtAndHt false
+ApplyJetLooseIDforMhtAndHt false
+ApplyJetTightIDforMhtAndHt true
 
 /// --- MC selection --- ///
 InitializeMCSelection false

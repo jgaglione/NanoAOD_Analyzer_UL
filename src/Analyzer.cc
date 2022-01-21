@@ -1044,7 +1044,7 @@ void Analyzer::setupTauIDSFsInfo(std::string tauidalgoname, std::string year, bo
     {"2017", "UL2017"},
     {"2018", "UL2018"}
   };
-  if (year == "2016" && distats["Run"].bfind("is2016APV")){
+  if (year == "2016" && distats["Run"].bfind("is2016preVFP")){
     tauidyearmap["2016"] = "UL2016_preVFP";
   }
   else {
@@ -1912,7 +1912,7 @@ void Analyzer::setupJetCorrections(std::string year, std::string outputfilename)
      {"2017" , "Summer19UL17_V5_MC"},
      {"2018" , "Summer19UL18_V5_MC"}
    };
-   if (year == "2016" && distats["Run"].bfind("is2016APV")){
+   if (year == "2016" && distats["Run"].bfind("is2016preVFP")){
      jecTagsMC["2016"] = "Summer19UL16APV_V7_MC";
    }
 
@@ -1927,7 +1927,7 @@ void Analyzer::setupJetCorrections(std::string year, std::string outputfilename)
      {"2017" , "Summer19UL17_V5_DATA"},
      {"2018" , "Summer19UL18_V5_DATA"}
    };
-   if (year == "2016" && distats["Run"].bfind("is2016APV")){
+   if (year == "2016" && distats["Run"].bfind("is2016preVFP")){
      archiveTagsDATA["2016"] = "Summer19UL16APV_V7_DATA";
    }
 
@@ -1949,7 +1949,7 @@ void Analyzer::setupJetCorrections(std::string year, std::string outputfilename)
      {"2018C" , "Summer19UL18_RunC_V5_DATA"},
      {"2018D" , "Summer19UL18_RunD_V5_DATA"}
    };
-  if (year == "2016" && !distats["Run"].bfind("is2016APV")){
+  if (year == "2016" && !distats["Run"].bfind("is2016preVFP")){
      jecTagsDATA["2016F"] = "Summer19UL16_RunFGH_V7_DATA";
   }
        
@@ -1959,7 +1959,7 @@ void Analyzer::setupJetCorrections(std::string year, std::string outputfilename)
      {"2017" , "Summer19UL17_JRV2_MC"},
      {"2018" , "Summer19UL18_JRV2_MC"}
    };
-   if (year == "2016" && distats["Run"].bfind("is2016APV")){
+   if (year == "2016" && distats["Run"].bfind("is2016preVFP")){
     jerTagsMC["2016"] = "Summer20UL16_JRV3_MC";
    }
 
@@ -2036,7 +2036,7 @@ void Analyzer::applyJetEnergyCorrections(Particle& jet, const CUTS eGenPos, cons
 
   // Include the phi-corrections to raw MET -- this is equivalent to apply them to type0-I MET
   if(distats["Run"].bfind("ApplyMETxyShiftCorrections")){
-    _MET->applyXYshiftCorr(year, runera, bestVertices, isData, systname, syst, distats["Run"].bfind("is2016APV"));
+    _MET->applyXYshiftCorr(year, runera, bestVertices, isData, systname, syst, distats["Run"].bfind("is2016preVFP"));
   }
 
   // Define the jet energy threshold below which we consider it to be unclustered energy.

@@ -144,7 +144,7 @@ void Met::removeEEnoiseUnclEnergy(double const& delta_x_T1Jet, double const& del
 
 }
 
-void Met::applyXYshiftCorr(std::string const& year, std::string const& runera, int npv, bool const& isdata, std::string& systname, int syst, bool const& isAPV){
+void Met::applyXYshiftCorr(std::string const& year, std::string const& runera, int npv, bool const& isdata, std::string& systname, int syst, bool const& isPreVFP){
    // Reference: https://lathomas.web.cern.ch/lathomas/METStuff/XYCorrections/XYMETCorrection.h
    if(systRawMetVec.at(syst) == nullptr) return;
 
@@ -155,7 +155,7 @@ void Met::applyXYshiftCorr(std::string const& year, std::string const& runera, i
    float metxcorr = 0.0, metycorr = 0.0;
 
    // Check what the run era is and calculate the correction based on the NPV of the event.
-   if(year == "2016" && isdata && isAPV){ // In this case, we use normal MET (not v2 as in 2017)
+   if(year == "2016" && isdata && isPreVFP){ // In this case, we use normal MET (not v2 as in 2017)
      if(runera == "2016B"){
        metxcorr = -(-0.0214894*npv +-0.188255);
        metycorr = -(0.0876624*npv +0.812885);
@@ -179,7 +179,7 @@ void Met::applyXYshiftCorr(std::string const& year, std::string const& runera, i
        metycorr = -(0.0888774*npv +0.902632);
      }
      
-   } else if (year == "2016" && isdata && !isAPV){
+   } else if (year == "2016" && isdata && !isPreVFP){
      if(runera == "2016B"){
        metxcorr = -(-0.0214894*npv +-0.188255);
        metycorr = -(0.0876624*npv +0.812885);
@@ -203,11 +203,11 @@ void Met::applyXYshiftCorr(std::string const& year, std::string const& runera, i
        metycorr = -(0.0888774*npv +0.902632);
      }
 
-   } else if(year == "2016" && !isdata && runera == "2016MC" && !isAPV){ // In this case, we use normal MET (not v2 as in 2017)
+   } else if(year == "2016" && !isdata && runera == "2016MC" && !isPreVFP){ // In this case, we use normal MET (not v2 as in 2017)
 
        metxcorr = -(-0.153497*npv +-0.231751);
        metycorr = -(0.00731978*npv +0.243323);
-   } else if(year == "2016" && !isdata && runera == "2016MC" && isAPV){ 
+   } else if(year == "2016" && !isdata && runera == "2016MC" && isPreVFP){ 
 
        metxcorr = -(-0.188743*npv +0.136539);
        metycorr = -(0.0127927*npv +0.117747);

@@ -74,7 +74,7 @@ GenZDiLepMass	  1000	0.	 5000.
 
 //------------------------------------------------//
 
-FillTau1 1
+FillTau1 0
 
 NTau1                    20   0.      20.
 Tau1Energy             2000   0.    5000.
@@ -88,7 +88,7 @@ Tau1SeedTrackPt        2000   0.    5000.
 Tau1Charge               10  -5.       5.
 Tau1MetMt		 200  0.       1000.
 
-FillTau2 1
+FillTau2 0
 
 NTau2                    20   0.      20.
 Tau2Energy             2000   0.    5000.
@@ -128,7 +128,7 @@ Electron2MetMt              100   0      500
 
 //------------------------------------------------//
 
-FillMuon1 0
+FillMuon1 1
 
 
 ptak8pt        2000   0.    5000.
@@ -141,7 +141,7 @@ FirstLeadingMuon1Eta    144  -7.2     +7.2
 Muon1Phi                 36  -3.15    +3.15
 Muon1MetMt              100   0      500
 
-FillMuon2 0
+FillMuon2 1
 
 NMuon2                   20   0.      20.
 Muon2Energy            2000   0.    5000.
@@ -239,7 +239,7 @@ DeltaEtaVsDeltaPhiLeadSubl   200   0      10.   72   0    +3.15
 
 //------------------------------------------------//
 
-FillDiJet 1
+FillDiJet 0
 
 DiJetDeltaR           200   0    10.
 DiJetDeltaEta         200   0    10.
@@ -323,7 +323,7 @@ Muon1MetDeltaPhiVsDiMuonCosDphi   72  0   +3.15  220    -1.1    1.1
 
 //------------------------------------------------//
 
-FillDiTau 1
+FillDiTau 0
 
 DiTau_Tau1DiJetDeltaPhi          72     0    +3.15
 DiTau_Tau2DiJetDeltaPhi          72     0    +3.15
